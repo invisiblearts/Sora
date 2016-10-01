@@ -1,6 +1,0 @@
-﻿<Ui xmlns="http://www.blizzard.com/wow/ui/">
-
-	<Script file = "Variables.lua"/>
-	<Script file = "API.lua"/>
-
-</Ui>

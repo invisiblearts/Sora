@@ -1,0 +1,21 @@
+## Interface: 60000
+## X-Curse-Packaged-Version: 6.0.0.10-Beta
+## X-Curse-Project-Name: tekKompare
+## X-Curse-Project-ID: tekkompare
+## X-Curse-Repository-ID: wow/tekkompare/mainline
+
+## Title: tekKompare
+## Notes: Simple item compare tooltips
+## Author: Tekkub Stoutwrithe
+## Version: 6.0.0.10
+## X-Website: http://www.tekkub.net/
+## X-Email: tekkub-wow@googlegroups.com
+## X-Category: Interface Enhancements
+
+## LoadManagers: AddonLoader
+## X-LoadOn-Always: delayed
+
+externals\tonumber_all.lua
+
+tekKompare.lua
+HoverTips.lua

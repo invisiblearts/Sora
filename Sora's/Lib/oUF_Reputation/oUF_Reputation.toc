@@ -1,0 +1,12 @@
+## Interface: 70000
+## Author: p3lim
+## Version: 70000.13-Release
+## Title: oUF Reputation
+## Notes: Reputation Bar support for oUF layouts.
+## RequiredDeps: oUF
+## X-Curse-Packaged-Version: 70000.13-Release
+## X-Curse-Project-Name: oUF Reputation
+## X-Curse-Project-ID: ouf-reputation
+## X-Curse-Repository-ID: wow/ouf-reputation/mainline
+
+oUF_Reputation.lua

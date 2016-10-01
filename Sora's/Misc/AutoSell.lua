@@ -1,23 +1,35 @@
-﻿-- Event
+﻿-- Engine
+-- local S, C, L, DB = unpack(select(2, ...))
+
+-- Event
 local Event = CreateFrame("Frame")
 Event:RegisterEvent("MERCHANT_SHOW")
-Event:SetScript("OnEvent", function(self)
-	local Cost = 0
-	for BagID = 0, 4 do
-		for SlotID = 1, GetContainerNumSlots(BagID) do
-			local Link = GetContainerItemLink(BagID, SlotID)
-			if Link then
-				local p = select(11, GetItemInfo(Link))*select(2, GetContainerItemInfo(BagID, SlotID))
-				if select(3, GetItemInfo(Link)) == 0 and p > 0 then
-					UseContainerItem(BagID, SlotID)
-					PickupMerchantItem()
-					Cost = Cost + p
-				end
-			end
-		end
-	end
-	if Cost > 0 then
-		local g, s, c = math.floor(Cost/10000) or 0, math.floor((Cost%10000)/100) or 0, Cost%100
-		DEFAULT_CHAT_FRAME:AddMessage("共售出：".." |cffffffff"..g.."|cffffc125 G|r".." |cffffffff"..s.."|cffc7c7cf S|r".." |cffffffff"..c.."|cffeda55f C|r"..".", 255, 255, 255)
-	end
+Event:SetScript("OnEvent", function(self, ...)
+    local cost = 0
+    
+    for container = 0, 4 do
+        local numSlots = GetContainerNumSlots(container)
+        
+        for slot = 1, numSlots do
+            local link = GetContainerItemLink(container, slot)
+            
+            if link then
+                local quality = select(3, GetItemInfo(link))
+                local vendorPrice = select(11, GetItemInfo(link))
+                local count = select(2, GetContainerItemInfo(container, slot))
+                
+                if vendorPrice and vendorPrice > 0 and count > 0 and quality == 0 then
+                    UseContainerItem(container, slot)
+                    PickupMerchantItem()
+                    
+                    cost = cost + vendorPrice * count
+                end
+            end
+        end
+    end
+    
+    if cost > 0 then
+        local g, s, c = math.floor(cost / 10000) or 0, math.floor((cost % 10000) / 100) or 0, cost % 100
+        DEFAULT_CHAT_FRAME:AddMessage("共售出：" .. g .. "|cffffc125G|r " .. s .. "|cffc7c7cfS|r " .. c .. "|cffeda55fC|r", 255, 255, 255)
+    end
 end)

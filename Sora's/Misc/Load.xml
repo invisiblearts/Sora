@@ -1,0 +1,15 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<Script file = "ZD.lua" />
+	<Script file = "CVar.lua" />
+	<Script file = "Mail.lua" />
+	<Script file = "Align.lua" />
+	<Script file = "Focuser.lua" />
+	<Script file = "AutoSell.lua" />
+	<Script file = "DragEmAll.lua" />
+	<Script file = "AutoRepair.lua" />
+	<Script file = "UIParentFade.lua" />
+	<Script file = "ClearFont_zhCN.lua" />
+	<Script file = "ClearFont_zhTW.lua" />
+
+</Ui>

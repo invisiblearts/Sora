@@ -1,0 +1,12 @@
+## Interface: 70000
+## Author: p3lim
+## Version: 70000.21-Release
+## Title: oUF Experience
+## Notes: Experience Bar support for oUF layouts.
+## RequiredDeps: oUF
+## X-Curse-Packaged-Version: 70000.21-Release
+## X-Curse-Project-Name: oUF Experience
+## X-Curse-Project-ID: ouf-experience
+## X-Curse-Repository-ID: wow/ouf-experience/mainline
+
+oUF_Experience.lua

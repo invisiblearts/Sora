@@ -1,0 +1,39 @@
+6.0.0.10-Beta
+    Add battlepets to hovertips
+    So yea, I didn't know about this for 5 years
+    Fuck ItemRefShoppingTooltip3
+    Ok, ok, don't fuck it on live
+
+4.0.0.9-Release
+    I've never seen an instancelock tip, but whatever
+
+3.3.0.8-Release
+    Forgot about moving the itemref tooltip
+
+3.3.0.7-Release
+    Simplify the handlers to use blizzy's code
+
+3.2.0.7-Beta
+    Don't let ItemRefTooltip fuck with the compare tips
+
+3.2.0.6-Beta
+    Move to new itemref compare tips for 3.2
+    Use all three compare frames (even though the third is never used)
+    WTF was that thing?
+
+3.0.3.5-Release
+    Hovertips for glyphs!
+
+3.0.1.4-Release
+    Update TOC metadata
+    How the fuck did I miss "item"?
+
+3.0.1.3-Release
+    Add achievements to hovertips
+    Allow for talent hovertips
+
+2.4.0.2-Release
+    Make hovertips handle more types, thanks Arrowmaster
+
+2.3.3.1-Release
+    Removing Cowtip Condom, ckk claims he's clean now
