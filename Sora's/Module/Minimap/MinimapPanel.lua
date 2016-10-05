@@ -151,9 +151,9 @@ local function OnAddOnPanelUpdate(self, elapsed, ...)
         self:SetValue(currMemory)
         self.text:SetText(S.FormatMemory(currMemory))
         
-        if currMemory > 12288 then
+        if currMemory > 20480 then
             self:SetStatusBarColor(1.00, 0.00, 0.00)
-        elseif currMemory > 8192 then
+        elseif currMemory > 12288 then
             self:SetStatusBarColor(1.00, 1.00, 0.00)
         else
             self:SetStatusBarColor(0.00, 0.40, 1.00)
@@ -166,7 +166,7 @@ end
 local function SetAddOnPanel()
     local bar = CreateFrame("StatusBar", nil, UIParent)
     bar:SetSize(width, height)
-    bar:SetMinMaxValues(0, 15000)
+    bar:SetMinMaxValues(0, 20480)
     bar:SetStatusBarTexture(DB.Statusbar)
     bar:SetStatusBarColor(0.00, 0.40, 1.00)
     bar:SetPoint("TOPLEFT", Minimap, "TOPRIGHT", 8, -height * 3)
