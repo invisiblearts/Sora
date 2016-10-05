@@ -18,6 +18,7 @@ local setItem = hookfactory(function(b, self)
 		if (quality) then
 			local R, G, B = GetItemQualityColor(quality)
 			b:SetBackdropBorderColor(R, G, B)
+			self:SetBackdropBorderColor(R, G, B)
 		end
 		b.achOverlay:SetTexture(icon)
 		b.link = link

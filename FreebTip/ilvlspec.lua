@@ -140,30 +140,37 @@ local function ScanUnit(unit, forced)
 		forceInspect = forced or IsShiftKeyDown() or not FreeUI_ftipUnitDB[currentGUID]
 
 		if (FreeUI_ftipUnitDB[currentGUID]) then
-			if (Time - FreeUI_ftipUnitDB[currentGUID].Time > 1800) then
+			local cachedTime = Time - (FreeUI_ftipUnitDB[currentGUID].Time or 0)
+			if (cachedTime > 1800) then
 				forceInspect = true
-			elseif (not currentINS) then
-				if (not FreeUI_ftipUnitDB[currentGUID].Spec) then
-					FreeUI_ftipUnitDB[currentGUID].Spec = UnitSpec(unit)
-				end
-
-				if (not FreeUI_ftipUnitDB[currentGUID].Gear) then
-					FreeUI_ftipUnitDB[currentGUID].Gear = UnitGear(unit)
-				end
-
+			else
 				cachedSpec = FreeUI_ftipUnitDB[currentGUID].Spec
 				cachedGear = FreeUI_ftipUnitDB[currentGUID].Gear
 
 				if (not cachedSpec) then
-					if (Time - lastScanRequest > 3.5) then
+					cachedSpec = UnitSpec(unit)
+				end
+				FreeUI_ftipUnitDB[currentGUID].Spec = cachedSpec
+
+				if (not cachedSpec) then
+					if (Time - lastScanRequest > 3) then
 						cachedSpec = FAILED
 					elseif (timeSinceLastInspect > 1.5) then
 						forceInspect = true
 					end
 				end
 
+				if (not currentINS or cachedTime > 0) then
+					if (not cachedGear) then
+						cachedGear = UnitGear(unit)
+					end
+					if (cachedGear and cachedGear ~= 0) then
+						FreeUI_ftipUnitDB[currentGUID].Gear = cachedGear
+					end
+				end
+
 				if (not cachedGear) then
-					if (Time - lastScanRequest > 3.5) then
+					if (Time - lastScanRequest > 3) then
 						_, cachedGear = UnitGear(unit)
 					elseif (timeSinceLastInspect > 1.5) then
 						forceInspect = true
@@ -235,9 +242,9 @@ f:SetScript("OnEvent", function(self, event, ...)
 			local spec = UnitSpec(currentUNIT)
 			local gear = UnitGear(currentUNIT)
 
-			if (spec or (gear and gear > 0)) then
+			if (spec or (gear and gear ~= 0)) then
 				if (not FreeUI_ftipUnitDB[guid]) then FreeUI_ftipUnitDB[guid] = {} end
-				if (gear) then FreeUI_ftipUnitDB[guid].Gear = gear end
+				if (gear and gear ~= 0) then FreeUI_ftipUnitDB[guid].Gear = gear end
 				if (spec) then FreeUI_ftipUnitDB[guid].Spec = spec end
 				FreeUI_ftipUnitDB[guid].Time = GetTime()
 				FreeUI_ftipUnitDB[guid].Update = (FreeUI_ftipUnitDB[guid].Update or 0) + 1

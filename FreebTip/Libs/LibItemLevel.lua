@@ -1,7 +1,7 @@
+ï»¿---------------------------------
+-- ç‰©å“ä¿¡æ¯åº« Author: M
 ---------------------------------
--- ÎïÆ·ÐÅÏ¢Žì Author: M
----------------------------------
-local REVISION = 2
+local REVISION = 3
 if (type(LibItemLevel) == "table" and REVISION <= LibItemLevel.REVISION) then return end
 
 LibItemLevel = LibItemLevel or {}
@@ -13,14 +13,21 @@ LIL.ItemTip:SetOwner(UIParent,"ANCHOR_NONE")
 LIL.UnitTip:SetOwner(UIParent,"ANCHOR_NONE")
 LIL.ItemDB = LIL.ItemDB or {}
 
+local _G = _G
+local ARMOR = _G["ARMOR"]
+local WEAPON = _G["WEAPON"]
+local ARTIFACT_RELIC
 local PVP_ITEM_PATTERN
 local locale = GetLocale()
 if (locale == "zhCN") then
-	PVP_ITEM_PATTERN = "µÚ%dÈü¼¾"
+	PVP_ITEM_PATTERN = "ç¬¬%dèµ›å­£"
+	ARTIFACT_RELIC = _G["ITEM_QUALITY6_DESC"].._G["RELICSLOT"]
 elseif (locale == "zhTW") then
-	PVP_ITEM_PATTERN = "µÚ%d¼¾"
+	PVP_ITEM_PATTERN = "ç¬¬%då­£"
+	ARTIFACT_RELIC = _G["ITEM_QUALITY6_DESC"].._G["RELICSLOT"]
 else
 	PVP_ITEM_PATTERN = "Season %d"
+	ARTIFACT_RELIC = _G["ITEM_QUALITY6_DESC"].." ".._G["RELICSLOT"]
 end
 
 local function hasLocally(itemID)
@@ -28,15 +35,13 @@ local function hasLocally(itemID)
 	return select(10, GetItemInfo(tonumber(itemID)))
 end
 
---ÎïÆ·ÊÇ·ñ±¾µØ»¯
 function LIL:ItemLocally(itemLink)
-	local id, gem1, gem2, gem3 = string.match(itemLink, "item:(%d+):[^:]*:(%d-):(%d-):(%d-):")
+	local id, gem1, gem2, gem3 = strmatch(itemLink, "item:(%d+):[^:]*:(%d-):(%d-):(%d-):")
 	if (hasLocally(id) and hasLocally(gem1) and hasLocally(gem2) and hasLocally(gem3)) then return true end
 end
 
---»ñÈ¡ÎïÆ·Êµ¼ÊÐÅÏ¢
 function LIL:GetActualItemInfo(itemLink)
-	if (not itemLink or itemLink == "") then return end
+	if (not itemLink or itemLink == "" or not strmatch(itemLink, "item:%d+:")) then return end
 
 	if (LIL.ItemDB[itemLink]) then
 		return LIL.ItemDB[itemLink].Level, 0, LIL.ItemDB[itemLink].Rarity, LIL.ItemDB[itemLink].Slot, LIL.ItemDB[itemLink].PVP
@@ -44,24 +49,28 @@ function LIL:GetActualItemInfo(itemLink)
 
 	if (not LIL:ItemLocally(itemLink)) then return 0, 1 end
 
-	if (not LIL.LVLPattern) then LIL.LVLPattern = gsub(ITEM_LEVEL, "%%d", "(%%d+)") end
-	if (not LIL.PVPPattern) then LIL.PVPPattern = gsub(PVP_ITEM_PATTERN, "%%d", "(%%d+)") end
-
-	LIL.ItemTip:ClearLines()
-	LIL.ItemTip:SetHyperlink(itemLink)
-
-	local _, _, itemRarity, itemLevel, _, _, _, _, itemSlot = GetItemInfo(itemLink)
+	local _, _, itemRarity, itemLevel, _, itemType, itemSubType, _, itemSlot = GetItemInfo(itemLink)
 	local text, LVL, PVP
 
-	for i = 2, 5 do
-		text = _G["LibItemLevelItemTipTextLeft"..i]:GetText()
-		if (not text) then break end
-		if (i == 2) then PVP = strmatch(text, LIL.PVPPattern) end
-		LVL = tonumber(strmatch(text, LIL.LVLPattern))
-		if (LVL) then break end
+	if (itemRarity < 2 or (itemType ~= ARMOR and itemType ~= WEAPON and itemSubType ~= ARTIFACT_RELIC)) then
+		LVL = itemLevel
+	else
+		LIL.ItemTip:ClearLines()
+		LIL.ItemTip:SetHyperlink(itemLink)
+
+		if (not LIL.LVLPattern) then LIL.LVLPattern = gsub(ITEM_LEVEL, "%%d", "(%%d+)") end
+		if (not LIL.PVPPattern) then LIL.PVPPattern = gsub(PVP_ITEM_PATTERN, "%%d", "(%%d+)") end
+
+		for i = 2, 5 do
+			text = _G["LibItemLevelItemTipTextLeft"..i]:GetText()
+			if (not text) then break end
+			if (i == 2) then PVP = strmatch(text, LIL.PVPPattern) end
+			LVL = tonumber(strmatch(text, LIL.LVLPattern))
+			if (LVL) then break end
+		end
 	end
 
-	if (LVL and itemRarity ~= 7) then
+	if (LVL and itemRarity < 7) then
 		LIL.ItemDB[itemLink] = {
 			Level = LVL,
 			Rarity = itemRarity,
@@ -73,13 +82,13 @@ function LIL:GetActualItemInfo(itemLink)
 	return LVL or itemLevel or 0, 0, itemRarity, itemSlot, PVP
 end
 
---»ñÈ¡UNITÎïÆ·Êµ¼ÊÐÅÏ¢
 function LIL:GetUnitItemInfo(unit, index)
+	if (not UnitExists(unit)) then return 0, 1 end
+
 	LIL.UnitTip:ClearLines()
 	LIL.UnitTip:SetInventoryItem(unit, index)
 
 	local itemLink = select(2, LIL.UnitTip:GetItem())
-
 	if (not itemLink or itemLink == "") then return end
 
 	if (LIL.ItemDB[itemLink]) then
@@ -88,21 +97,25 @@ function LIL:GetUnitItemInfo(unit, index)
 
 	if (not LIL:ItemLocally(itemLink)) then return 0, 1 end
 
-	if (not LIL.LVLPattern) then LIL.LVLPattern = gsub(ITEM_LEVEL, "%%d", "(%%d+)") end
-	if (not LIL.PVPPattern) then LIL.PVPPattern = gsub(PVP_ITEM_PATTERN, "%%d", "(%%d+)") end
-
 	local _, _, itemRarity, itemLevel, _, _, _, _, itemSlot = GetItemInfo(itemLink)
 	local text, LVL, PVP
 
-	for i = 2, 5 do
-		text = _G["LibItemLevelUnitTipTextLeft"..i]:GetText()
-		if (not text) then break end
-		if (i == 2) then PVP = strmatch(text, LIL.PVPPattern) end
-		LVL = tonumber(strmatch(text, LIL.LVLPattern))
-		if (LVL) then break end
+	if (itemRarity < 2) then
+		LVL = itemLevel
+	else
+		if (not LIL.LVLPattern) then LIL.LVLPattern = gsub(ITEM_LEVEL, "%%d", "(%%d+)") end
+		if (not LIL.PVPPattern) then LIL.PVPPattern = gsub(PVP_ITEM_PATTERN, "%%d", "(%%d+)") end
+
+		for i = 2, 5 do
+			text = _G["LibItemLevelUnitTipTextLeft"..i]:GetText()
+			if (not text) then break end
+			if (i == 2) then PVP = strmatch(text, LIL.PVPPattern) end
+			LVL = tonumber(strmatch(text, LIL.LVLPattern))
+			if (LVL) then break end
+		end
 	end
 
-	if (LVL and itemRarity ~= 7) then
+	if (LVL and itemRarity < 7) then
 		LIL.ItemDB[itemLink] = {
 			Level = LVL,
 			Rarity = itemRarity,
@@ -114,7 +127,6 @@ function LIL:GetUnitItemInfo(unit, index)
 	return LVL or itemLevel or 0, 0, itemRarity, itemSlot, PVP
 end
 
---»ñÈ¡UNITµÄ×°±¸µÈ¼¶
 function LIL:GetUnitItemLevel(unit)
 	local level, count, quality, slot, isPVP
 	local avg, total, unknown, boa, pvp = 0, 0, 0, 0, 0

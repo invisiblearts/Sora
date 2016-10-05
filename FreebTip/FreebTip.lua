@@ -4,8 +4,9 @@ local _, _G = _, _G
 local GameTooltip = _G["GameTooltip"]
 
 local locale, mainFont = GetLocale()
-local BOSS, ELITE = BOSS, ELITE
 local RARE, RAREELITE
+local BOSS = _G["BOSS"]
+local ELITE = _G["ELITE"]
 if (locale == "zhCN") then
 	mainFont = "Fonts\\ARKai_T.ttf"		-- 简体中文客户端主字体
 	RARE = "稀有"
@@ -22,20 +23,21 @@ end
 
 local cfg = {
 	font = mainFont,
-	fontflag = "OUTLINE",
+	fontflag = "OUTLINE",				--Tooltip显示的字体描边。
 	fontsize_header = 14,				--Tooltip显示的名称字体大小。
 	fontsize_normal = 12,				--Tooltip显示的普通字体大小。
 	fontsize_small = 10,				--Tooltip显示的装备比较字体大小。
 	fontsize_value = 10,				--Tooltip显示的血量/能量值字体大小。
 	scale = 1,							--Tooltip缩放，默认为1，小于1缩小，大于1放大。
+	opacity = 0.6,						--Tooltip背景透明度，取值在0和1之间，0完全透明，1完全不透明。
 	point = {"BOTTOMRIGHT", -25, 30},	--Tooltip不跟随鼠标时的位置，BOTTOMRIGHT代表右下，数字代表偏移值。
 	cursor = 1,							--Tooltip是否跟随鼠标，0不跟随，1跟随，2非战斗状态跟随。
 	cursormode = 1,						--Tooltip跟随鼠标方式，1鼠标右下，2鼠标正上方。
 	cursoroffset = {40, -30},			--Tooltip跟随鼠标坐标偏移值。
 	hpbar = 1,							--是否显示血量条，0不显示，1显示。
-	hpbarText = 0,						--是否显示血量值，0不显示，1显示当前血量值，2显示当前血量值/最大血量值。
+	hpbarText = 0,						--是否显示血量值，0不显示，1显示当前值，2显示百分比，3显示当前/百分比，4显示当前值/最大值。
 	powerbar = 0,						--是否显示能量条，0不显示，1显示。
-	powerbarText = 0,					--是否显示能量值，0不显示，1显示当前能量值，2显示当前能量值/最大能量值。
+	powerbarText = 0,					--是否显示能量值，0不显示，1显示当前值，2显示百分比，3显示当前/百分比，4显示当前值/最大值。
 	fadeOnUnit = 0,						--鼠标移开后Tooltip渐隐，0关闭，1开启。
 	combathide = 0,						--战斗中隐藏指向玩家们的鼠标提示，0不隐藏，1隐藏。
 	combathideALL = 0,					--战斗中隐藏所有鼠标提示，0不隐藏，1隐藏。
@@ -43,9 +45,12 @@ local cfg = {
 	showGRank = 0,						--是否显示在公会中的阶级，0不显示，1显示。
 	showCCbdr = 0,						--是否根据职业颜色染色Tooltip边框，0不染色，1染色。
 	showRealm = 1,						--不同服务器显示服务器名，0不显示，1显示。如不显示会在名字后显示"*"号。
-	opacity = 0.6,						--不透明度，取值在0和1之间，0完全透明，1完全不透明。
+	showReaction = 1,					--是否显示NPC声望，0不显示，1显示。
+	factionIconAlpha = 0,				--阵营图标透明度，取值在0和1之间，0完全透明，1完全不透明。
+	factionIconSize = 60,				--阵营图标大小，不建议更改。
 	bgcolor = {r = 0, g = 0, b = 0},	--Tooltip默认背景颜色，不建议更改。
 	bdrcolor = {r = 0, g = 0, b = 0},	--Tooltip默认边框颜色，不建议更改。
+	sbHeight = 2,						--Tooltip血量/能量条高度，不建议更改。
 	backdrop = {
 		bgFile = "Interface\\AddOns\\FreebTip\\media\\blank",
 		edgeFile = "Interface\\AddOns\\FreebTip\\media\\blank",
@@ -56,9 +61,6 @@ local cfg = {
 	disabled = "Interface\\AddOns\\FreebTip\\media\\disabled",
 	highlight = "Interface\\AddOns\\FreebTip\\media\\highlight",
 	statusbar = "Interface\\AddOns\\FreebTip\\media\\statusbar",
-	sbHeight = 2,
-	factionIconSize = 30,
-	factionIconAlpha = 0,
 }
 ns.cfg = cfg
 
@@ -87,12 +89,12 @@ GameTooltipTextSmall:SetFont(cfg.font, cfg.fontsize_small, cfg.fontflag)
 GameTooltipHeaderText:SetFont(cfg.font, cfg.fontsize_header, cfg.fontflag)
 
 local factionIcon = {
-	["Alliance"] = "Interface\\Timer\\Alliance-Logo",
-	["Horde"] = "Interface\\Timer\\Horde-Logo",
+	["Alliance"] = "Interface\\FriendsFrame\\PlusManz-Alliance",
+	["Horde"] = "Interface\\FriendsFrame\\PlusManz-Horde",
 }
 
 local hex = function(r, g, b)
-	if(r and not b) then
+	if (r and not b) then
 		r, g, b = r.r, r.g, r.b
 	end
 
@@ -125,7 +127,7 @@ ns.numberize = numberize
 
 local function unitColor(unit, mode)
 	local colors
-	
+
 	if (UnitPlayerControlled(unit)) then
 		local _, class = UnitClass(unit)
 		if (class and UnitIsPlayer(unit)) then
@@ -144,24 +146,21 @@ local function unitColor(unit, mode)
 	elseif (UnitIsTapDenied(unit, "player")) then
 		colors = tappedColor
 	end
-	
+
 	if (not colors) then
 		local reaction = UnitReaction(unit, "player")
 		colors = reaction and FACTION_BAR_COLORS[reaction] or nilColor
 	end
-	
-	if (mode == 1) then
-		return colors
-	else
-		return colors.r, colors.g, colors.b
-	end
+
+	if (mode == 1) then return colors end
+	return colors.r, colors.g, colors.b
 end
 ns.unitColor = unitColor
 GameTooltip_UnitColor = unitColor
 
 local function getUnit(self)
 	local _, unit = self and self:GetUnit()
-	if(not unit) then
+	if (not unit) then
 		local mFocus = GetMouseFocus()
 		unit = mFocus and (mFocus.unit or mFocus:GetAttribute("unit")) or "mouseover"
 	end
@@ -169,22 +168,17 @@ local function getUnit(self)
 	return unit
 end
 
-FreebTip_Cache = {}
-local Cache = FreebTip_Cache
+local Cache = {}
 local function getPlayer(unit)
 	local guid = UnitGUID(unit)
-	if not (Cache[guid]) then
+	if (not Cache[guid]) then
 		local class, _, race, _, _, name, realm = GetPlayerInfoByGUID(guid)
-		if not name then return end
+		if (not name) then return end
 
 		local pvpname = UnitPVPName(unit) or name
 
 		if (realm and strlen(realm) > 0) then
-			if(cfg.showRealm) then
-				realm = ("-"..realm)
-			else
-				realm = cfg.realmText
-			end
+			realm = ("-"..realm)
 		end
 
 		Cache[guid] = {
@@ -199,7 +193,7 @@ local function getPlayer(unit)
 end
 
 local function getTarget(unit)
-	if(UnitIsUnit(unit, "player")) then
+	if (UnitIsUnit(unit, "player")) then
 		return ("|cffff0000%s|r"):format(">"..strupper(YOU).."<")
 	else
 		return UnitName(unit)
@@ -220,13 +214,13 @@ local function hideLines(self)
 		local tipLine = _G["GameTooltipTextLeft"..i]
 		local tipText = tipLine:GetText()
 
-		if(tipText == FACTION_ALLIANCE) then
+		if (tipText == FACTION_ALLIANCE) then
 			tipLine:SetText(nil)
 			tipLine:Hide()
-		elseif(tipText == FACTION_HORDE) then
+		elseif (tipText == FACTION_HORDE) then
 			tipLine:SetText(nil)
 			tipLine:Hide()
-		elseif(tipText == PVP) then
+		elseif (tipText == PVP) then
 			tipLine:SetText(nil)
 			tipLine:Hide()
 		end
@@ -240,7 +234,7 @@ local function formatLines(self)
 	for i = 2, numLines do
 		local tipLine = _G["GameTooltipTextLeft"..i]
 
-		if(tipLine and not tipLine:IsShown()) then
+		if (tipLine and not tipLine:IsShown()) then
 			hidden[i] = tipLine
 		end
 	end
@@ -248,7 +242,7 @@ local function formatLines(self)
 	for i, line in next, hidden do
 		local nextLine = _G["GameTooltipTextLeft"..i+1]
 
-		if(nextLine) then
+		if (nextLine) then
 			local point, relativeTo, relativePoint, x, y = line:GetPoint()
 			nextLine:SetPoint(point, relativeTo, relativePoint, x, y)
 		end
@@ -263,7 +257,6 @@ local function GTCursor(self, owner)
 	local parent = (owner == UIParent)
 
 	if (parent and not unit) then return 2 end
-	if (not cfg.cursor) then return 0 end
 	if (cfg.cursor == 0) then return 0 end
 	if (cfg.cursor ~= 1 and InCombatLockdown()) then return 0 end
 	if (self:GetAnchorType() ~= "ANCHOR_NONE") then return end
@@ -290,16 +283,16 @@ local function GTCursorPosition(self, mode)
 		mX = mX + cfg.cursoroffset[1]
 		mY = mY + cfg.cursoroffset[2]
 		return mX, mY
-	elseif (mode == 3) then
+	else
 		local width, height = UIParent:GetWidth(), UIParent:GetHeight()
-		if (mY < height / 2) then
-			if (mX < width / 3 * 2) then
+		if (mY < height * 0.6) then
+			if (mX < width * 0.6) then
 				return "ANCHOR_RIGHT"
 			else
 				return "ANCHOR_LEFT"
 			end
 		else
-			if (mX < width / 3 * 2) then
+			if (mX < width * 0.6) then
 				return "ANCHOR_BOTTOMRIGHT"
 			else
 				return "ANCHOR_BOTTOMLEFT"
@@ -307,46 +300,83 @@ local function GTCursorPosition(self, mode)
 		end
 	end
 end
+
 -------------------------------------------------------------------------------
 --[[ GameTooltip HookScripts ]] --
 
 local function OnSetUnit(self)
-	if (cfg.combathide and cfg.combathide ~= 0 and InCombatLockdown()) then
+	if (cfg.combathide ~= 0 and InCombatLockdown()) then
 		return self:Hide()
 	end
 
 	hideLines(self)
 
-	if (not self.factionIcon) then
-		self.factionIcon = self:CreateTexture(nil, "OVERLAY")
-		self.factionIcon:SetPoint("TOPRIGHT", 8, 8)
-		self.factionIcon:SetSize(cfg.factionIconSize,cfg.factionIconSize)
-		self.factionIcon:SetAlpha(cfg.factionIconAlpha)
+	if (cfg.factionIconAlpha ~= 0 and not self.factionIcon) then
+		local frame = CreateFrame("Frame", nil, UIParent)
+		frame:Hide()
+		frame:SetSize(1, 1)
+		frame:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, -5)
+		frame.icon = frame:CreateTexture(nil, "BACKGROUND")
+		frame.icon:SetPoint("TOPRIGHT")
+		frame.icon:SetSize(cfg.factionIconSize, cfg.factionIconSize)
+		frame.icon:SetAlpha(cfg.factionIconAlpha)
+		frame.icon:SetBlendMode("ADD")
+		self.factionIcon = frame
 	end
 
 	local unit = getUnit(self)
-	local player, guid, isInGuild
+	local player, isInGuild
 
 	if (UnitExists(unit)) then
 		self.ftipUnit = unit
 
 		local isPlayer = UnitIsPlayer(unit)
-		if (isPlayer) then
-			player, guid, Name = getPlayer(unit)
+		local isDead = UnitIsDeadOrGhost(unit)
 
-			if (not cfg.showTitle or cfg.showTitle == 0) then
-				Name = player and (player.name..(player.realm or ""))
+		if (cfg.hpbar == 0 or isDead) then GameTooltipStatusBar:Hide() end
+
+		if (cfg.powerbar ~= 0) then
+			local pMin, pMax = UnitPower(unit), UnitPowerMax(unit)
+
+			if (pMax > 0 and not isDead) then
+				FreebTipPowerBar:SetMinMaxValues(0, pMax)
+				FreebTipPowerBar:SetValue(pMin)
+				local pType, pToken = UnitPowerType(unit)
+				local pColor = powerColors[pToken]
+				FreebTipPowerBar:SetStatusBarColor(pColor.r, pColor.g, pColor.b)
+				FreebTipPowerBar:Show()
 			else
-				Name = player and (player.pvpname..(player.realm or ""))
+				FreebTipPowerBar:Hide()
 			end
-			if (Name) then GameTooltipTextLeft1:SetText(Name) end
+		end
 
-			local guild, gRank = GetGuildInfo(unit)
+		if (isPlayer) then
+			player = getPlayer(unit)
+			if (player) then
+				if (cfg.showRealm == 0) then player.realm = player.realm and " (*)" end
+				if (cfg.showTitle ~= 0) then player.name = player.pvpname end
+				GameTooltipTextLeft1:SetText(player.name..(player.realm or ""))
+			end
+
+			local guild, gRank, gRankId = GetGuildInfo(unit)
 			if (guild and strlen(guild) > 0) then
 				isInGuild = true
-
-				if (not cfg.showGRank or cfg.showGRank == 0) then gRank = nil end
+				if (cfg.showGRank == 0) then
+					gRank = nil
+				elseif (gRank and gRankId) then
+					gRank = gRank.."("..gRankId..")"
+				end
 				GameTooltipTextLeft2:SetFormattedText("|cffE41F9B<%s>|r |cffA0A0A0%s|r", guild, gRank or "")
+			end
+
+			if (cfg.factionIconAlpha ~= 0) then
+				local faction = UnitFactionGroup(unit)
+				if (faction and factionIcon[faction]) then
+					local frame = self.factionIcon
+					frame:SetParent(self)
+					frame.icon:SetTexture(factionIcon[faction])
+					frame:Show()
+				end
 			end
 		end
 
@@ -361,14 +391,6 @@ local function OnSetUnit(self)
 			GameTooltipTextLeft1:SetFormattedText(("%s %s"), ICON_LIST[ricon].."12|t", text)
 		end
 
-		local faction = UnitFactionGroup(unit)
-		if (faction and factionIcon[faction]) then
-			self.factionIcon:SetTexture(factionIcon[faction])
-			self.factionIcon:Show()
-		else
-			self.factionIcon:Hide()
-		end
-
 		local isBattlePet = UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)
 		local level = isBattlePet and UnitBattlePetLevel(unit) or UnitLevel(unit)
 
@@ -377,7 +399,7 @@ local function OnSetUnit(self)
 			for i = (isInGuild and 3) or 2, self:NumLines() do
 				local line = _G["GameTooltipTextLeft"..i]
 				local text = line:GetText()
-				if (text and text:find(LEVEL)) then
+				if (text and strfind(text, LEVEL)) then
 					levelLine = line
 					break
 				end
@@ -386,12 +408,12 @@ local function OnSetUnit(self)
 			if (levelLine) then
 				local creature = not isPlayer and UnitCreatureType(unit)
 				local race = player and player.race or UnitRace(unit)
-				local dead = UnitIsDeadOrGhost(unit) and hex(deadColor)..CORPSE.."|r"
+				local dead = isDead and hex(deadColor)..CORPSE.."|r"
 				local classify = UnitClassification(unit)
 
 				local class = player and hex(unitColor(unit))..(player.class or "").."|r"
 				if (isBattlePet) then
-					class = ("|cff80ACEF(%s)|r"):format(_G["BATTLE_PET_NAME_"..UnitBattlePetType(unit)])
+					class = ("|cff80ACEF%s|r"):format(_G["BATTLE_PET_NAME_"..UnitBattlePetType(unit)])
 				end
 
 				local lvltxt, diff
@@ -406,30 +428,9 @@ local function OnSetUnit(self)
 
 				if (dead) then
 					levelLine:SetFormattedText("%s %s", lvltxt, dead)
-					GameTooltipStatusBar:Hide()
 				else
+					if (race and UnitIsEnemy(unit, "player")) then race = hex(FACTION_BAR_COLORS[2])..race.."|r" end
 					levelLine:SetFormattedText("%s %s", lvltxt, (creature or race) or "")
-
-					if (cfg.hpbar and cfg.hpbar ~= 0) then
-						GameTooltipStatusBar:SetStatusBarColor(unitColor(unit))
-					else
-						GameTooltipStatusBar:Hide()
-					end
-
-					if (cfg.powerbar and cfg.powerbar ~= 0) then
-						local pMin, pMax = UnitPower(unit), UnitPowerMax(unit)
-
-						if (pMin > 0) then
-							FreebTipPowerBar:SetMinMaxValues(0, pMax)
-							FreebTipPowerBar:SetValue(pMin)
-							local pType, pToken = UnitPowerType(unit)
-							local pColor = powerColors[pToken]
-							FreebTipPowerBar:SetStatusBarColor(pColor.r, pColor.g, pColor.b)
-							FreebTipPowerBar:Show()
-						else
-							FreebTipPowerBar:Hide()
-						end
-					end
 				end
 
 				if (class) then
@@ -440,6 +441,16 @@ local function OnSetUnit(self)
 				if (UnitIsPVP(unit) and UnitCanAttack("player", unit)) then
 					lvltxt = levelLine:GetText()
 					levelLine:SetFormattedText("%s |cff00FF00(%s)|r", lvltxt, PVP)
+				end
+
+				if (cfg.showReaction ~= 0 and not (isPlayer or isBattlePet)) then
+					local reaction = UnitReaction(unit, "player")
+					reaction = _G["FACTION_STANDING_LABEL"..reaction]
+					if (reaction) then
+						lvltxt = levelLine:GetText()
+						reaction = hex(unitColor(unit))..reaction.."|r"
+						levelLine:SetFormattedText("%s %s", lvltxt, reaction)
+					end
 				end
 			end
 		end
@@ -466,7 +477,7 @@ local function GTUpdate(self, elapsed)
 
 	self.ftipUpdate = (self.ftipUpdate or 0) + elapsed
 	if (self.ftipUpdate < 0.1) then return end
-	if (not cfg.fadeOnUnit or cfg.fadeOnUnit == 0) then
+	if (cfg.fadeOnUnit == 0) then
 		if (self.ftipUnit and not UnitExists(self.ftipUnit)) then self:Hide() return end
 	end
 
@@ -478,14 +489,14 @@ local function GTUpdate(self, elapsed)
 		self.ftipCursor = ftipCursor
 	end
 
-	if (cfg.showCCbdr and cfg.showCCbdr ~= 0 and not self:GetItem()) then
+	if (cfg.showCCbdr ~= 0 and not self:GetItem()) then
 		local ftipBorder
-		if (self.ftipUnit) then
-			ftipBorder = unitColor(self.ftipUnit, 1)
-		else
+		if (not self.ftipUnit) then
 			ftipBorder = cfg.bdrcolor
+		elseif (UnitExists(self.ftipUnit)) then
+			ftipBorder = unitColor(self.ftipUnit, 1)
 		end
-		if (hex(ftipBorder) ~= hex(self.ftipBorder)) then
+		if (ftipBorder and hex(ftipBorder) ~= hex(self.ftipBorder)) then
 			self:SetBackdropBorderColor(ftipBorder.r, ftipBorder.g, ftipBorder.b)
 			self.ftipBorder = ftipBorder
 		end
@@ -498,12 +509,12 @@ local function GTUpdate(self, elapsed)
 	end
 
 	if (not self.ftipShown) then self:SetAlpha(1) self.ftipShown = true end
-	
+
 	self.ftipUpdate = 0
 end
 
 GameTooltip.FadeOut = function(self)
-	if (not cfg.fadeOnUnit or cfg.fadeOnUnit == 0) then
+	if (cfg.fadeOnUnit == 0) then
 		self:Hide()
 	end
 end
@@ -544,35 +555,44 @@ gtSBbg:SetAllPoints(GameTooltipStatusBar)
 gtSBbg:SetTexture(cfg.statusbar)
 gtSBbg:SetVertexColor(0.3, 0.3, 0.3, 0.5)
 
-local function gtSBValChange(self, value)
-	if (not value) then
-		return
-	end
-	local vMin, vMax = self:GetMinMaxValues()
-	if (value < vMin) or (value > vMax) then
-		return
-	end
+local function UpdateHP(self, value)
+	local unit = getUnit(GameTooltip)
+	if (UnitExists(unit)) then
+		if (cfg.hpbarText ~= 0) then
+			if (not value) then return end
+			local vMin, vMax = self:GetMinMaxValues()
+			if (value < vMin or value > vMax) then return end
 
-	if (not self.text) then
-		self.text = self:CreateFontString(nil, "OVERLAY")
-		self.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 0)
-		self.text:SetFont(cfg.font, cfg.fontsize_value, "THICKOUTLINE")
-	end
+			if (not self.text) then
+				self.text = self:CreateFontString(nil, "OVERLAY")
+				self.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 0)
+				self.text:SetFont(cfg.font, cfg.fontsize_value, "THICKOUTLINE")
+			end
 
-	if (cfg.hpbarText and cfg.hpbarText ~= 0) then
-		local hp
-		self.text:Show()
-		if cfg.hpbarText == 1 then
-			hp = numberize(self:GetValue())
-		else
-			hp = numberize(self:GetValue()).." / "..numberize(vMax)
+			local hp
+			self.text:Show()
+			if (cfg.hpbarText == 1) then
+				hp = numberize(self:GetValue())
+			elseif (cfg.hpbarText == 2) then
+				hp = ("%.0f%%"):format(self:GetValue() * 100 / vMax)
+			elseif (cfg.hpbarText == 3) then
+				hp = numberize(self:GetValue()).."("..("%.0f%%"):format(self:GetValue() * 100 / vMax)..")"
+			else
+				hp = numberize(self:GetValue()).." / "..numberize(vMax)
+			end
+			self.text:SetText(hp)
 		end
-		self.text:SetText(hp)
-	else
-		self.text:Hide()
 	end
 end
-GameTooltipStatusBar:HookScript("OnValueChanged", gtSBValChange)
+GameTooltipStatusBar:HookScript("OnValueChanged", UpdateHP)
+
+GameTooltipStatusBar.SetHPBarColor = CreateFrame("StatusBar").SetStatusBarColor
+function GameTooltipStatusBar:SetStatusBarColor(...)
+	local unit = getUnit(GameTooltip)
+	if(UnitExists(unit)) then
+		return self:SetHPBarColor(unitColor(unit))
+	end
+end
 
 -------------------------------------------------------------------------------
 --[[ FreebTipPowerBar ]]--
@@ -598,32 +618,33 @@ local function UpdatePower(self, elapsed)
 	self.elapsed = 0
 
 	local unit = GameTooltip.ftipUnit
-
 	if (UnitExists(unit)) then
 		local pMin, pMax = UnitPower(unit), UnitPowerMax(unit)
 
-		if (pMin > 0) then
+		if (pMax > 0) then
 			self:SetMinMaxValues(0, pMax)
 			self:SetValue(pMin)
-		end
 
-		if (not self.text) then
-			self.text = self:CreateFontString(nil, "OVERLAY")
-			self.text:SetPoint("CENTER", self, "CENTER", 0, 0)
-			self.text:SetFont(cfg.font, cfg.fontsize_value, "THICKOUTLINE")
-		end
+			if (cfg.powerbarText ~= 0) then
+				if (not self.text) then
+					self.text = self:CreateFontString(nil, "OVERLAY")
+					self.text:SetPoint("CENTER", self, "CENTER", 0, 0)
+					self.text:SetFont(cfg.font, cfg.fontsize_value, "THICKOUTLINE")
+				end
 
-		if (cfg.powerbarText and cfg.powerbarText ~= 0) then
-			local power
-			self.text:Show()
-			if cfg.powerbarText == 1 then
-				power = numberize(self:GetValue())
-			else
-				power = numberize(self:GetValue()).." / "..numberize(pMax)
+				local power
+				self.text:Show()
+				if (cfg.powerbarText == 1) then
+					power = numberize(self:GetValue())
+				elseif (cfg.powerbarText == 2) then
+					power = ("%.0f%%"):format(self:GetValue() * 100 / pMax)
+				elseif (cfg.powerbarText == 3) then
+					power = numberize(self:GetValue()).."("..("%.0f%%"):format(self:GetValue() * 100 / pMax)..")"
+				else
+					power = numberize(self:GetValue()).." / "..numberize(pMax)
+				end
+				self.text:SetText(power)
 			end
-			self.text:SetText(power)
-		else
-			self.text:Hide()
 		end
 	end
 end
@@ -671,7 +692,7 @@ local function style(frame)
 	ftipBD:SetBackdropColor(cfg.bgcolor.r, cfg.bgcolor.g, cfg.bgcolor.b, cfg.opacity)
 	ftipBD:SetBackdropBorderColor(cfg.bdrcolor.r, cfg.bdrcolor.g, cfg.bdrcolor.b)
 
-	if (cfg.showCCbdr and cfg.showCCbdr ~= 0 and frame.ftipUnit) then
+	if (cfg.showCCbdr ~= 0 and frame.ftipUnit) then
 		frame:SetBackdropBorderColor(unitColor(frame.ftipUnit))
 	end
 
@@ -776,7 +797,7 @@ GameTooltip:SetBackdropBorderColor(OverrideGetBackdropBorderColor)
 
 local function framehook(frame)
 	frame:HookScript("OnShow", function(self)
-		if (cfg.combathideALL and cfg.combathideALL ~= 0 and InCombatLockdown()) then
+		if (cfg.combathideALL ~= 0 and InCombatLockdown()) then
 			return self:Hide()
 		end
 		style(self)
