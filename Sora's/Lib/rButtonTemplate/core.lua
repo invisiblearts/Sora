@@ -113,7 +113,7 @@ local function SetupFontString(fontString,cfg)
 end
 
 local function SetupCooldown(cooldown,cfg)
-  if not cfg then return end
+  if not cooldown or not cfg then return end
   ApplyPoints(cooldown, cfg.points)
 end
 
@@ -150,7 +150,9 @@ function rButtonTemplate:StyleActionButton(button, cfg)
   local normalTexture = button:GetNormalTexture()
   local pushedTexture = button:GetPushedTexture()
   local highlightTexture = button:GetHighlightTexture()
-  local checkedTexture = button:GetCheckedTexture()
+  --normal buttons do not have a checked texture, but checkbuttons do and normal actionbuttons are checkbuttons
+  local checkedTexture = nil
+  if button.GetCheckedTexture then checkedTexture = button:GetCheckedTexture() end
   local floatingBG = _G[buttonName.."FloatingBG"]
 
   --hide stuff
