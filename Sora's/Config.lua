@@ -12,10 +12,3 @@ C.Aura = {}
 C.Aura.Size = 42
 C.Aura.Space = 8
 C.Aura.Postion = {"TOPRIGHT", UIParent, -C.Aura.Space, -C.Aura.Space}
-
--- 地图模块相关设置
-C.MiniMap = {}
-
-C.MiniMap.Size = {150, 150}
-C.MiniMap.Postion = {"TOPLEFT", UIParent, 8, -8}
-C.MiniMap.ERBarHeight = 6

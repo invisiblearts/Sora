@@ -4,25 +4,11 @@ local oUF = ns.oUF or oUF
 local S, C, L, DB = unpack(select(2, ...))
 
 -- Begin
-oUF.colors.power['MANA'] = {0.0, 0.56, 1.0}
-oUF.colors.power['RAGE'] = {1.0, 0, 0}
-oUF.colors.power['FOCUS'] = {1.0, 0.75, 0.25}
-oUF.colors.power['ENERGY'] = {0.65, 0.65, 0.35}
-oUF.colors.power['ENERGY'] = {0.65, 0.65, 0.35}
-oUF.colors.power['RUNIC_POWER'] = {0.44, 0.44, 0.44}
-oUF.colors.power['AMMOSLOT'] = {0.8, 0.6, 0}
-oUF.colors.power['FUEL'] = {0, 0.55, 0.5}
-oUF.colors.power['POWER_TYPE_STEAM'] = {0.55, 0.57, 0.61}
-oUF.colors.power['POWER_TYPE_PYRITE'] = {0.6, 0.09, 0.17}
-oUF.colors.power['POWER_TYPE_HEAT'] = {0.9, 0.45, 0.1}
-oUF.colors.power['POWER_TYPE_OOZE'] = {0.1, 0.1, 0.9}
-oUF.colors.power['POWER_TYPE_BLOOD_POWER'] = {0.9, 0.1, 0.1}
-oUF.colors.runes = {
-    {196 / 255, 30 / 255, 58 / 255},
-    {173 / 255, 217 / 255, 25 / 255},
-    {35 / 255, 127 / 255, 255 / 255},
-    {178 / 255, 53 / 255, 240 / 255}
-}
+oUF.colors.power["MANA"] = {0.00, 0.56, 1.00}
+oUF.colors.power["RAGE"] = {1.00, 0.00, 0.00}
+oUF.colors.power["FOCUS"] = {1.00, 0.75, 0.25}
+oUF.colors.power["ENERGY"] = {0.65, 0.65, 0.35}
+oUF.colors.power["RUNIC_POWER"] = {0.44, 0.44, 0.44}
 
 oUF.Tags.Methods["Sora:Color"] = function(unit, r)
     local _, class = UnitClass(unit)
