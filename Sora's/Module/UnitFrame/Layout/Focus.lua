@@ -22,23 +22,23 @@ local function PortraitFadeOut(...)
 end
 
 local function CreatePower(self, ...)
-    local Power = CreateFrame("StatusBar", nil, self)
-    Power:SetPoint("BOTTOM", self)
-    Power:SetSize(self:GetWidth(), 4)
-    Power:SetStatusBarTexture(DB.Statusbar)
+    local power = CreateFrame("StatusBar", nil, self)
+    power:SetPoint("BOTTOM", self)
+    power:SetSize(self:GetWidth(), 4)
+    power:SetStatusBarTexture(DB.Statusbar)
     
-    Power.bg = Power:CreateTexture(nil, "BACKGROUND")
-    Power.bg:SetTexture(DB.Statusbar)
-    Power.bg:SetAllPoints()
-    Power.bg:SetVertexColor(0.12, 0.12, 0.12)
-    Power.bg.multiplier = 0.2
+    power.bg = power:CreateTexture(nil, "BACKGROUND")
+    power.bg:SetTexture(DB.Statusbar)
+    power.bg:SetAllPoints()
+    power.bg:SetVertexColor(0.12, 0.12, 0.12)
+    power.bg.multiplier = 0.2
     
-    Power.Smooth = true
-    Power.colorPower = true
-    Power.frequentUpdates = true
-    Power.shadow = S.MakeShadow(Power, 2)
+    power.Smooth = true
+    power.colorPower = true
+    power.frequentUpdates = true
+    power.shadow = S.MakeShadow(power, 2)
     
-    self.Power = Power
+    self.Power = power
 end
 
 local function CreateHealth(self, ...)
@@ -116,14 +116,14 @@ local function CreateAura(self, ...)
 end
 
 local function CreateCastbar(self, ...)
-    local height = C.UnitFrame.FocusTarget.Height
+    local height = C.UnitFrame.FocusTarget.Height - 4
     local width = self:GetWidth() - C.UnitFrame.FocusTarget.Width - 8 - height;
     
     local Castbar = CreateFrame("StatusBar", nil, self)
     Castbar:SetSize(width, height)
     Castbar:SetStatusBarTexture(DB.Statusbar)
     Castbar:SetStatusBarColor(95 / 255, 182 / 255, 255 / 255)
-    Castbar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -height - 4, 4)
+    Castbar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -height - 4, 8)
     
     Castbar.Shadow = S.MakeShadow(Castbar, 2)
     Castbar.Shadow:SetBackdrop({

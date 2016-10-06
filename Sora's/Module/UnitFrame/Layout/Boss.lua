@@ -21,23 +21,23 @@ local function PortraitFadeOut(...)
 end
 
 local function CreatePower(self, ...)
-    local Power = CreateFrame("StatusBar", nil, self)
-    Power:SetPoint("BOTTOM", self)
-    Power:SetSize(self:GetWidth(), 4)
-    Power:SetStatusBarTexture(DB.Statusbar)
+    local power = CreateFrame("StatusBar", nil, self)
+    power:SetPoint("BOTTOM", self)
+    power:SetSize(self:GetWidth(), 4)
+    power:SetStatusBarTexture(DB.Statusbar)
     
-    Power.BG = Power:CreateTexture(nil, "BACKGROUND")
-    Power.BG:SetTexture(DB.Statusbar)
-    Power.BG:SetAllPoints()
-    Power.BG:SetVertexColor(0.12, 0.12, 0.12)
-    Power.BG.multiplier = 0.2
+    power.bg = power:CreateTexture(nil, "BACKGROUND")
+    power.bg:SetTexture(DB.Statusbar)
+    power.bg:SetAllPoints()
+    power.bg:SetVertexColor(0.12, 0.12, 0.12)
+    power.bg.multiplier = 0.2
     
-    Power.Smooth = true
-    Power.colorPower = true
-    Power.frequentUpdates = true
-    Power.shadow = S.MakeShadow(Power, 2)
+    power.Smooth = true
+    power.colorPower = true
+    power.frequentUpdates = true
+    power.shadow = S.MakeShadow(power, 2)
     
-    self.Power = Power
+    self.Power = power
 end
 
 local function CreateHealth(self, ...)
@@ -115,14 +115,14 @@ local function CreateAura(self, ...)
 end
 
 local function CreateCastbar(self, ...)
-    local height = C.UnitFrame.BossTarget.Height
+    local height = C.UnitFrame.BossTarget.Height - 4
     local width = self:GetWidth() - C.UnitFrame.BossTarget.Width - 8 - height;
     
     local Castbar = CreateFrame("StatusBar", nil, self)
     Castbar:SetSize(width, height)
     Castbar:SetStatusBarTexture(DB.Statusbar)
     Castbar:SetStatusBarColor(95 / 255, 182 / 255, 255 / 255)
-    Castbar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -height - 4, 4)
+    Castbar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -height - 4, 8)
     
     Castbar.Shadow = S.MakeShadow(Castbar, 2)
     Castbar.Shadow:SetBackdrop({
@@ -223,6 +223,14 @@ local function RegisterStyle(self, ...)
     self:RegisterForClicks("AnyUp")
     self:SetSize(C.UnitFrame.Boss.Width, C.UnitFrame.Boss.Height)
     
+    local iStr = string.gsub(self:GetName(), "oUF_Sora_Boss", "")
+    local i = tonumber(iStr)
+    if i == 1 then
+        self:SetPoint(unpack(C.UnitFrame.Boss.Postion))
+    else
+        self:SetPoint("BOTTOM", _G["oUF_Sora_Boss" .. (i - 1)], "TOP", 0, 128)
+    end
+    
     CreatePower(self, ...)
     CreateHealth(self, ...)
     
@@ -242,12 +250,6 @@ local function OnPlayerLogin(self, event, ...)
     
     for i = 1, 5 do
         local oUFFrame = oUF:Spawn("boss" .. i, "oUF_Sora_Boss" .. i)
-        
-        if i == 1 then
-            oUFFrame:SetPoint(unpack(C.UnitFrame.Boss.Postion))
-        else
-            oUFFrame:SetPoint("BOTTOM", _G["oUF_Sora_Boss" .. (i - 1)], "TOP", 0, 128)
-        end
     end
 end
 

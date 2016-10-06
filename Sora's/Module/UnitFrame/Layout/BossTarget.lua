@@ -72,6 +72,7 @@ end
 local function RegisterStyle(self, ...)
     self:RegisterForClicks("AnyUp")
     self:SetSize(C.UnitFrame.BossTarget.Width, C.UnitFrame.BossTarget.Height)
+    self:SetPoint("BOTTOMLEFT", _G[string.gsub(self:GetName(), "Target", "")], "TOPLEFT", 0, 4)
     
     CreatePower(self, ...)
     CreateHealth(self, ...)
@@ -86,7 +87,6 @@ local function OnPlayerLogin(self, event, ...)
     
     for i = 1, 5 do
         local oUFFrame = oUF:Spawn("boss" .. i .. "target", "oUF_Sora_Boss" .. i .. "Target")
-        oUFFrame:SetPoint("BOTTOMLEFT", _G["oUF_Sora_Boss" .. (i - 1)], "TOPLEFT", 0, 4)
     end
 end
 
