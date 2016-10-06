@@ -75,26 +75,30 @@ end
 local addons = {}
 
 local function UpdateAddons()
+    UpdateAddOnMemoryUsage()
     local addonCount = GetNumAddOns()
     
-    if addonCount ~= #addons then
-        addons = {}
-        
-        for i = 1, addonCount do
-            local addon = {}
-            addon.isLoaded = IsAddOnLoaded(i)
-            addon.addonName = select(2, GetAddOnInfo(i))
-            addon.addonMemory = GetAddOnMemoryUsage(i)
-            
-            addons[i] = addon
-        end
-        
-        table.sort(addons, function(l, r)
-            if l and r then
-                return l.addonMemory > r.addonMemory
-            end
-        end)
+    if addonCount == #addons then
+        return
     end
+    
+    addons = {}
+    for i = 1, addonCount do
+        local _ = nil
+        local addon = {}
+        
+        addon.isLoaded = IsAddOnLoaded(i)
+        _, addon.addonName = GetAddOnInfo(i)
+        addon.addonMemory = GetAddOnMemoryUsage(i)
+        
+        addons[i] = addon
+    end
+    
+    table.sort(addons, function(l, r)
+        if l and r then
+            return l.addonMemory > r.addonMemory
+        end
+    end)
 end
 
 local function OnAddOnPanelMouseDown(self, ...)
