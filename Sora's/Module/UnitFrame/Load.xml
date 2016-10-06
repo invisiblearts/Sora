@@ -1,10 +1,14 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/">
 
+	<Script file = "Config.lua" />
+
 	<Script file = "Plugin\Tag.lua" />
-	<Script file = "Plugin\Smooth.lua" />
 	<Script file = "Plugin\Castbar.lua" />
 	
 	<Script file = "Layout\Raid.lua" />
+	
+	<Script file = "Layout\Boss.lua" />
+	<Script file = "Layout\BossTarget.lua" />
 	<Script file = "Layout\Player.lua" />
 	<Script file = "Layout\PlayerPet.lua" />
 	<Script file = "Layout\Target.lua" />

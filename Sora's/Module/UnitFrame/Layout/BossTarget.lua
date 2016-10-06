@@ -69,10 +69,9 @@ local function CreateRaidIcon(self, ...)
     self.RaidIcon = RaidIcon
 end
 
-local function CreatePlayerPet(self, ...)
+local function RegisterStyle(self, ...)
     self:RegisterForClicks("AnyUp")
-    self:SetPoint("TOPRIGHT", _G["oUF_Sora_Player"], "BOTTOMLEFT", -4, -4)
-    self:SetSize(C.UnitFrame.PlayerPet.Width, C.UnitFrame.PlayerPet.Height)
+    self:SetSize(C.UnitFrame.BossTarget.Width, C.UnitFrame.BossTarget.Height)
     
     CreatePower(self, ...)
     CreateHealth(self, ...)
@@ -82,10 +81,13 @@ local function CreatePlayerPet(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)
-    oUF:RegisterStyle("oUF_Sora_PlayerPet", CreatePlayerPet)
-    oUF:SetActiveStyle("oUF_Sora_PlayerPet")
+    oUF:RegisterStyle("oUF_Sora_BossTarget", RegisterStyle)
+    oUF:SetActiveStyle("oUF_Sora_BossTarget")
     
-    local oUFFrame = oUF:Spawn("pet", "oUF_Sora_PlayerPet")
+    for i = 1, 5 do
+        local oUFFrame = oUF:Spawn("boss" .. i .. "target", "oUF_Sora_Boss" .. i .. "Target")
+        oUFFrame:SetPoint("BOTTOMLEFT", _G["oUF_Sora_Boss" .. (i - 1)], "TOPLEFT", 0, 4)
+    end
 end
 
 local Event = CreateFrame("Frame", nil, UIParent)

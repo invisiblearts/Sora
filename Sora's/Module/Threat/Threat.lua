@@ -20,7 +20,6 @@ local function UpdateThreat(unit)
         return
     end
     
-    
     local threat = {}
     threat.guid = guid
     threat.name = name
@@ -28,7 +27,6 @@ local function UpdateThreat(unit)
     threat.isTanking = isTanking
     threat.rawPercent = rawPercent
     threat.classColor = RAID_CLASS_COLORS[class]
-    
     
     table.insert(threats, threat)
 end
@@ -38,9 +36,9 @@ local function UpdateAllThreats()
     
     local mobiUnit = nil
     
-    if not UnitIsFriend("player", "target") then
+    if UnitCanAttack("player", "target") then
         mobiUnit = "target"
-    elseif not UnitIsFriend("player", "targettarget") then
+    elseif UnitCanAttack("player", "targettarget") then
         mobiUnit = "targettarget"
     else
         return
@@ -62,16 +60,29 @@ local function UpdateAllThreats()
         UpdateThreat("raid" .. i .. "pet", mobiUnit)
     end
     
-    for i = 1, #threats do
-        for j = i + 1, #threats do
-            if threats[i].guid == threats[j].guid then
-                table.remove(threats, i)
-            end
-        end
+    local tempThreats = {}
+    
+    for k, v in pairs(threats) do
+        tempThreats[v.guid] = v
+    end
+    
+    table.wipe(threats)
+    for k, v in pairs(tempThreats) do
+        table.insert(threats, v)
     end
     
     table.sort(threats, function(l, r)
-        return l.isTanking and true or l.rawPercent > r.rawPercent
+        local flag = false
+        
+        if not l.rawPercent and r.rawPercent then
+            flag = false
+        elseif l.rawPercent and not r.rawPercent then
+            flag = true
+        elseif l.rawPercent and r.rawPercent then
+            flag = l.rawPercent > r.rawPercent
+        end
+        
+        return flag
     end)
 end
 
@@ -89,30 +100,22 @@ local function UpdateAllThreatBars()
                 
                 bar:Show()
                 bar:SetValue(threat.rawPercent / 255 * 100)
+                bar:SetStatusBarColor(threat.classColor.r, threat.classColor.g, threat.classColor.b)
                 
-                bar.infoText:SetText(i .. "  -  " .. threat.name)
+                bar.infoText:SetText(i .. " - " .. threat.name)
                 bar.valueText:SetText(("%2.f%%"):format(threat.rawPercent / 255 * 100))
-                
-                local r, g, b = 0, 0, 0
-                
-                if threat.status > 0 and threat.status < 3 then
-                    r, g, b = GetThreatStatusColor(threat.status)
-                else
-                    r, g, b = threat.classColor.r, threat.classColor.g, threat.classColor.b
-                end
-                
-                bar:SetStatusBarColor(r, g, b)
             end
         end
     end
 end
+
 
 local function OnPlayerLogin(self, event, ...)
     bars = {}
     
     for i = 1, 4 do
         local bar = CreateFrame("StatusBar", nil, UIParent)
-        bar:SetSize(256, 16)
+        bar:SetSize(256, 12)
         bar:SetMinMaxValues(0, 130)
         bar:SetStatusBarTexture(DB.Statusbar)
         
@@ -122,14 +125,14 @@ local function OnPlayerLogin(self, event, ...)
         bar.bg:SetAllPoints()
         bar.bg:SetVertexColor(0.12, 0.12, 0.12)
         
-        bar.infoText = S.MakeText(bar, 10)
-        bar.infoText:SetPoint("LEFT", bar, "LEFT", 4, 1)
+        bar.infoText = S.MakeText(bar, 8)
+        bar.infoText:SetPoint("LEFT", bar, "LEFT", 4, 0)
         
-        bar.valueText = S.MakeText(bar, 10)
-        bar.valueText:SetPoint("RIGHT", bar, "RIGHT", -4, 1)
+        bar.valueText = S.MakeText(bar, 8)
+        bar.valueText:SetPoint("RIGHT", bar, "RIGHT", -4, 0)
         
         if i == 1 then
-            bar:SetPoint(unpack(C.Threat.Postion))
+            bar:SetPoint("TOP", UIParent, "CENTER", -384, -190)
         else
             bar:SetPoint("TOP", bars[i - 1], "BOTTOM", 0, -4)
         end
@@ -163,9 +166,9 @@ Event:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_LOGIN" then
         OnPlayerLogin(self, event, ...)
     elseif event == "PLAYER_TARGET_CHANGED" then
-        OnPlayerTargetChanged()
+        OnPlayerTargetChanged(self, event, ...)
     elseif event == "UNIT_THREAT_LIST_UPDATE" then
-        OnUnitThreatListUpdate()
+        OnUnitThreatListUpdate(self, event, ...)
     elseif event == "UNIT_THREAT_SITUATION_UPDATE" then
         OnUnitThreatSituationUpdate(self, event, ...)
     end

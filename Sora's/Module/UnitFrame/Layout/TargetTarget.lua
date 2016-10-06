@@ -4,109 +4,94 @@ local oUF = ns.oUF or oUF
 local S, C, L, DB = unpack(select(2, ...))
 
 -- Begin
-local function CreatePowerBar(self, ...)
-	local Power = CreateFrame("StatusBar", nil, self)
-	Power:SetPoint("BOTTOM", self)
-	Power:SetSize(self:GetWidth(), 2)
-	Power:SetStatusBarTexture(DB.Statusbar)
+local function CreatePower(self, ...)
+	local power = CreateFrame("StatusBar", nil, self)
+	power:SetPoint("BOTTOM")
+	power:SetSize(self:GetWidth(), 2)
+	power:SetStatusBarTexture(DB.Statusbar)
 
-	Power.BG = Power:CreateTexture(nil, "BACKGROUND")
-	Power.BG:SetTexture(DB.Statusbar)
-	Power.BG:SetAllPoints()
-	Power.BG:SetVertexColor(0.12, 0.12, 0.12)
-	Power.BG.multiplier = 0.2
+    power.bg = power:CreateTexture(nil, "BACKGROUND")
+    power.bg:SetAllPoints()
+    power.bg:SetTexture(DB.Statusbar)
+    power.bg:SetVertexColor(0.12, 0.12, 0.12)
+    power.bg.multiplier = 0.12
 	
-	Power.Smooth = true
-	Power.colorPower = true
-	Power.frequentUpdates = true
-	Power.Shadow = S.MakeShadow(Power, 2)
+	power.Smooth = true
+	power.colorPower = true
+	power.frequentUpdates = true
+	power.shadow = S.MakeShadow(power, 2)
 	
-	self.Power = Power
+	self.Power = power
 end
 
-local function CreateHealthBar(self, ...)
-	local Health = CreateFrame("StatusBar", nil, self)
-	Health:SetPoint("TOP", self)
-	Health:SetStatusBarTexture(DB.Statusbar)
-	Health:SetSize(self:GetWidth(), self:GetHeight()-4)
-
-	Health.BG = Health:CreateTexture(nil, "BACKGROUND")
-	Health.BG:SetAllPoints()
-	Health.BG:SetTexture(DB.Statusbar)
-	Health.BG:SetVertexColor(0.12, 0.12, 0.12)
-	Health.BG.multiplier = 0.2
-	
-	Health.Smooth = true
-	Health.colorClass = true
-	Health.colorSmooth = true
-	Health.colorTapping = true
-	Health.colorReaction = true
-	Health.frequentUpdates = true
-	Health.Shadow = S.MakeShadow(Health, 2)
-
-	self.Health = Health
+local function CreateHealth(self, ...)
+    local health = CreateFrame("StatusBar", nil, self)
+    health:SetPoint("TOP", self)
+    health:SetStatusBarTexture(DB.Statusbar)
+    health:SetSize(self:GetWidth(), self:GetHeight() - 4)
+    
+    health.bg = health:CreateTexture(nil, "BACKGROUND")
+    health.bg:SetAllPoints()
+    health.bg:SetTexture(DB.Statusbar)
+    health.bg:SetVertexColor(0.12, 0.12, 0.12)
+    health.bg.multiplier = 0.12
+    
+    health.Smooth = true
+    health.colorTapping = true
+    health.colorDisconnected = true
+    health.colorClass = true
+    health.colorClassNPC = true
+    health.colorClassPet = true
+    health.colorReaction = true
+    health.colorHealth = true
+    health.frequentUpdates = true
+    health.shadow = S.MakeShadow(health, 2)
+    
+    self.Health = health
 end
 
 local function CreateTag(self, ...)
-	local NameTag = S.MakeText(self.Health, 10)
-	NameTag:SetPoint("TOPLEFT", 1, -1)
-
-	local HPTag = S.MakeText(self.Health, 7)
-	HPTag:SetPoint("BOTTOMRIGHT", self.Health, 2, 1)
-
-	self:Tag(NameTag, "[name]")
-	self:Tag(HPTag, "[Sora:PerHP]")
+    local NameTag = S.MakeText(self.Health, 10)
+    NameTag:SetPoint("TOPLEFT", 1, -1)
+    
+    local HPTag = S.MakeText(self.Health, 7)
+    HPTag:SetPoint("BOTTOMRIGHT", self.Health, 2, 1)
+    
+    self:Tag(NameTag, "[name]")
+    self:Tag(HPTag, "[Sora:PerHP]")
 end
 
 local function CreateRaidIcon(self, ...)
-	local RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
-	RaidIcon:SetSize(16, 16)
-	RaidIcon:SetPoint("CENTER", self.Health, "TOP", 0, 2)
-
-	self.RaidIcon = RaidIcon
-end
-
-local function RegisterForClicks(self, ...)
-	self.menu = function(self)
-		local unit = self.unit:sub(1, -2)
-		local cunit = self.unit:gsub("^%l", string.upper)
-
-		if cunit == "Vehicle" then cunit = "Pet" end
-
-		if unit == "party" or unit == "partypet" then
-			ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self.id.."DropDown"], "cursor", 0, 0)
-		elseif _G[cunit.."FrameDropDown"] then
-			ToggleDropDownMenu(1, nil, _G[cunit.."FrameDropDown"], "cursor", 0, 0)
-		end
-	end
-
-	self:SetScript("OnEnter", UnitFrame_OnEnter)
-	self:SetScript("OnLeave", UnitFrame_OnLeave)
-	self:RegisterForClicks("AnyUp")
+    local RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
+    RaidIcon:SetSize(16, 16)
+    RaidIcon:SetPoint("CENTER", self.Health, "TOP", 0, 2)
+    
+    self.RaidIcon = RaidIcon
 end
 
 local function CreateTargetTarget(self, ...)
-	self:SetSize(unpack(C.UnitFrame.TargetTargetSize))
-	self:SetPoint("TOPLEFT", _G["oUF_SoraTarget"], "BOTTOMRIGHT", 4, -4)
-
-	CreatePowerBar(self, ...)
-	CreateHealthBar(self, ...)
-
-	CreateTag(self, ...)
-	CreateRaidIcon(self, ...)
-	RegisterForClicks(self, ...)
+    self:RegisterForClicks("AnyUp")
+    self:SetPoint("TOPLEFT", _G["oUF_Sora_Target"], "BOTTOMRIGHT", 4, -4)
+    self:SetSize(C.UnitFrame.TargetTarget.Width, C.UnitFrame.TargetTarget.Height)
+    
+	CreatePower(self, ...)
+	CreateHealth(self, ...)
+    
+    CreateTag(self, ...)
+    CreateRaidIcon(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)
-	oUF:RegisterStyle("TargetTarget", CreateTargetTarget)
-	oUF:SetActiveStyle("TargetTarget")
-	oUF:Spawn("targettarget", "oUF_SoraTargetTarget")
+    oUF:RegisterStyle("oUF_Sora_TargetTarget", CreateTargetTarget)
+    oUF:SetActiveStyle("oUF_Sora_TargetTarget")
+    
+    local oUFFrame = oUF:Spawn("targettarget", "oUF_Sora_TargetTarget")
 end
 
 local Event = CreateFrame("Frame", nil, UIParent)
 Event:RegisterEvent("PLAYER_LOGIN")
 Event:SetScript("OnEvent", function(self, event, ...)
-	if event == "PLAYER_LOGIN" then
-		OnPlayerLogin(self, event, ...)
-	end
+    if event == "PLAYER_LOGIN" then
+        OnPlayerLogin(self, event, ...)
+    end
 end)

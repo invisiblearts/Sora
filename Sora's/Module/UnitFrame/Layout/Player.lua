@@ -3,50 +3,69 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 local S, C, L, DB = unpack(select(2, ...))
 
--- Begin
+-- Variables
 local HPTag, PPTag, NameTag, Portrait = nil
 
-local function CreatePowerBar(self, ...)
-    local Power = CreateFrame("StatusBar", nil, self)
-    Power:SetPoint("BOTTOM")
-    Power:SetSize(self:GetWidth(), 4)
-    Power:SetStatusBarTexture(DB.Statusbar)
-    
-    Power.BG = Power:CreateTexture(nil, "BACKGROUND")
-    Power.BG:SetTexture(DB.Statusbar)
-    Power.BG:SetAllPoints()
-    Power.BG:SetVertexColor(0.12, 0.12, 0.12)
-    
-    Power.Smooth = true
-    Power.colorPower = true
-    Power.BG.multiplier = 0.2
-    Power.frequentUpdates = true
-    Power.Shadow = S.MakeShadow(Power, 2)
-    
-    self.Power = Power
+-- Begin
+local function PortraitFadeIn(...)
+    UIFrameFadeOut(HPTag, 0.5, 1, 0)
+    UIFrameFadeOut(PPTag, 0.5, 1, 0)
+    UIFrameFadeOut(NameTag, 0.5, 1, 0)
+    UIFrameFadeIn(Portrait, 0.5, 0, 0.3)
 end
 
-local function CreateHealthBar(self, ...)
-    local Health = CreateFrame("StatusBar", nil, self)
-    Health:SetPoint("TOP", self)
-    Health:SetStatusBarTexture(DB.Statusbar)
-    Health:SetSize(self:GetWidth(), self:GetHeight() - 8)
-    
-    Health.BG = Health:CreateTexture(nil, "BACKGROUND")
-    Health.BG:SetAllPoints()
-    Health.BG:SetTexture(DB.Statusbar)
-    Health.BG:SetVertexColor(0.12, 0.12, 0.12)
-    Health.BG.multiplier = 0.2
-    
-    Health.Smooth = true
-    Health.colorClass = true
-    Health.frequentUpdates = true
-    Health.Shadow = S.MakeShadow(Health, 2)
-    
-    self.Health = Health
+local function PortraitFadeOut(...)
+    UIFrameFadeIn(HPTag, 0.5, 0, 1)
+    UIFrameFadeIn(PPTag, 0.5, 0, 1)
+    UIFrameFadeIn(NameTag, 0.5, 0, 1)
+    UIFrameFadeOut(Portrait, 0.5, 0.3, 0)
 end
 
-local function CreateTag(self, ...)
+local function SetPower(self, ...)
+    local power = CreateFrame("StatusBar", nil, self)
+    power:SetPoint("BOTTOM")
+    power:SetSize(self:GetWidth(), 4)
+    power:SetStatusBarTexture(DB.Statusbar)
+    
+    power.bg = power:CreateTexture(nil, "BACKGROUND")
+    power.bg:SetTexture(DB.Statusbar)
+    power.bg:SetAllPoints()
+    power.bg:SetVertexColor(0.12, 0.12, 0.12)
+    power.bg.multiplier = 0.12
+    
+    power.Smooth = true
+    power.colorPower = true
+    power.frequentUpdates = true
+    power.shadow = S.MakeShadow(power, 2)
+    
+    self.Power = power
+end
+
+local function SetHealth(self, ...)
+    local health = CreateFrame("StatusBar", nil, self)
+    health:SetPoint("TOP")
+    health:SetStatusBarTexture(DB.Statusbar)
+    health:SetSize(self:GetWidth(), self:GetHeight() - 8)
+    
+    health.bg = health:CreateTexture(nil, "BACKGROUND")
+    health.bg:SetAllPoints()
+    health.bg:SetTexture(DB.Statusbar)
+    health.bg:SetVertexColor(0.12, 0.12, 0.12)
+    health.bg.multiplier = 0.12
+    
+    health.Smooth = true
+    health.colorTapping = true
+    health.colorDisconnected = true
+    health.colorClass = true
+    health.colorReaction = true
+    health.colorHealth = true
+    health.frequentUpdates = true
+    health.shadow = S.MakeShadow(health, 2)
+    
+    self.Health = health
+end
+
+local function SetTag(self, ...)
     NameTag = S.MakeText(self.Health, 11)
     NameTag:SetAlpha(0)
     NameTag:SetPoint("LEFT", 2, 0)
@@ -63,44 +82,40 @@ local function CreateTag(self, ...)
     self:Tag(PPTag, "[Sora:PP]" .. " | " .. "[Sora:PerPP]")
 end
 
-local function CreateCombat(self, ...)
-    local Combat = self.Health:CreateTexture(nil, "OVERLAY")
-    Combat:SetSize(18, 18)
-    Combat:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 0, -4)
+local function SetDebuff(self, ...)
+    local spacing = 4
+    local size = (self:GetWidth() + 4 * 9) / 10
     
-    self.Combat = Combat
-end
-
-local function CreateDebuff(self, ...)
-    local Size, Spacing = 20, 4
-    local Debuffs = CreateFrame("Frame", nil, self)
+    local debuffs = CreateFrame("Frame", nil, self)
+    debuffs:SetSize(self:GetWidth(), size * 2 + spacing)
+    debuffs:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -spacing)
     
-    Debuffs.size = Size
-    Debuffs.spacing = Spacing
-    Debuffs["growth-y"] = "DOWN"
-    Debuffs["growth-x"] = "RIGHT"
-    Debuffs.disableCooldown = false
-    Debuffs.initialAnchor = "TOPLEFT"
-    Debuffs:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -5)
-    Debuffs:SetSize(self:GetWidth(), Size * 3 + Spacing * 2)
-    Debuffs.num = floor((self:GetWidth() + Spacing) / (Size + Spacing)) * 3
+    debuffs.num = 20
+    debuffs.size = size
+    debuffs.spacing = spacing
+    debuffs["growth-y"] = "DOWN"
+    debuffs["growth-x"] = "RIGHT"
+    debuffs.disableCooldown = false
+    debuffs.initialAnchor = "TOPLEFT"
     
-    Debuffs.PostCreateIcon = function(self, btn)
-        if not btn.Shadow then
-            btn.Shadow = S.MakeShadow(btn, 2)
+    debuffs.PostCreateIcon = function(self, icon, ...)
+        if not icon.isProcessed then
+            icon.shadow = S.MakeShadow(icon, 2)
             
-            btn.icon:SetAllPoints()
-            btn.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+            icon.icon:SetAllPoints()
+            icon.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
             
-            btn.count = S.MakeText(btn, 10)
-            btn.count:SetPoint("BOTTOMRIGHT", 3, 0)
+            icon.count = S.MakeText(icon, 10)
+            icon.count:SetPoint("BOTTOMRIGHT", 3, 0)
+            
+            icon.isProcessed = true
         end
     end
     
-    self.Debuffs = Debuffs
+    self.Debuffs = debuffs
 end
 
-local function CreateCastbar(self, ...)
+local function SetCastbar(self, ...)
     local Castbar = CreateFrame("StatusBar", nil, self)
     Castbar:SetStatusBarTexture(DB.Statusbar)
     Castbar:SetStatusBarColor(95 / 255, 182 / 255, 255 / 255)
@@ -155,15 +170,7 @@ local function CreateCastbar(self, ...)
     self.Castbar = Castbar
 end
 
-local function CreateResting(self, ...)
-    local Resting = self.Health:CreateTexture(nil, "OVERLAY")
-    Resting:SetSize(18, 18)
-    Resting:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 0, 4)
-    
-    self.Resting = Resting
-end
-
-local function CreatePortrait(self, ...)
+local function SetPortrait(self, ...)
     Portrait = CreateFrame("PlayerModel", nil, self.Health)
     Portrait:SetAlpha(0.3)
     Portrait:SetAllPoints()
@@ -172,7 +179,7 @@ local function CreatePortrait(self, ...)
     self.Portrait = Portrait
 end
 
-local function CreateRaidIcon(self, ...)
+local function SetRaidIcon(self, ...)
     local RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
     RaidIcon:SetSize(16, 16)
     RaidIcon:SetPoint("CENTER", self.Health, "TOP", 0, 0)
@@ -180,120 +187,7 @@ local function CreateRaidIcon(self, ...)
     self.RaidIcon = RaidIcon
 end
 
-local function CreateRunes(self, ...)
-    if DB.MyClass ~= "DEATHKNIGHT" then
-        return
-    end
-    
-    local Runes = {}
-    
-    for i = 1, 6 do
-        local Rune = CreateFrame("StatusBar", nil, self)
-        Rune:SetStatusBarTexture(DB.Statusbar)
-        Rune:SetSize((self:GetWidth() - 25) / 6, 4)
-        Rune:SetStatusBarColor(0.50, 0.33, 0.67)
-        
-        Rune.BG = Rune:CreateTexture(nil, "BACKGROUND")
-        Rune.BG:SetAllPoints()
-        Rune.BG:SetTexture(DB.Statusbar)
-        Rune.BG:SetVertexColor(0.12, 0.12, 0.12)
-        Rune.Shadow = S.MakeShadow(Rune, 2)
-        
-        if i == 1 then
-            Rune:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
-        else
-            Rune:SetPoint("LEFT", Runes[i - 1], "RIGHT", 5, 0)
-        end
-        
-        Runes[i] = Rune
-    end
-    
-    self.Runes = Runes
-end
-
-local function CreateCPoints(self, ...)
-    local CPoints = {}
-    
-    for i = 1, MAX_COMBO_POINTS do
-        local CPoint = CreateFrame("StatusBar", nil, self)
-        CPoint:SetStatusBarTexture(DB.Statusbar)
-        CPoint:SetStatusBarColor(0.81, 0.03, 0.03)
-        CPoint:SetSize((self:GetWidth() - (MAX_COMBO_POINTS - 1) * 5) / MAX_COMBO_POINTS, 4)
-        
-        CPoint.BG = CPoint:CreateTexture(nil, "BACKGROUND")
-        CPoint.BG:SetAllPoints()
-        CPoint.BG:SetTexture(DB.Statusbar)
-        CPoint.BG:SetVertexColor(0.12, 0.12, 0.12)
-        CPoint.Shadow = S.MakeShadow(CPoint, 2)
-        
-        if i == 1 then
-            CPoint:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
-        else
-            CPoint:SetPoint("LEFT", CPoints[i - 1], "RIGHT", 5, 0)
-        end
-        
-        CPoints[i] = CPoint
-    end
-    
-    self.CPoints = CPoints
-end
-
-local function CreateClassIcons(self, ...)
-    if DB.MyClass ~= "MAGE" and DB.MyClass ~= "MONK" and DB.MyClass ~= "PALADIN" and DB.MyClass ~= "WARLOCK" then
-        return
-    end
-    
-    
-    local Colors = {}
-    Colors["MAGE"] = {0.83, 0.50, 0.83}
-    Colors["MONK"] = {0.00, 0.80, 0.60}
-    Colors["PALADIN"] = {1.00, 1.0, 0.40}
-    Colors["WARLOCK"] = {0.67, 0.33, 0.67}
-    
-    local ClassIcons = {}
-    
-    for i = 1, 8 do
-        local ClassIcon = CreateFrame("StatusBar", nil, self)
-        ClassIcon:SetStatusBarTexture(DB.Statusbar)
-        ClassIcon:SetStatusBarColor(unpack(Colors[DB.MyClass]))
-        
-        ClassIcon.BG = CreateFrame("StatusBar", nil, self)
-        ClassIcon.BG:SetFrameLevel(0)
-        ClassIcon.BG:SetStatusBarTexture(DB.Statusbar)
-        ClassIcon.BG:SetStatusBarColor(0.12, 0.12, 0.12)
-        ClassIcon.BG.Shadow = S.MakeShadow(ClassIcon.BG, 2)
-        
-        ClassIcons[i] = ClassIcon
-    end
-    
-    ClassIcons.PostUpdate = function(element, cur, max, hasMaxChanged, powerType, event)
-        if not max then return end
-        
-        if hasMaxChanged then
-            for i = max, 8 do
-                ClassIcons[i]:ClearAllPoints()
-                ClassIcons[i].BG:ClearAllPoints()
-            end
-            
-            for i = 1, max do
-                ClassIcons[i]:SetSize((self:GetWidth() - (max - 1) * 5) / max, 4)
-                ClassIcons[i].BG:SetSize((self:GetWidth() - (max - 1) * 5) / max, 4)
-                
-                if i == 1 then
-                    ClassIcons[i]:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
-                    ClassIcons[i].BG:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
-                else
-                    ClassIcons[i]:SetPoint("LEFT", ClassIcons[i - 1], "RIGHT", 5, 0)
-                    ClassIcons[i].BG:SetPoint("LEFT", ClassIcons[i - 1], "RIGHT", 5, 0)
-                end
-            end
-        end
-    end
-    
-    self.ClassIcons = ClassIcons
-end
-
-local function CreateCombatIcon(self, ...)
+local function SetMiscIcon(self, ...)
     local Leader = self.Health:CreateTexture(nil, "OVERLAY")
     Leader:SetSize(16, 16)
     Leader:SetPoint("TOPLEFT", self, -7, 9)
@@ -307,84 +201,143 @@ local function CreateCombatIcon(self, ...)
     MasterLooter:SetSize(16, 16)
     MasterLooter:SetPoint("LEFT", Leader, "RIGHT")
     self.MasterLooter = MasterLooter
+    
+    local Resting = self.Health:CreateTexture(nil, "OVERLAY")
+    Resting:SetSize(16, 16)
+    Resting:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 0, 4)
+    self.Resting = Resting
+    
+    local Combat = self.Health:CreateTexture(nil, "OVERLAY")
+    Combat:SetSize(16, 16)
+    Combat:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 0, -4)
+    self.Combat = Combat
 end
 
-local function RegisterForClicks(self, ...)
-    self.menu = function(self)
-        local unit = self.unit:sub(1, -2)
-        local cunit = self.unit:gsub("^%l", string.upper)
+local function SetClassIcons(self, ...)
+    if DB.MyClass == "DEATHKNIGHT" then
+        local Runes = {}
         
-        if cunit == "Vehicle" then cunit = "Pet" end
-        
-        if unit == "party" or unit == "partypet" then
-            ToggleDropDownMenu(1, nil, _G["PartyMemberFrame" .. self.id .. "DropDown"], "cursor", 0, 0)
-        elseif _G[cunit .. "FrameDropDown"] then
-            ToggleDropDownMenu(1, nil, _G[cunit .. "FrameDropDown"], "cursor", 0, 0)
+        for i = 1, 6 do
+            local Rune = CreateFrame("StatusBar", nil, self)
+            Rune:SetStatusBarTexture(DB.Statusbar)
+            Rune:SetSize((self:GetWidth() - 20) / 6, 4)
+            Rune:SetStatusBarColor(0.50, 0.33, 0.67)
+            
+            Rune.BG = Rune:CreateTexture(nil, "BACKGROUND")
+            Rune.BG:SetAllPoints()
+            Rune.BG:SetTexture(DB.Statusbar)
+            Rune.BG:SetVertexColor(0.12, 0.12, 0.12)
+            Rune.Shadow = S.MakeShadow(Rune, 2)
+            
+            if i == 1 then
+                Rune:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
+            else
+                Rune:SetPoint("LEFT", Runes[i - 1], "RIGHT", 4, 0)
+            end
+            
+            Runes[i] = Rune
         end
+        
+        self.Runes = Runes
+    else
+        local Colors = {}
+        Colors["MAGE"] = {0.83, 0.50, 0.83}
+        Colors["MONK"] = {0.00, 0.80, 0.60}
+        Colors["PALADIN"] = {1.00, 1.00, 0.40}
+        Colors["WARLOCK"] = {0.67, 0.33, 0.67}
+        
+        local ClassIcons = {}
+        
+        for i = 1, 8 do
+            local ClassIcon = CreateFrame("StatusBar", nil, self)
+            ClassIcon:SetStatusBarTexture(DB.Statusbar)
+            ClassIcon:SetStatusBarColor(unpack(Colors[DB.MyClass] or {0.81, 0.03, 0.03}))
+            
+            ClassIcon.BG = CreateFrame("StatusBar", nil, self)
+            ClassIcon.BG:SetFrameLevel(0)
+            ClassIcon.BG:SetStatusBarTexture(DB.Statusbar)
+            ClassIcon.BG:SetStatusBarColor(0.12, 0.12, 0.12)
+            ClassIcon.BG.Shadow = S.MakeShadow(ClassIcon.BG, 2)
+            
+            ClassIcons[i] = ClassIcon
+        end
+        
+        ClassIcons.PostUpdate = function(element, cur, max, hasMaxChanged, powerType, event)
+            if not max then
+                return
+            end
+            
+            if hasMaxChanged then
+                for i = max, 8 do
+                    ClassIcons[i]:ClearAllPoints()
+                    ClassIcons[i].BG:ClearAllPoints()
+                end
+                
+                for i = 1, max do
+                    ClassIcons[i]:SetSize((self:GetWidth() - (max - 1) * 4) / max, 4)
+                    ClassIcons[i].BG:SetSize((self:GetWidth() - (max - 1) * 4) / max, 4)
+                    
+                    if i == 1 then
+                        ClassIcons[i]:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
+                        ClassIcons[i].BG:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
+                    else
+                        ClassIcons[i]:SetPoint("LEFT", ClassIcons[i - 1], "RIGHT", 4, 0)
+                        ClassIcons[i].BG:SetPoint("LEFT", ClassIcons[i - 1], "RIGHT", 4, 0)
+                    end
+                end
+            end
+        end
+        
+        self.ClassIcons = ClassIcons
     end
-    
-    self:SetScript("OnEnter", UnitFrame_OnEnter)
-    self:SetScript("OnLeave", UnitFrame_OnLeave)
-    self:RegisterForClicks("AnyUp")
 end
 
-local function CreatePlayer(self, ...)
-    self:SetSize(unpack(C.UnitFrame.PlayerSize))
-    self:SetPoint(unpack(C.UnitFrame.PlayerPostion))
+local function RegisterForEvent(self, ...)
+    self:HookScript("OnLeave", function(self, event, ...)
+        if not UnitAffectingCombat("player") then
+            PortraitFadeIn()
+        end
+    end)
     
-    CreatePowerBar(self, ...)
-    CreateHealthBar(self, ...)
+    self:HookScript("OnEnter", function(self, event, ...)
+        if not UnitAffectingCombat("player") then
+            PortraitFadeOut()
+        end
+    end)
+end
+
+local function RegisterStyle(self, ...)
+    self:RegisterForClicks("AnyUp")
+    self:SetPoint(unpack(C.UnitFrame.Player.Postion))
+    self:SetSize(C.UnitFrame.Player.Width, C.UnitFrame.Player.Height)
     
-    CreateRunes(self, ...)
-    CreateClassIcons(self, ...)
+    SetPower(self, ...)
+    SetHealth(self, ...)
     
-    CreateTag(self, ...)
-    CreateCombat(self, ...)
-    CreateDebuff(self, ...)
-    CreateCastbar(self, ...)
-    CreateResting(self, ...)
-    CreateCPoints(self, ...)
-    CreatePortrait(self, ...)
-    CreateRaidIcon(self, ...)
-    CreateCombatIcon(self, ...)
-    RegisterForClicks(self, ...)
+    SetTag(self, ...)
+    SetDebuff(self, ...)
+    SetCastbar(self, ...)
+    SetPortrait(self, ...)
+    SetRaidIcon(self, ...)
+    SetMiscIcon(self, ...)
+    SetClassIcons(self, ...)
+    
+    RegisterForEvent(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)
-    oUF:RegisterStyle("Player", CreatePlayer)
-    oUF:SetActiveStyle("Player")
+    oUF:RegisterStyle("oUF_Sora_Player", RegisterStyle)
+    oUF:SetActiveStyle("oUF_Sora_Player")
     
-    local Frame = oUF:Spawn("player", "oUF_SoraPlayer")
-    Frame:HookScript("OnLeave", function()
-        if not UnitAffectingCombat("player") then
-            UIFrameFadeOut(HPTag, 0.5, 1, 0)
-            UIFrameFadeOut(PPTag, 0.5, 1, 0)
-            UIFrameFadeOut(NameTag, 0.5, 1, 0)
-            UIFrameFadeIn(Portrait, 0.5, 0, 0.3)
-        end
-    end)
-    Frame:HookScript("OnEnter", function()
-        if not UnitAffectingCombat("player") then
-            UIFrameFadeIn(HPTag, 0.5, 0, 1)
-            UIFrameFadeIn(PPTag, 0.5, 0, 1)
-            UIFrameFadeIn(NameTag, 0.5, 0, 1)
-            UIFrameFadeOut(Portrait, 0.5, 0.3, 0)
-        end
-    end)
+    local oUFFrame = oUF:Spawn("player", "oUF_Sora_Player")
 end
 
 local function OnPlayerRegenEnable(self, event, ...)
-    UIFrameFadeOut(HPTag, 0.5, 1, 0)
-    UIFrameFadeOut(PPTag, 0.5, 1, 0)
-    UIFrameFadeOut(NameTag, 0.5, 1, 0)
-    UIFrameFadeIn(Portrait, 0.5, 0, 0.3)
+    PortraitFadeIn()
 end
 
 local function OnPlayerRegenDisable(self, event, ...)
-    UIFrameFadeIn(HPTag, 0.5, 0, 1)
-    UIFrameFadeIn(PPTag, 0.5, 0, 1)
-    UIFrameFadeIn(NameTag, 0.5, 0, 1)
-    UIFrameFadeOut(Portrait, 0.5, 0.3, 0)
+    PortraitFadeOut()
 end
 
 local Event = CreateFrame("Frame", nil, UIParent)

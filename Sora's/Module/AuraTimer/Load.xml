@@ -1,5 +1,7 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/">
 
-	<Script file = "AuraTimer.lua" />
+	<Script file = "AuraTimers.lua" />
+	<Script file = "PlayerAuraTimer.lua" />
+	<Script file = "TargetAuraTimer.lua" />
 
 </Ui>

@@ -3,10 +3,9 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 local S, C, L, DB = unpack(select(2, ...))
 
--- Variables
-local Name, HPTag, PPTag, Portrait = nil
-
 -- Begin
+local HPTag, PPTag, NameTag, Portrait = nil
+
 local function PortraitFadeIn(...)
     UIFrameFadeOut(HPTag, 0.5, 1, 0)
     UIFrameFadeOut(PPTag, 0.5, 1, 0)
@@ -22,24 +21,23 @@ local function PortraitFadeOut(...)
 end
 
 local function CreatePower(self, ...)
-    local power = CreateFrame("StatusBar", nil, self)
-    power:SetPoint("BOTTOM", self)
-    power:SetSize(self:GetWidth(), 4)
-    power:SetStatusBarTexture(DB.Statusbar)
+    local Power = CreateFrame("StatusBar", nil, self)
+    Power:SetPoint("BOTTOM", self)
+    Power:SetSize(self:GetWidth(), 4)
+    Power:SetStatusBarTexture(DB.Statusbar)
     
-    power.bg = power:CreateTexture(nil, "BACKGROUND")
-    power.bg:SetTexture(DB.Statusbar)
-    power.bg:SetAllPoints()
-    power.bg:SetVertexColor(0.12, 0.12, 0.12)
-    power.bg.multiplier = 0.12
+    Power.BG = Power:CreateTexture(nil, "BACKGROUND")
+    Power.BG:SetTexture(DB.Statusbar)
+    Power.BG:SetAllPoints()
+    Power.BG:SetVertexColor(0.12, 0.12, 0.12)
+    Power.BG.multiplier = 0.2
     
-    power.Smooth = true
-    power.colorPower = true
-    power.altPowerColor = true
-    power.frequentUpdates = true
-    power.shadow = S.MakeShadow(power, 2)
+    Power.Smooth = true
+    Power.colorPower = true
+    Power.frequentUpdates = true
+    Power.shadow = S.MakeShadow(Power, 2)
     
-    self.Power = power
+    self.Power = Power
 end
 
 local function CreateHealth(self, ...)
@@ -61,7 +59,6 @@ local function CreateHealth(self, ...)
     health.colorReaction = true
     health.colorHealth = true
     health.frequentUpdates = true
-
     health.shadow = S.MakeShadow(health, 2)
     
     self.Health = health
@@ -118,11 +115,14 @@ local function CreateAura(self, ...)
 end
 
 local function CreateCastbar(self, ...)
+    local height = C.UnitFrame.BossTarget.Height
+    local width = self:GetWidth() - C.UnitFrame.BossTarget.Width - 8 - height;
+    
     local Castbar = CreateFrame("StatusBar", nil, self)
+    Castbar:SetSize(width, height)
     Castbar:SetStatusBarTexture(DB.Statusbar)
     Castbar:SetStatusBarColor(95 / 255, 182 / 255, 255 / 255)
-    Castbar:SetSize(C.ActionBar.Size * 18 + C.ActionBar.Space * 16 - 24, 24)
-    Castbar:SetPoint("BOTTOMLEFT", "MultiBarBottomRightButton1", "TOPLEFT", 0, C.ActionBar.Size * 2 + C.ActionBar.Space * 2)
+    Castbar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -height - 4, 4)
     
     Castbar.Shadow = S.MakeShadow(Castbar, 2)
     Castbar.Shadow:SetBackdrop({
@@ -142,8 +142,8 @@ local function CreateCastbar(self, ...)
     
     Castbar.Icon = Castbar:CreateTexture(nil, "ARTWORK")
     Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    Castbar.Icon:SetPoint("LEFT", Castbar, "RIGHT", 4, 0)
     Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
-    Castbar.Icon:SetPoint("LEFT", Castbar, "RIGHT", C.ActionBar.Space, 0)
     Castbar.Icon.Shadow = S.MakeTextureShadow(Castbar, Castbar.Icon, 2)
     
     Castbar.SafeZone = Castbar:CreateTexture(nil, "OVERLAY")
@@ -206,13 +206,13 @@ local function CreateCombatIcon(self, ...)
 end
 
 local function RegisterForEvent(self, ...)
-    self:HookScript("OnLeave", function()
+    self:HookScript("OnLeave", function(self, ...)
         if not UnitAffectingCombat("player") then
             PortraitFadeIn()
         end
     end)
     
-    self:HookScript("OnEnter", function()
+    self:HookScript("OnEnter", function(self, ...)
         if not UnitAffectingCombat("player") then
             PortraitFadeOut()
         end
@@ -221,8 +221,7 @@ end
 
 local function RegisterStyle(self, ...)
     self:RegisterForClicks("AnyUp")
-    self:SetPoint(unpack(C.UnitFrame.Target.Postion))
-    self:SetSize(C.UnitFrame.Target.Width, C.UnitFrame.Target.Height)
+    self:SetSize(C.UnitFrame.Boss.Width, C.UnitFrame.Boss.Height)
     
     CreatePower(self, ...)
     CreateHealth(self, ...)
@@ -233,31 +232,34 @@ local function RegisterStyle(self, ...)
     CreatePortrait(self, ...)
     CreateRaidIcon(self, ...)
     CreateCombatIcon(self, ...)
-
+    
     RegisterForEvent(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)
-    oUF:RegisterStyle("oUF_Sora_Target", RegisterStyle)
-    oUF:SetActiveStyle("oUF_Sora_Target")
+    oUF:RegisterStyle("oUF_Sora_Boss", RegisterStyle)
+    oUF:SetActiveStyle("oUF_Sora_Boss")
     
-    local oUFFrame = oUF:Spawn("target", "oUF_Sora_Target")
+    for i = 1, 5 do
+        local oUFFrame = oUF:Spawn("boss" .. i, "oUF_Sora_Boss" .. i)
+        
+        if i == 1 then
+            oUFFrame:SetPoint(unpack(C.UnitFrame.Boss.Postion))
+        else
+            oUFFrame:SetPoint("BOTTOM", _G["oUF_Sora_Boss" .. (i - 1)], "TOP", 0, 128)
+        end
+    end
 end
 
 local function OnPlayerRegenEnable(self, event, ...)
-    UIFrameFadeOut(NameTag, 0.5, 1, 0)
-    UIFrameFadeOut(HPTag, 0.5, 1, 0)
-    UIFrameFadeOut(PPTag, 0.5, 1, 0)
-    UIFrameFadeIn(Portrait, 0.5, 0, 0.3)
+    PortraitFadeIn()
 end
 
 local function OnPlayerRegenDisable(self, event, ...)
-    UIFrameFadeIn(NameTag, 0.5, 0, 1)
-    UIFrameFadeIn(HPTag, 0.5, 0, 1)
-    UIFrameFadeIn(PPTag, 0.5, 0, 1)
-    UIFrameFadeOut(Portrait, 0.5, 0.3, 0)
+    PortraitFadeOut()
 end
 
+-- Event
 local Event = CreateFrame("Frame", nil, UIParent)
 Event:RegisterEvent("PLAYER_LOGIN")
 Event:RegisterEvent("PLAYER_REGEN_ENABLED")

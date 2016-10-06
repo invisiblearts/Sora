@@ -228,6 +228,9 @@ local function SetClockPanel()
     clock:SetScript("OnEnter", OnClockPanelEnter)
     clock:SetScript("OnUpdate", OnClockPanelUpdate)
     
+    clock.skin = S.MakeButton(clock)
+    clock.skin:SetAllPoints()
+
     GameTimeFrame:Hide()
     TimeManagerClockButton:Hide()
 end
