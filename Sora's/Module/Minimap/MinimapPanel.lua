@@ -4,7 +4,7 @@ local oUF = ns.oUF or oUF
 local S, C, L, DB = unpack(select(2, ...))
 
 -- Variables
-local width, height = 48, 6
+local height = 6
 
 -- Begin
 local function OnLeave(self, ...)
@@ -49,15 +49,15 @@ end
 
 local function SetPingPanel()
     local bar = CreateFrame("StatusBar", nil, UIParent)
-    bar:SetSize(width, height)
     bar:SetMinMaxValues(0, 1000)
     bar:SetStatusBarTexture(DB.Statusbar)
     bar:SetStatusBarColor(0.00, 0.40, 1.00)
-    bar:SetPoint("TOPLEFT", Minimap, "TOPRIGHT", 8, 0)
+    bar:SetSize((C.MiniMap.Width - 4 * 2) / 3, C.MiniMap.BarHeight)
+    bar:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", 0, -C.MiniMap.BarHeight - 8)
     
     bar.text = S.MakeText(bar, 10)
     bar.text:SetText("0ms")
-    bar.text:SetPoint("CENTER", 0, -4)
+    bar.text:SetPoint("CENTER", 0, 5)
     
     bar.shadow = S.MakeShadow(bar, 2)
     bar.bg = bar:CreateTexture(nil, "BACKGROUND")
@@ -169,15 +169,15 @@ end
 
 local function SetAddOnPanel()
     local bar = CreateFrame("StatusBar", nil, UIParent)
-    bar:SetSize(width, height)
     bar:SetMinMaxValues(0, 20480)
     bar:SetStatusBarTexture(DB.Statusbar)
     bar:SetStatusBarColor(0.00, 0.40, 1.00)
-    bar:SetPoint("TOPLEFT", Minimap, "TOPRIGHT", 8, -height * 3)
+    bar:SetSize((C.MiniMap.Width - 4 * 2) / 3, C.MiniMap.BarHeight)
+    bar:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 0, -C.MiniMap.BarHeight - 8)
     
     bar.text = S.MakeText(bar, 10)
     bar.text:SetText("N/A")
-    bar.text:SetPoint("CENTER", 0, -4)
+    bar.text:SetPoint("CENTER", 0, 5)
     
     bar.shadow = S.MakeShadow(bar, 2)
     bar.bg = bar:CreateTexture(nil, "BACKGROUND")
@@ -217,8 +217,8 @@ end
 
 local function SetClockPanel()
     local clock = CreateFrame("Frame", nil, UIParent)
-    clock:SetSize(width, height * 3)
-    clock:SetPoint("LEFT", Minimap, "RIGHT", 8, 4)
+    clock:SetPoint("TOP", Minimap, "BOTTOM", 0, -8)
+    clock:SetSize((C.MiniMap.Width - 4 * 2) / 3, C.MiniMap.BarHeight * 2)
     
     clock.text = S.MakeText(clock, 14)
     clock.text:SetAllPoints()
@@ -228,9 +228,6 @@ local function SetClockPanel()
     clock:SetScript("OnEnter", OnClockPanelEnter)
     clock:SetScript("OnUpdate", OnClockPanelUpdate)
     
-    clock.skin = S.MakeButton(clock)
-    clock.skin:SetAllPoints()
-
     GameTimeFrame:Hide()
     TimeManagerClockButton:Hide()
 end
@@ -269,15 +266,15 @@ end
 
 local function SetGoldPanel()
     local bar = CreateFrame("StatusBar", nil, UIParent)
-    bar:SetSize(width, height)
     bar:SetMinMaxValues(0, 200000)
     bar:SetStatusBarTexture(DB.Statusbar)
     bar:SetStatusBarColor(0.00, 0.40, 1.00)
-    bar:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMRIGHT", 8, height * 4)
-    
+    bar:SetSize((C.MiniMap.Width - 4) / 2, C.MiniMap.BarHeight)
+    bar:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", 0, -C.MiniMap.BarHeight * 3 - 8 * 2)
+
     bar.text = S.MakeText(bar, 10)
     bar.text:SetText("N/A")
-    bar.text:SetPoint("CENTER", 0, -4)
+    bar.text:SetPoint("CENTER", 0, 5)
     
     bar.shadow = S.MakeShadow(bar, 2)
     bar.bg = bar:CreateTexture(nil, "BACKGROUND")
@@ -357,15 +354,15 @@ end
 
 local function SetDurabilityPanel()
     local bar = CreateFrame("StatusBar", nil, UIParent)
-    bar:SetSize(width, height)
     bar:SetMinMaxValues(0, 100)
     bar:SetStatusBarTexture(DB.Statusbar)
     bar:SetStatusBarColor(0.00, 0.40, 1.00)
-    bar:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMRIGHT", 8, height)
+    bar:SetSize((C.MiniMap.Width - 4) / 2, C.MiniMap.BarHeight)
+    bar:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 0, -C.MiniMap.BarHeight * 3 - 8 * 2)
     
     bar.text = S.MakeText(bar, 10)
     bar.text:SetText("N/A")
-    bar.text:SetPoint("CENTER", 0, -4)
+    bar.text:SetPoint("CENTER", 0, 5)
     
     bar.shadow = S.MakeShadow(bar, 2)
     bar.bg = bar:CreateTexture(nil, "BACKGROUND")

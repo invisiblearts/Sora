@@ -7,11 +7,6 @@ local S, C, L, DB = unpack(select(2, ...))
 local width, height = 48, 6
 
 -- Begin
-local function SetAnchor(self, ...)
-    self:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", 0, -C.MiniMap.ERBarHeight)
-    self:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 0, -C.MiniMap.ERBarHeight * 4)
-end
-
 local function OnLeave(self, event, ...)
     GameTooltip:Hide()
 end
@@ -41,9 +36,9 @@ end
 
 local function SetExperienceBar(self, ...)
     local experience = CreateFrame("StatusBar", nil, self)
-    experience:SetSize(width, height)
     experience:SetStatusBarTexture(DB.Statusbar)
-    experience:SetPoint("TOPLEFT", Minimap, "TOPRIGHT", 8, -height * 6)
+    experience:SetPoint("BOTTOM", self, "BOTTOM", 0, 0)
+    experience:SetSize(C.MiniMap.Width, C.MiniMap.BarHeight)
     
     experience.rested = CreateFrame("StatusBar", nil, experience)
     experience.rested:SetAllPoints(experience)
@@ -52,7 +47,7 @@ local function SetExperienceBar(self, ...)
     
     experience.text = S.MakeText(experience, 10)
     experience.text:SetText("N/A")
-    experience.text:SetPoint("CENTER", 0, -4)
+    experience.text:SetPoint("CENTER", 0, 5)
     self:Tag(experience.text, "[perxp]%")
     
     experience.bg = experience.rested:CreateTexture(nil, "BACKGROUND")
@@ -81,16 +76,16 @@ end
 
 local function SetReputationBar(self, ...)
     local reputation = CreateFrame("StatusBar", nil, self)
-    reputation:SetSize(width, height)
     reputation:SetStatusBarTexture(DB.Statusbar)
-    reputation:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMRIGHT", 8, height * 7)
+    reputation:SetPoint("TOP", self, "TOP", 0, 0)
+    reputation:SetSize(C.MiniMap.Width, C.MiniMap.BarHeight)
     
     reputation.colorStanding = true
     reputation.shadow = S.MakeShadow(reputation, 2)
     
     reputation.text = S.MakeText(reputation, 10)
     reputation.text:SetText("N/A")
-    reputation.text:SetPoint("CENTER", 0, -4)
+    reputation.text:SetPoint("CENTER", 0, 5)
     self:Tag(reputation.text, "[perrep]%")
     
     reputation.bg = reputation:CreateTexture(nil, "BACKGROUND")
@@ -112,15 +107,19 @@ local function SetReputationBar(self, ...)
     self.Reputation = reputation
 end
 
-local function OnPlayerLogin(self, event, ...)
-    oUF:RegisterStyle("ERBar", function(self, ...)
-        SetAnchor(self, ...)
-        SetExperienceBar(self, ...)
-        SetReputationBar(self, ...)
-    end)
+local function RegisterStyle(self, ...)
+    self:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", 0, -C.MiniMap.BarHeight * 5 - 3 * 8)
+    self:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 0, -C.MiniMap.BarHeight * 8 - 4 * 8)
     
-    oUF:SetActiveStyle("ERBar")
-    oUF:Spawn("player", "oUF_Sora_ERBar")
+    SetExperienceBar(self, ...)
+    SetReputationBar(self, ...)
+end
+
+local function OnPlayerLogin(self, event, ...)
+    oUF:RegisterStyle("oUF_Sora_ERBar", RegisterStyle)
+    oUF:SetActiveStyle("oUF_Sora_ERBar")
+    
+    local oUFFrame = oUF:Spawn("player", "oUF_Sora_ERBar")
 end
 
 -- Event
