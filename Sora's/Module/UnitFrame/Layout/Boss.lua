@@ -65,20 +65,20 @@ local function CreateHealth(self, ...)
 end
 
 local function CreateTag(self, ...)
-    NameTag = S.MakeText(self.Health, 11)
-    NameTag:SetAlpha(0)
-    NameTag:SetPoint("LEFT", 2, 0)
-    self:Tag(NameTag, "[Sora:Level] [Sora:Color][name]")
+    NameTag = S.MakeText(self.Health, 12)
+    NameTag:SetAlpha(0.00)
+    NameTag:SetPoint("LEFT", 4, 0)
+    self:Tag(NameTag, "[Sora:Level][Sora:Rare][Sora:Color][Sora:Name]|r")
     
-    HPTag = S.MakeText(self.Health, 11)
-    HPTag:SetAlpha(0)
-    HPTag:SetPoint("RIGHT", 0, 0)
-    self:Tag(HPTag, "[Sora:Color][Sora:HP]" .. " | " .. '[Sora:PerHP]')
+    HPTag = S.MakeText(self.Health, 12)
+    HPTag:SetAlpha(0.00)
+    HPTag:SetPoint("RIGHT", -4, 0)
+    self:Tag(HPTag, "[Sora:Color][Sora:Health]|r | [Sora:Color][Sora:PerHealth]|r")
     
     PPTag = S.MakeText(self.Power, 9)
-    PPTag:SetAlpha(0)
-    PPTag:SetPoint("RIGHT", 0, 0)
-    self:Tag(PPTag, "[Sora:PP]" .. " | " .. "[Sora:PerPP]")
+    PPTag:SetAlpha(0.00)
+    PPTag:SetPoint("RIGHT", -4, 0)
+    self:Tag(PPTag, "[Sora:Power] | [Sora:PerPower]")
 end
 
 local function CreateAura(self, ...)

@@ -70,12 +70,11 @@ end
 local function CreateTag(self, ...)
     local NameTag = S.MakeText(self.Health, 10)
     NameTag:SetPoint("CENTER", 0, 0)
-    
-    local InfoTag = S.MakeText(self.Health, 7)
-    InfoTag:SetPoint("CENTER", 0, -10)
-    
-    self:Tag(InfoTag, "[Sora:Info]")
-    self:Tag(NameTag, "[Sora:Color][name]")
+    self:Tag(NameTag, "[Sora:Color][Sora:Name]|r")
+        
+    local StatusTag = S.MakeText(self.Health, 7)
+    StatusTag:SetPoint("CENTER", 0, -10)
+    self:Tag(StatusTag, "[Sora:Color][Sora:Status]|r")
 end
 
 local function CreateRange(self, ...)
