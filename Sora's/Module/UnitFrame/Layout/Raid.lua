@@ -36,7 +36,7 @@ local function CreatePower(self, ...)
     power.Smooth = true
     power.colorPower = true
     power.frequentUpdates = true
-    power.shadow = S.MakeShadow(Powpowerer, 2)
+    power.shadow = S.MakeShadow(power, 2)
     
     self.Power = power
 end
