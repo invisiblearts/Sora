@@ -62,7 +62,10 @@ local function SetActionButtonStyle()
     }
     
     actionButtonStyle.name = {
-        alpha = 0.0,
+        font = {STANDARD_TEXT_FONT, 9, "THINOUTLINE"},
+        points = {
+            {"BOTTOM", 0, 1}
+        }
     }
     
     actionButtonStyle.count = {
