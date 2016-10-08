@@ -1,8 +1,0 @@
-## Interface: 70000
-## Title: TBags
-## Author: 堂吉先生
-## Version: 3.0
-
-Bags.lua
-## currencies.lua
-OpenAllBags.lua

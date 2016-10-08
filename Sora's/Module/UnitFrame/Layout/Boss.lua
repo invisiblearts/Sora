@@ -83,13 +83,14 @@ end
 
 local function CreateAura(self, ...)
     local spacing = 4
-    local size = (self:GetWidth() + 4 * 9) / 10
+    local size = (self:GetWidth() - 4 * 8) / 9
+
     local auras = CreateFrame("Frame", nil, self)
     auras:SetSize(self:GetWidth(), size * 3 + spacing * 2)
     auras:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -spacing)
     
-    auras.num = 30
-    auras.numBuffs = 10
+    auras.num = 27
+    auras.numBuffs = 9
     auras.gap = true
     auras.size = size
     auras.spacing = spacing

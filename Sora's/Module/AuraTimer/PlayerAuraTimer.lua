@@ -49,7 +49,7 @@ local function InitParent(self, ...)
     local playerWitdh = player:GetWidth()
     
     spacing = 4
-    iconSize = (playerWitdh + 4 * 8) / 9
+    iconSize = (playerWitdh - 4 * 7) / 8
     
     self:SetSize(playerWitdh, iconSize)
     self:SetPoint("BOTTOMLEFT", player, "TOPLEFT", 0, 12)

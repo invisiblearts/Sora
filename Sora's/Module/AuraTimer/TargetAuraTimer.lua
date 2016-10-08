@@ -84,7 +84,7 @@ local function InitParent(self, ...)
     local targetWitdh = target:GetWidth()
     
     spacing = 4
-    iconSize = (targetWitdh + 4 * 11) / 12
+    iconSize = (targetWitdh - 4 * 7) / 8
     barWidth = targetWitdh - iconSize - spacing
     
     self:SetSize(iconSize, iconSize)

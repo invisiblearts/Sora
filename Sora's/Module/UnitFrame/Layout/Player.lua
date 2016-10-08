@@ -84,13 +84,13 @@ end
 
 local function SetDebuff(self, ...)
     local spacing = 4
-    local size = (self:GetWidth() + 4 * 9) / 10
+    local size = (self:GetWidth() - 4 * 8) / 9
     
     local debuffs = CreateFrame("Frame", nil, self)
     debuffs:SetSize(self:GetWidth(), size * 2 + spacing)
     debuffs:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -spacing)
     
-    debuffs.num = 20
+    debuffs.num = 18
     debuffs.size = size
     debuffs.spacing = spacing
     debuffs["growth-y"] = "DOWN"
