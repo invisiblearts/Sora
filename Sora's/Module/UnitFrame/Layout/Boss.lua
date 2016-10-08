@@ -4,21 +4,7 @@ local oUF = ns.oUF or oUF
 local S, C, L, DB = unpack(select(2, ...))
 
 -- Begin
-local HPTag, PPTag, NameTag, Portrait = nil
-
-local function PortraitFadeIn(...)
-    UIFrameFadeOut(HPTag, 0.5, 1, 0)
-    UIFrameFadeOut(PPTag, 0.5, 1, 0)
-    UIFrameFadeOut(NameTag, 0.5, 1, 0)
-    UIFrameFadeIn(Portrait, 0.5, 0, 0.3)
-end
-
-local function PortraitFadeOut(...)
-    UIFrameFadeIn(HPTag, 0.5, 0, 1)
-    UIFrameFadeIn(PPTag, 0.5, 0, 1)
-    UIFrameFadeIn(NameTag, 0.5, 0, 1)
-    UIFrameFadeOut(Portrait, 0.5, 0.3, 0)
-end
+local anchor = nil
 
 local function CreatePower(self, ...)
     local power = CreateFrame("StatusBar", nil, self)
@@ -65,18 +51,15 @@ local function CreateHealth(self, ...)
 end
 
 local function CreateTag(self, ...)
-    NameTag = S.MakeText(self.Health, 12)
-    NameTag:SetAlpha(0.00)
+    local NameTag = S.MakeText(self.Health, 12)
     NameTag:SetPoint("LEFT", 4, 0)
     self:Tag(NameTag, "[Sora:Level][Sora:Rare][Sora:Color][Sora:Name]|r")
     
-    HPTag = S.MakeText(self.Health, 12)
-    HPTag:SetAlpha(0.00)
+    local HPTag = S.MakeText(self.Health, 12)
     HPTag:SetPoint("RIGHT", -4, 0)
     self:Tag(HPTag, "[Sora:Color][Sora:Health]|r | [Sora:Color][Sora:PerHealth]|r")
     
-    PPTag = S.MakeText(self.Power, 9)
-    PPTag:SetAlpha(0.00)
+    local PPTag = S.MakeText(self.Power, 9)
     PPTag:SetPoint("RIGHT", -4, 0)
     self:Tag(PPTag, "[Sora:Power] | [Sora:PerPower]")
 end
@@ -84,13 +67,12 @@ end
 local function CreateAura(self, ...)
     local spacing = 4
     local size = (self:GetWidth() - 4 * 8) / 9
-
+    
     local auras = CreateFrame("Frame", nil, self)
     auras:SetSize(self:GetWidth(), size * 3 + spacing * 2)
     auras:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -spacing)
     
-    auras.num = 27
-    auras.numBuffs = 9
+    auras.num = 18
     auras.gap = true
     auras.size = size
     auras.spacing = spacing
@@ -173,15 +155,6 @@ local function CreateCastbar(self, ...)
     self.Castbar = Castbar
 end
 
-local function CreatePortrait(self, ...)
-    Portrait = CreateFrame("PlayerModel", nil, self.Health)
-    Portrait:SetAlpha(0.3)
-    Portrait:SetAllPoints()
-    Portrait:SetFrameLevel(self.Health:GetFrameLevel() + 1)
-    
-    self.Portrait = Portrait
-end
-
 local function CreateRaidIcon(self, ...)
     local RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
     RaidIcon:SetSize(16, 16)
@@ -206,20 +179,6 @@ local function CreateCombatIcon(self, ...)
     self.MasterLooter = MasterLooter
 end
 
-local function RegisterForEvent(self, ...)
-    self:HookScript("OnLeave", function(self, ...)
-        if not UnitAffectingCombat("player") then
-            PortraitFadeIn()
-        end
-    end)
-    
-    self:HookScript("OnEnter", function(self, ...)
-        if not UnitAffectingCombat("player") then
-            PortraitFadeOut()
-        end
-    end)
-end
-
 local function RegisterStyle(self, ...)
     self:RegisterForClicks("AnyUp")
     self:SetSize(C.UnitFrame.Boss.Width, C.UnitFrame.Boss.Height)
@@ -227,9 +186,9 @@ local function RegisterStyle(self, ...)
     local iStr = string.gsub(self:GetName(), "oUF_Sora_Boss", "")
     local i = tonumber(iStr)
     if i == 1 then
-        self:SetPoint(unpack(C.UnitFrame.Boss.Postion))
+        self:SetPoint("LEFT", anchor, "LEFT", 0, 0)
     else
-        self:SetPoint("BOTTOM", _G["oUF_Sora_Boss" .. (i - 1)], "TOP", 0, 128)
+        self:SetPoint("LEFT", _G["oUF_Sora_Boss" .. (i - 1)], "RIGHT", 16, 0)
     end
     
     CreatePower(self, ...)
@@ -238,14 +197,15 @@ local function RegisterStyle(self, ...)
     CreateTag(self, ...)
     CreateAura(self, ...)
     CreateCastbar(self, ...)
-    CreatePortrait(self, ...)
     CreateRaidIcon(self, ...)
     CreateCombatIcon(self, ...)
-    
-    RegisterForEvent(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)
+    anchor = CreateFrame("Frame", nil, UIParent)
+    anchor:SetPoint(unpack(C.UnitFrame.Boss.Postion))
+    anchor:SetSize(C.UnitFrame.Boss.Width * 5 + 16 * 4, C.UnitFrame.Boss.Height)
+    
     oUF:RegisterStyle("oUF_Sora_Boss", RegisterStyle)
     oUF:SetActiveStyle("oUF_Sora_Boss")
     
@@ -254,25 +214,11 @@ local function OnPlayerLogin(self, event, ...)
     end
 end
 
-local function OnPlayerRegenEnable(self, event, ...)
-    PortraitFadeIn()
-end
-
-local function OnPlayerRegenDisable(self, event, ...)
-    PortraitFadeOut()
-end
-
 -- Event
 local Event = CreateFrame("Frame", nil, UIParent)
 Event:RegisterEvent("PLAYER_LOGIN")
-Event:RegisterEvent("PLAYER_REGEN_ENABLED")
-Event:RegisterEvent("PLAYER_REGEN_DISABLED")
 Event:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_LOGIN" then
         OnPlayerLogin(self, event, ...)
-    elseif event == "PLAYER_REGEN_ENABLED" then
-        OnPlayerRegenEnable(self, event, ...)
-    elseif event == "PLAYER_REGEN_DISABLED" then
-        OnPlayerRegenDisable(self, event, ...)
     end
 end)

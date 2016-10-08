@@ -27,7 +27,7 @@ C.UnitFrame.TargetTarget.Height = 24
 C.UnitFrame.Focus = {}
 C.UnitFrame.Focus.Width = 256
 C.UnitFrame.Focus.Height = 42
-C.UnitFrame.Focus.Postion = {"CENTER", UIParent, "CENTER", -384, 256}
+C.UnitFrame.Focus.Postion = {"CENTER", UIParent, "CENTER", 0, 192}
 
 C.UnitFrame.FocusTarget = {}
 C.UnitFrame.FocusTarget.Width = 72
@@ -36,7 +36,7 @@ C.UnitFrame.FocusTarget.Height = 24
 C.UnitFrame.Boss = {}
 C.UnitFrame.Boss.Width = 256
 C.UnitFrame.Boss.Height = 42
-C.UnitFrame.Boss.Postion = {"CENTER", UIParent, "CENTER", 384, 256}
+C.UnitFrame.Boss.Postion = {"CENTER", UIParent, "CENTER", 0, 384}
 
 C.UnitFrame.BossTarget = {}
 C.UnitFrame.BossTarget.Width = 72

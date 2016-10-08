@@ -25,7 +25,7 @@ local function UpdateThreat(unit)
     threat.name = name
     threat.status = status
     threat.isTanking = isTanking
-    threat.rawPercent = rawPercent
+    threat.rawPercent = rawPercent or 0
     threat.classColor = RAID_CLASS_COLORS[class]
     
     table.insert(threats, threat)
@@ -72,17 +72,7 @@ local function UpdateAllThreats()
     end
     
     table.sort(threats, function(l, r)
-        local flag = false
-        
-        if not l.rawPercent and r.rawPercent then
-            flag = false
-        elseif l.rawPercent and not r.rawPercent then
-            flag = true
-        elseif l.rawPercent and r.rawPercent then
-            flag = l.rawPercent > r.rawPercent
-        end
-        
-        return flag
+        return l.isTanking or l.status >= 2 or l.rawPercent > r.rawPercent
     end)
 end
 

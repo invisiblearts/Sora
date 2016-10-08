@@ -3,6 +3,7 @@
 	<Script file = "Config.lua" />
 
 	<Script file = "Plugin\Tag.lua" />
+	<Script file = "Plugin\Tester.lua" />
 	<Script file = "Plugin\Castbar.lua" />
 	
 	<Script file = "Layout\Raid.lua" />
