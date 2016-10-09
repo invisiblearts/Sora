@@ -119,8 +119,8 @@ local function SetCastbar(self, ...)
     local Castbar = CreateFrame("StatusBar", nil, self)
     Castbar:SetStatusBarTexture(DB.Statusbar)
     Castbar:SetStatusBarColor(95 / 255, 182 / 255, 255 / 255)
-    Castbar:SetSize(C.ActionBar.Size * 18 + C.ActionBar.Space * 16 - 24, 24)
-    Castbar:SetPoint("BOTTOMLEFT", "MultiBarBottomRightButton1", "TOPLEFT", 0, C.ActionBar.Size + C.ActionBar.Space * 2)
+    Castbar:SetSize(C.ActionBar.Size * 18 + C.ActionBar.Space * 17 - C.ActionBar.Space - 32, 32)
+    Castbar:SetPoint("BOTTOMLEFT", "MultiBarBottomRightButton1", "TOPLEFT", 0, C.ActionBar.Size + C.ActionBar.Space + 8)
     
     Castbar.Shadow = S.MakeShadow(Castbar, 2)
     Castbar.Shadow:SetBackdrop({

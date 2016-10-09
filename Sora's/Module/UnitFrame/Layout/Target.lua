@@ -61,7 +61,7 @@ local function CreateHealth(self, ...)
     health.colorReaction = true
     health.colorHealth = true
     health.frequentUpdates = true
-
+    
     health.shadow = S.MakeShadow(health, 2)
     
     self.Health = health
@@ -87,7 +87,7 @@ end
 local function CreateAura(self, ...)
     local spacing = 4
     local size = (self:GetWidth() - 4 * 8) / 9
-
+    
     local auras = CreateFrame("Frame", nil, self)
     auras:SetSize(self:GetWidth(), size * 3 + spacing * 2)
     auras:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -spacing)
@@ -122,8 +122,8 @@ local function CreateCastbar(self, ...)
     local Castbar = CreateFrame("StatusBar", nil, self)
     Castbar:SetStatusBarTexture(DB.Statusbar)
     Castbar:SetStatusBarColor(95 / 255, 182 / 255, 255 / 255)
-    Castbar:SetSize(C.ActionBar.Size * 18 + C.ActionBar.Space * 16 - 24, 24)
-    Castbar:SetPoint("BOTTOMLEFT", "MultiBarBottomRightButton1", "TOPLEFT", 0, C.ActionBar.Size * 2 + C.ActionBar.Space * 2)
+    Castbar:SetSize(C.ActionBar.Size * 18 + C.ActionBar.Space * 17 - C.ActionBar.Space - 32, 32)
+    Castbar:SetPoint("BOTTOMLEFT", "MultiBarBottomRightButton1", "TOPLEFT", 0, C.ActionBar.Size + C.ActionBar.Space + 8 + 32 + 8)
     
     Castbar.Shadow = S.MakeShadow(Castbar, 2)
     Castbar.Shadow:SetBackdrop({
@@ -234,7 +234,7 @@ local function RegisterStyle(self, ...)
     CreatePortrait(self, ...)
     CreateRaidIcon(self, ...)
     CreateCombatIcon(self, ...)
-
+    
     RegisterForEvent(self, ...)
 end
 
