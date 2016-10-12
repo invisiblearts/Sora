@@ -3,7 +3,7 @@ local S, C, L, DB = unpack(select(2, ...))
 
 -- Begin
 local function HackAurora()
-    if not AuroraConfig or AuroraConfig.__hacked then
+    if not AuroraConfig then
         return
     end
     
