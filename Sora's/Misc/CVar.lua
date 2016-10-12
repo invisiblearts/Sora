@@ -1,5 +1,6 @@
 ﻿-- Engine
--- local S, C, L, DB = unpack(select(2, ...))
+local S, C, L, DB = unpack(select(2, ...))
+
 -- Begin
 local function OnPlayerLogin(self, event, ...)
     -- 反和谐

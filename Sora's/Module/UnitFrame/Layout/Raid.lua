@@ -124,7 +124,7 @@ end
 
 local function RegisterForEvent(self, ...)
     self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", OnUnitThreatUpdate)
-    self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", OnUnitThreatUpdate)
+    self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", OnUnitThreatUpdate)
 end
 
 local function RegisterStyle(self, ...)
