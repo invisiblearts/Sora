@@ -4,7 +4,7 @@
 ## Author: Ermad
 ## SavedVariables: AngryWorldQuests_Config
 ## SavedVariablesPerCharacter: AngryWorldQuests_CharacterConfig
-## X-Curse-Packaged-Version: v0.14.0
+## X-Curse-Packaged-Version: v0.15.0
 ## X-Curse-Project-Name: Angry World Quests
 ## X-Curse-Project-ID: angry-world-quests
 ## X-Curse-Repository-ID: wow/angry-world-quests/mainline
