@@ -68,7 +68,12 @@ local function CreateRaidIcon(self, ...)
     self.RaidIcon = RaidIcon
 end
 
-local function CreatePlayerPet(self, ...)
+local function RegisterForEvent(self, ...)
+    self:SetScript("OnLeave", UnitFrame_OnLeave)
+    self:SetScript("OnEnter", UnitFrame_OnEnter)
+end
+
+local function RegisterStyle(self, ...)
     self:RegisterForClicks("AnyUp")
     self:SetPoint("TOPRIGHT", _G["oUF_Sora_Player"], "BOTTOMLEFT", -4, -4)
     self:SetSize(C.UnitFrame.PlayerPet.Width, C.UnitFrame.PlayerPet.Height)
@@ -78,10 +83,12 @@ local function CreatePlayerPet(self, ...)
     
     CreateTag(self, ...)
     CreateRaidIcon(self, ...)
+
+    RegisterForEvent(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)
-    oUF:RegisterStyle("oUF_Sora_PlayerPet", CreatePlayerPet)
+    oUF:RegisterStyle("oUF_Sora_PlayerPet", RegisterStyle)
     oUF:SetActiveStyle("oUF_Sora_PlayerPet")
     
     local oUFFrame = oUF:Spawn("pet", "oUF_Sora_PlayerPet")

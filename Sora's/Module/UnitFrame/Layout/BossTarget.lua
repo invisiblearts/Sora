@@ -68,6 +68,11 @@ local function CreateRaidIcon(self, ...)
     self.RaidIcon = RaidIcon
 end
 
+local function RegisterForEvent(self, ...)
+    self:SetScript("OnLeave", UnitFrame_OnLeave)
+    self:SetScript("OnEnter", UnitFrame_OnEnter)
+end
+
 local function RegisterStyle(self, ...)
     self:RegisterForClicks("AnyUp")
     self:SetSize(C.UnitFrame.BossTarget.Width, C.UnitFrame.BossTarget.Height)
@@ -78,6 +83,8 @@ local function RegisterStyle(self, ...)
     
     CreateTag(self, ...)
     CreateRaidIcon(self, ...)
+
+    RegisterForEvent(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)

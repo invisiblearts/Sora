@@ -68,7 +68,12 @@ local function CreateRaidIcon(self, ...)
     self.RaidIcon = RaidIcon
 end
 
-local function CreateTargetTarget(self, ...)
+local function RegisterForEvent(self, ...)
+    self:SetScript("OnLeave", UnitFrame_OnLeave)
+    self:SetScript("OnEnter", UnitFrame_OnEnter)
+end
+
+local function RegisterStyle(self, ...)
     self:RegisterForClicks("AnyUp")
     self:SetPoint("TOPLEFT", _G["oUF_Sora_Target"], "BOTTOMRIGHT", 4, -4)
     self:SetSize(C.UnitFrame.TargetTarget.Width, C.UnitFrame.TargetTarget.Height)
@@ -78,10 +83,12 @@ local function CreateTargetTarget(self, ...)
     
     CreateTag(self, ...)
     CreateRaidIcon(self, ...)
+
+    RegisterForEvent(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)
-    oUF:RegisterStyle("oUF_Sora_TargetTarget", CreateTargetTarget)
+    oUF:RegisterStyle("oUF_Sora_TargetTarget", RegisterStyle)
     oUF:SetActiveStyle("oUF_Sora_TargetTarget")
     
     local oUFFrame = oUF:Spawn("targettarget", "oUF_Sora_TargetTarget")

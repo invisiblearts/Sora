@@ -207,13 +207,17 @@ local function CreateCombatIcon(self, ...)
 end
 
 local function RegisterForEvent(self, ...)
-    self:HookScript("OnLeave", function()
+    self:SetScript("OnLeave", function(self, event, ...)
+        UnitFrame_OnLeave(self)
+
         if not UnitAffectingCombat("player") then
             PortraitFadeIn()
         end
     end)
     
-    self:HookScript("OnEnter", function()
+    self:SetScript("OnEnter", function(self, event, ...)
+        UnitFrame_OnEnter(self)
+
         if not UnitAffectingCombat("player") then
             PortraitFadeOut()
         end

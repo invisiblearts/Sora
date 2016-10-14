@@ -71,7 +71,7 @@ local function CreateTag(self, ...)
     local NameTag = S.MakeText(self.Health, 10)
     NameTag:SetPoint("CENTER", 0, 0)
     self:Tag(NameTag, "[Sora:Color][Sora:Name]|r")
-        
+    
     local StatusTag = S.MakeText(self.Health, 7)
     StatusTag:SetPoint("CENTER", 0, -10)
     self:Tag(StatusTag, "[Sora:Color][Sora:Status]|r")
@@ -123,11 +123,13 @@ local function CreateReadyCheckIcon(self, ...)
 end
 
 local function RegisterForEvent(self, ...)
+    self:SetScript("OnLeave", UnitFrame_OnLeave)
+    self:SetScript("OnEnter", UnitFrame_OnEnter)
     self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", OnUnitThreatUpdate)
     self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", OnUnitThreatUpdate)
 end
 
-local function RegisterStyle(self, ...)
+local function RegisterStyle(self, ...)    
     self:RegisterForClicks("AnyUp")
     self:SetSize(C.UnitFrame.Raid.Width, C.UnitFrame.Raid.Height)
     
@@ -140,6 +142,8 @@ local function RegisterStyle(self, ...)
     CreateCombatIcon(self, ...)
     CreateLFDRoleIcon(self, ...)
     CreateReadyCheckIcon(self, ...)
+
+    RegisterForEvent(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)

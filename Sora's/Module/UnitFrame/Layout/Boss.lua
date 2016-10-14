@@ -179,6 +179,11 @@ local function CreateCombatIcon(self, ...)
     self.MasterLooter = MasterLooter
 end
 
+local function RegisterForEvent(self, ...)
+    self:SetScript("OnLeave", UnitFrame_OnLeave)
+    self:SetScript("OnEnter", UnitFrame_OnEnter)
+end
+
 local function RegisterStyle(self, ...)
     self:RegisterForClicks("AnyUp")
     self:SetSize(C.UnitFrame.Boss.Width, C.UnitFrame.Boss.Height)
@@ -199,6 +204,8 @@ local function RegisterStyle(self, ...)
     CreateCastbar(self, ...)
     CreateRaidIcon(self, ...)
     CreateCombatIcon(self, ...)
+    
+    RegisterForEvent(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)

@@ -293,13 +293,17 @@ local function SetClassIcons(self, ...)
 end
 
 local function RegisterForEvent(self, ...)
-    self:HookScript("OnLeave", function(self, event, ...)
+    self:SetScript("OnLeave", function(self, event, ...)
+        UnitFrame_OnLeave(self)
+
         if not UnitAffectingCombat("player") then
             PortraitFadeIn()
         end
     end)
     
-    self:HookScript("OnEnter", function(self, event, ...)
+    self:SetScript("OnEnter", function(self, event, ...)
+        UnitFrame_OnEnter(self)
+
         if not UnitAffectingCombat("player") then
             PortraitFadeOut()
         end
@@ -307,7 +311,7 @@ local function RegisterForEvent(self, ...)
 end
 
 local function RegisterStyle(self, ...)
-    self:RegisterForClicks("AnyUp")
+    self:RegisterForClicks("AnyDown")
     self:SetPoint(unpack(C.UnitFrame.Player.Postion))
     self:SetSize(C.UnitFrame.Player.Width, C.UnitFrame.Player.Height)
     
