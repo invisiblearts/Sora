@@ -2,6 +2,7 @@
 local S, C, L, DB = unpack(select(2, ...))
 
 -- Variables
+local maxRawPercent = 255
 local bars, threats = nil, nil
 
 -- Begin
@@ -16,7 +17,7 @@ local function UpdateThreat(unit)
     
     local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation(unit, "target")
     
-    if not rawPercent then
+    if not status or not rawPercent or rawPercent == 0 then
         return
     end
     
@@ -25,8 +26,12 @@ local function UpdateThreat(unit)
     threat.name = name
     threat.status = status
     threat.isTanking = isTanking
-    threat.rawPercent = rawPercent or 0
+    threat.rawPercent = rawPercent
     threat.classColor = RAID_CLASS_COLORS[class]
+    
+    if threat.isTanking or threat.status >= 2 then
+        maxRawPercent = threat.rawPercent
+    end
     
     table.insert(threats, threat)
 end
@@ -89,7 +94,7 @@ local function UpdateAllThreatBars()
                 local bar, threat = bars[i], threats[i]
                 
                 bar:Show()
-                bar:SetValue(threat.rawPercent / 255 * 100)
+                bar:SetValue(threat.rawPercent / maxRawPercent * 100)
                 bar:SetStatusBarColor(threat.classColor.r, threat.classColor.g, threat.classColor.b)
                 
                 bar.infoText:SetText(i .. " - " .. threat.name)
