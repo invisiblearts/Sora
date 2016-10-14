@@ -42,6 +42,7 @@ local function HackAdiBags()
     
     AdiBagsDB.__hacked = true
     AdiBagsDB.profiles.Default.scale = 1
+    AdiBagsDB.profiles.Default.positionMode = "manual"
     AdiBagsDB.profiles.Default.bagFont.size = 13
     AdiBagsDB.profiles.Default.sectionFont.size = 13
     AdiBagsDB.profiles.Default.columnWidth.Bank = 16
