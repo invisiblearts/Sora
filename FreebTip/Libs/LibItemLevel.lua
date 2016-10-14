@@ -1,7 +1,7 @@
 ﻿---------------------------------
 -- 物品信息庫 Author: M
 ---------------------------------
-local REVISION = 3
+local REVISION = 5
 if (type(LibItemLevel) == "table" and REVISION <= LibItemLevel.REVISION) then return end
 
 LibItemLevel = LibItemLevel or {}
@@ -37,11 +37,12 @@ end
 
 function LIL:ItemLocally(itemLink)
 	local id, gem1, gem2, gem3 = strmatch(itemLink, "item:(%d+):[^:]*:(%d-):(%d-):(%d-):")
+	if (not id or id == "" or id == "0") then return end
 	if (hasLocally(id) and hasLocally(gem1) and hasLocally(gem2) and hasLocally(gem3)) then return true end
 end
 
 function LIL:GetActualItemInfo(itemLink)
-	if (not itemLink or itemLink == "" or not strmatch(itemLink, "item:%d+:")) then return end
+	if (not itemLink or itemLink == "") then return end
 
 	if (LIL.ItemDB[itemLink]) then
 		return LIL.ItemDB[itemLink].Level, 0, LIL.ItemDB[itemLink].Rarity, LIL.ItemDB[itemLink].Slot, LIL.ItemDB[itemLink].PVP
@@ -50,7 +51,9 @@ function LIL:GetActualItemInfo(itemLink)
 	if (not LIL:ItemLocally(itemLink)) then return 0, 1 end
 
 	local _, _, itemRarity, itemLevel, _, itemType, itemSubType, _, itemSlot = GetItemInfo(itemLink)
-	local text, LVL, PVP
+	if (not (itemRarity and itemLevel and itemSlot)) then return 0, 1 end
+
+	local LVL, PVP
 
 	if (itemRarity < 2 or (itemType ~= ARMOR and itemType ~= WEAPON and itemSubType ~= ARTIFACT_RELIC)) then
 		LVL = itemLevel
@@ -61,6 +64,7 @@ function LIL:GetActualItemInfo(itemLink)
 		if (not LIL.LVLPattern) then LIL.LVLPattern = gsub(ITEM_LEVEL, "%%d", "(%%d+)") end
 		if (not LIL.PVPPattern) then LIL.PVPPattern = gsub(PVP_ITEM_PATTERN, "%%d", "(%%d+)") end
 
+		local text
 		for i = 2, 5 do
 			text = _G["LibItemLevelItemTipTextLeft"..i]:GetText()
 			if (not text) then break end
@@ -79,11 +83,11 @@ function LIL:GetActualItemInfo(itemLink)
 		}
 	end
 
-	return LVL or itemLevel or 0, 0, itemRarity, itemSlot, PVP
+	return LVL or itemLevel, 0, itemRarity, itemSlot, PVP
 end
 
 function LIL:GetUnitItemInfo(unit, index)
-	if (not UnitExists(unit)) then return 0, 1 end
+	if (not UnitExists(unit)) then return end
 
 	LIL.UnitTip:ClearLines()
 	LIL.UnitTip:SetInventoryItem(unit, index)
@@ -98,7 +102,9 @@ function LIL:GetUnitItemInfo(unit, index)
 	if (not LIL:ItemLocally(itemLink)) then return 0, 1 end
 
 	local _, _, itemRarity, itemLevel, _, _, _, _, itemSlot = GetItemInfo(itemLink)
-	local text, LVL, PVP
+	if (not (itemRarity and itemLevel and itemSlot)) then return 0, 1 end
+
+	local LVL, PVP
 
 	if (itemRarity < 2) then
 		LVL = itemLevel
@@ -106,6 +112,7 @@ function LIL:GetUnitItemInfo(unit, index)
 		if (not LIL.LVLPattern) then LIL.LVLPattern = gsub(ITEM_LEVEL, "%%d", "(%%d+)") end
 		if (not LIL.PVPPattern) then LIL.PVPPattern = gsub(PVP_ITEM_PATTERN, "%%d", "(%%d+)") end
 
+		local text
 		for i = 2, 5 do
 			text = _G["LibItemLevelUnitTipTextLeft"..i]:GetText()
 			if (not text) then break end
@@ -124,7 +131,7 @@ function LIL:GetUnitItemInfo(unit, index)
 		}
 	end
 
-	return LVL or itemLevel or 0, 0, itemRarity, itemSlot, PVP
+	return LVL or itemLevel, 0, itemRarity, itemSlot, PVP
 end
 
 function LIL:GetUnitItemLevel(unit)

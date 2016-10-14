@@ -1,7 +1,7 @@
 ## Interface: 70000
 ## Title: FreebTip
 ## Notes: FreebTip自用修改版，修复新版本装等提示不准确的问题。
-## Version: 70000.22
+## Version: 70000.24
 ## Author: Freebaser / Edit by aliluya555
 
 Libs\LibItemLevel.lua

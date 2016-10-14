@@ -4,19 +4,23 @@ local _, _G = _, _G
 local GameTooltip = _G["GameTooltip"]
 
 local locale, mainFont = GetLocale()
+local FISHING_BOBBER
 local RARE, RAREELITE
 local BOSS = _G["BOSS"]
 local ELITE = _G["ELITE"]
 if (locale == "zhCN") then
 	mainFont = "Fonts\\ARKai_T.ttf"		-- 简体中文客户端主字体
+	FISHING_BOBBER = "鱼漂"
 	RARE = "稀有"
 	RAREELITE = "稀有精英"
 elseif (locale == "zhTW") then
 	mainFont = "Fonts\\blei00d.ttf"		-- 繁体中文客户端主字体
+	FISHING_BOBBER = "浮標"
 	RARE = "稀有"
 	RAREELITE = "稀有精英"
 else
 	mainFont = "Fonts\\FRIZQT__.ttf"
+	FISHING_BOBBER = "Bobber"
 	RARE = "Rare"
 	RAREELITE = "Rare Elite"
 end
@@ -70,12 +74,9 @@ local nilColor = {r = 1, g = 1, b = 1}
 local tappedColor = {r = .6, g = .6, b = .6}
 local deadColor = {r = .6, g = .6, b = .6}
 
-local powerColors = {}
-for power, color in next, PowerBarColor do
-	powerColors[power] = color
-end
-powerColors["MANA"] = {r = .31, g = .45, b = .63}
-powerColors["RAGE"] = {r = .69, g = .31, b = .31}
+local PowerColor = _G["PowerBarColor"]
+PowerColor["MANA"] = {r = .31, g = .45, b = .63}
+PowerColor["RAGE"] = {r = .69, g = .31, b = .31}
 
 local classification = {
 	elite = ("|cffFFCC00 %s|r"):format(ELITE),
@@ -337,14 +338,25 @@ local function OnSetUnit(self)
 
 		if (cfg.powerbar ~= 0) then
 			local pMin, pMax = UnitPower(unit), UnitPowerMax(unit)
-
 			if (pMax > 0 and not isDead) then
 				FreebTipPowerBar:SetMinMaxValues(0, pMax)
 				FreebTipPowerBar:SetValue(pMin)
-				local pType, pToken = UnitPowerType(unit)
-				local pColor = powerColors[pToken]
-				FreebTipPowerBar:SetStatusBarColor(pColor.r, pColor.g, pColor.b)
-				FreebTipPowerBar:Show()
+				if (pMin > 0) then
+					FreebTipPowerBar:SetAlpha(1)
+				else
+					FreebTipPowerBar:SetAlpha(0)
+				end
+				local pType, pToken, R, G, B = UnitPowerType(unit)
+				local pColor = PowerColor[pToken] or PowerColor[pType]
+				if (not pColor and R and G and B) then
+					pColor = {r = R, g = G, b = B}
+				end
+				if (pColor) then
+					FreebTipPowerBar:SetStatusBarColor(pColor.r, pColor.g, pColor.b)
+					FreebTipPowerBar:Show()
+				else
+					FreebTipPowerBar:Hide()
+				end
 			else
 				FreebTipPowerBar:Hide()
 			end
@@ -470,16 +482,24 @@ local function tipCleared(self)
 end
 
 local function GTUpdate(self, elapsed)
-	if (GTCursor(self) == 1) then
+	local cursormode = GTCursor(self)
+	if (cursormode == 1) then
 		self:ClearAllPoints()
 		self:SetPoint("TOPLEFT", UIParent,"BOTTOMLEFT", GTCursorPosition(self))
+	elseif (cursormode == 2) then
+		local text = GameTooltipTextLeft1:GetText()
+		if (strfind(text, FISHING_BOBBER)) then
+			self:ClearAllPoints()
+			local x, y = GTCursorPosition(self, 1)
+			self:SetPoint("BOTTOMLEFT", UIParent,"BOTTOMLEFT", x, y - cfg.cursoroffset[2])
+		end
+	end
+	if (cfg.fadeOnUnit == 0) then
+		if (self.ftipUnit and not UnitExists(self.ftipUnit)) then self:Hide() return end
 	end
 
 	self.ftipUpdate = (self.ftipUpdate or 0) + elapsed
 	if (self.ftipUpdate < 0.1) then return end
-	if (cfg.fadeOnUnit == 0) then
-		if (self.ftipUnit and not UnitExists(self.ftipUnit)) then self:Hide() return end
-	end
 
 	local ftipCursor = self:GetAnchorType()
 	if (ftipCursor ~= self.ftipCursor) then
@@ -497,7 +517,7 @@ local function GTUpdate(self, elapsed)
 			ftipBorder = unitColor(self.ftipUnit, 1)
 		end
 		if (ftipBorder and hex(ftipBorder) ~= hex(self.ftipBorder)) then
-			self:SetBackdropBorderColor(ftipBorder.r, ftipBorder.g, ftipBorder.b)
+			self.ftipBD:SetBackdropBorderColor(ftipBorder.r, ftipBorder.g, ftipBorder.b)
 			self.ftipBorder = ftipBorder
 		end
 	end
@@ -558,33 +578,30 @@ gtSBbg:SetVertexColor(0.3, 0.3, 0.3, 0.5)
 local function UpdateHP(self, value)
 	local unit = getUnit(GameTooltip)
 	if (UnitExists(unit)) then
-		if (cfg.hpbarText ~= 0) then
-			if (not value) then return end
-			local vMin, vMax = self:GetMinMaxValues()
-			if (value < vMin or value > vMax) then return end
+		if (not value) then return end
+		local vMin, vMax = self:GetMinMaxValues()
+		if (value < vMin or value > vMax) then return end
 
-			if (not self.text) then
-				self.text = self:CreateFontString(nil, "OVERLAY")
-				self.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 0)
-				self.text:SetFont(cfg.font, cfg.fontsize_value, "THICKOUTLINE")
-			end
-
-			local hp
-			self.text:Show()
-			if (cfg.hpbarText == 1) then
-				hp = numberize(self:GetValue())
-			elseif (cfg.hpbarText == 2) then
-				hp = ("%.0f%%"):format(self:GetValue() * 100 / vMax)
-			elseif (cfg.hpbarText == 3) then
-				hp = numberize(self:GetValue()).."("..("%.0f%%"):format(self:GetValue() * 100 / vMax)..")"
-			else
-				hp = numberize(self:GetValue()).." / "..numberize(vMax)
-			end
-			self.text:SetText(hp)
+		if (not self.text) then
+			self.text = self:CreateFontString(nil, "OVERLAY")
+			self.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 0)
+			self.text:SetFont(cfg.font, cfg.fontsize_value, "THICKOUTLINE")
 		end
+
+		local hp
+		if (cfg.hpbarText == 1) then
+			hp = numberize(self:GetValue())
+		elseif (cfg.hpbarText == 2) then
+			hp = ("%.0f%%"):format(self:GetValue() * 100 / vMax)
+		elseif (cfg.hpbarText == 3) then
+			hp = numberize(self:GetValue()).."("..("%.0f%%"):format(self:GetValue() * 100 / vMax)..")"
+		else
+			hp = numberize(self:GetValue()).." / "..numberize(vMax)
+		end
+		self.text:SetText(hp)
 	end
 end
-GameTooltipStatusBar:HookScript("OnValueChanged", UpdateHP)
+if (cfg.hpbarText ~= 0) then GameTooltipStatusBar:HookScript("OnValueChanged", UpdateHP) end
 
 GameTooltipStatusBar.SetHPBarColor = CreateFrame("StatusBar").SetStatusBarColor
 function GameTooltipStatusBar:SetStatusBarColor(...)
@@ -621,9 +638,10 @@ local function UpdatePower(self, elapsed)
 	if (UnitExists(unit)) then
 		local pMin, pMax = UnitPower(unit), UnitPowerMax(unit)
 
-		if (pMax > 0) then
+		if (pMin > 0) then
 			self:SetMinMaxValues(0, pMax)
 			self:SetValue(pMin)
+			self:SetAlpha(1)
 
 			if (cfg.powerbarText ~= 0) then
 				if (not self.text) then
@@ -633,7 +651,6 @@ local function UpdatePower(self, elapsed)
 				end
 
 				local power
-				self.text:Show()
 				if (cfg.powerbarText == 1) then
 					power = numberize(self:GetValue())
 				elseif (cfg.powerbarText == 2) then
@@ -645,6 +662,8 @@ local function UpdatePower(self, elapsed)
 				end
 				self.text:SetText(power)
 			end
+		else
+			self:SetAlpha(0)
 		end
 	end
 end
@@ -653,47 +672,30 @@ FreebTipPowerBar:SetScript("OnUpdate", UpdatePower)
 -------------------------------------------------------------------------------
 --[[ Style ]] --
 
-local shopping = {
-	"ShoppingTooltip1",
-	"ShoppingTooltip2",
-	"ItemRefShoppingTooltip1",
-	"ItemRefShoppingTooltip2",
-	"WorldMapCompareTooltip1",
-	"WorldMapCompareTooltip2",
-}
-
-local tooltips = {
-	"ChatMenu",
-	"EmoteMenu",
-	"LanguageMenu",
-	"VoiceMacroMenu",
-	"GameTooltip",
-	"ItemRefTooltip",
-	"WorldMapTooltip",
-	"DropDownList1MenuBackdrop",
-	"DropDownList2MenuBackdrop",
-	"AutoCompleteBox",
-	"FriendsTooltip",
-	"FloatingBattlePetTooltip",
-}
-
 local itemUpdate = {}
 local function style(frame)
-	local frameName = frame and frame:GetName()
-	if (not frameName) then return end
+	if (not frame) then return end
+	local frameName = frame:GetName() or ""
 	frame:SetScale(cfg.scale)
 
-	local ftipBD = frame.BackdropFrame or frame
 	if (not frame.ftipBD) then
+		frame:SetBackdrop(nil)
+		frame.GetBackdrop = function() return cfg.backdrop end
+		frame.GetBackdropColor = function() return cfg.bgcolor.r, cfg.bgcolor.g, cfg.bgcolor.b, cfg.opacity end
+		frame.GetBackdropBorderColor = function() return cfg.bdrcolor.r, cfg.bdrcolor.g, cfg.bdrcolor.b end
+
+		local ftipBD = CreateFrame("Frame", nil, frame)
+		ftipBD:SetAllPoints()
+		ftipBD:SetFrameLevel(frame:GetFrameLevel())
 		ftipBD:SetBackdrop(cfg.backdrop)
-		frame.ftipBD = true
+		ftipBD:SetBackdropColor(cfg.bgcolor.r, cfg.bgcolor.g, cfg.bgcolor.b, cfg.opacity)
+		frame.ftipBD = ftipBD
 	end
 
-	ftipBD:SetBackdropColor(cfg.bgcolor.r, cfg.bgcolor.g, cfg.bgcolor.b, cfg.opacity)
-	ftipBD:SetBackdropBorderColor(cfg.bdrcolor.r, cfg.bdrcolor.g, cfg.bdrcolor.b)
+	frame.ftipBD:SetBackdropBorderColor(cfg.bdrcolor.r, cfg.bdrcolor.g, cfg.bdrcolor.b)
 
 	if (cfg.showCCbdr ~= 0 and frame.ftipUnit) then
-		frame:SetBackdropBorderColor(unitColor(frame.ftipUnit))
+		frame.ftipBD:SetBackdropBorderColor(unitColor(frame.ftipUnit))
 	end
 
 	if (frame.GetItem) then
@@ -702,7 +704,7 @@ local function style(frame)
 			local quality = select(3, GetItemInfo(item))
 			if (quality) then
 				local r, g, b = GetItemQualityColor(quality)
-				frame:SetBackdropBorderColor(r, g, b)
+				frame.ftipBD:SetBackdropBorderColor(r, g, b)
 				itemUpdate[frameName] = nil
 			else
 				itemUpdate[frameName] = true
@@ -741,28 +743,7 @@ local function style(frame)
 		frame.Power:SetFontObject(GameTooltipText)
 		frame.Speed:SetFontObject(GameTooltipText)
 		frame.Owned:SetFontObject(GameTooltipText)
-		frame.BorderTop:Hide()
-		frame.BorderRight:Hide()
-		frame.BorderBottom:Hide()
-		frame.BorderLeft:Hide()
-		frame.BorderTopLeft:Hide()
-		frame.BorderTopRight:Hide()
-		frame.BorderBottomLeft:Hide()
-		frame.BorderBottomRight:Hide()
 		frame.ftipBPfont = true
-	end
-
-	if (frame.Garrison and not frame.ftipGarrison) then
-		frame.BorderTop:Hide()
-		frame.BorderRight:Hide()
-		frame.BorderBottom:Hide()
-		frame.BorderLeft:Hide()
-		frame.BorderTopLeft:Hide()
-		frame.BorderTopRight:Hide()
-		frame.BorderBottomLeft:Hide()
-		frame.BorderBottomRight:Hide()
-		frame.Background:Hide()
-		frame.ftipGarrison = true
 	end
 
 	local ItemRefTooltipIndex = strmatch(frameName, "ItemRefTooltip(.*)")
@@ -783,17 +764,14 @@ local function style(frame)
 end
 ns.style = style
 
-local function OverrideGetBackdropColor()
-	return cfg.bgcolor.r, cfg.bgcolor.g, cfg.bgcolor.b, cfg.opacity
+local function extrastyle(frame)
+	frame:SetBackdrop(nil)
+	frame:DisableDrawLayer("BACKGROUND")
+	local ftipBD = CreateFrame("Frame", nil, frame)
+	ftipBD:SetAllPoints()
+	ftipBD:SetFrameLevel(frame:GetFrameLevel())
+	style(ftipBD)
 end
-GameTooltip.GetBackdropColor = OverrideGetBackdropColor
-GameTooltip:SetBackdropColor(OverrideGetBackdropColor)
-
-local function OverrideGetBackdropBorderColor()
-	return cfg.bdrcolor.r, cfg.bdrcolor.g, cfg.bdrcolor.b
-end
-GameTooltip.GetBackdropBorderColor = OverrideGetBackdropBorderColor
-GameTooltip:SetBackdropBorderColor(OverrideGetBackdropBorderColor)
 
 local function framehook(frame)
 	frame:HookScript("OnShow", function(self)
@@ -807,10 +785,13 @@ end
 local frameload = CreateFrame("Frame")
 frameload:RegisterEvent("ADDON_LOADED")
 frameload:RegisterEvent("PLAYER_ENTERING_WORLD")
-frameload:SetScript("OnEvent", function(self, event, arg1)
+frameload:SetScript("OnEvent", function(self, event, addon)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
+		local tooltips = {
+			"GameTooltip",
+			"ItemRefTooltip",
+		}
 		for i, tip in ipairs(tooltips) do
 			local frame = _G[tip]
 			if (frame) then
@@ -818,7 +799,15 @@ frameload:SetScript("OnEvent", function(self, event, arg1)
 			end
 		end
 
-		for i, tip in ipairs(shopping) do
+		local tooltips = {
+			"ShoppingTooltip1",
+			"ShoppingTooltip2",
+			"ItemRefShoppingTooltip1",
+			"ItemRefShoppingTooltip2",
+			"WorldMapCompareTooltip1",
+			"WorldMapCompareTooltip2",
+		}
+		for i, tip in ipairs(tooltips) do
 			local frame = _G[tip]
 			if (frame) then
 				framehook(frame)
@@ -826,24 +815,96 @@ frameload:SetScript("OnEvent", function(self, event, arg1)
 			end
 		end
 
-		local frame = _G["GarrisonFollowerAbilityWithoutCountersTooltip"]
-		if (frame) then
-			framehook(frame)
-			frame.Garrison = true
+		local tooltips = {
+			"ChatMenu",
+			"EmoteMenu",
+			"LanguageMenu",
+			"VoiceMacroMenu",
+			"DropDownList1MenuBackdrop",
+			"DropDownList2MenuBackdrop",
+			"AutoCompleteBox",
+			"FriendsTooltip",
+			"FriendsMenuXPMenuBackdrop",
+			"FriendsMenuXPSecureMenuBackdrop",
+			"GeneralDockManagerOverflowButtonList",
+		}
+		for i, tip in ipairs(tooltips) do
+			local frame = _G[tip]
+			if (frame) then
+				style(frame)
+			end
 		end
-	elseif (arg1 == "Blizzard_PVPUI") then
-		self:UnregisterEvent("ADDON_LOADED")
 
+		local tooltips = {
+			"QueueStatusFrame",
+			"BattlePetTooltip",
+			"PetBattlePrimaryAbilityTooltip",
+			"PetBattlePrimaryUnitTooltip",
+			"FloatingBattlePetTooltip",
+			"FloatingPetBattleAbilityTooltip",
+			"GarrisonMissionMechanicTooltip",
+			"GarrisonMissionMechanicFollowerCounterTooltip",
+			"GarrisonShipyardMapMissionTooltip",
+			"GarrisonBonusAreaTooltip",
+			"FloatingGarrisonShipyardFollowerTooltip",
+			"GarrisonShipyardFollowerTooltip",
+			"GarrisonFollowerAbilityWithoutCountersTooltip",
+			"GarrisonFollowerMissionAbilityWithoutCountersTooltip",
+			"FloatingGarrisonFollowerTooltip",
+			"FloatingGarrisonFollowerAbilityTooltip",
+			"FloatingGarrisonMissionTooltip",
+			"GarrisonFollowerAbilityTooltip",
+			"GarrisonFollowerTooltip",
+		}
+		for i, tip in ipairs(tooltips) do
+			local frame = _G[tip]
+			if (frame) then
+				extrastyle(frame)
+			end
+		end
+
+		local frame = _G["WorldMapTooltip"]
+		if (frame) then
+			style(frame.BackdropFrame)
+		end
+
+		local frame = _G["QuestScrollFrame"]
+		if (frame) then
+			style(frame.StoryTooltip)
+		end
+
+		local frame = _G["GarrisonBuildingFrame"]
+		if (frame) then
+			extrastyle(frame.BuildingLevelTooltip)
+		end
+
+		local frame = _G["IMECandidatesFrame"]
+		if (frame) then
+			extrastyle(frame)
+			frame.selection:SetVertexColor(unitColor("player"))
+		end
+	elseif (addon == "Blizzard_PVPUI") then
 		local frame = _G["PVPRewardTooltip"]
 		if (frame) then
-			framehook(frame)
+			style(frame)
+		end
+	elseif (addon == "Blizzard_Collections") then
+		local tooltips = {
+			"PetJournalPrimaryAbilityTooltip",
+			"PetJournalSecondaryAbilityTooltip",
+		}
+		for i, tip in ipairs(tooltips) do
+			local frame = _G[tip]
+			if (frame) then
+				extrastyle(frame)
+			end
 		end
 	end
 end)
 
 local itemEvent = CreateFrame("Frame")
 itemEvent:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-itemEvent:SetScript("OnEvent", function(self, event, arg1)
+itemEvent:SetScript("OnEvent", function(self, event)
 	for k in next, itemUpdate do
 		local tip = _G[k]
 		if (tip and tip:IsShown()) then
