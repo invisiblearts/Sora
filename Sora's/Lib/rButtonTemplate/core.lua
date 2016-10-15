@@ -25,6 +25,13 @@ local function CallButtonFunctionByName(button, func, ...)
   end
 end
 
+local function ResetAlpha(self,a)
+  if not self.__alpha then return end
+  if a == self.__alpha then return end
+  self:SetAlpha(self.__alpha)
+  print(self:GetName(),a)
+end
+
 local function ResetNormalTexture(self, file)
   if not self.__normalTextureFile then return end
   if file == self.__normalTextureFile then return end
@@ -68,7 +75,9 @@ end
 
 local function ApplyAlpha(region,alpha)
   if not alpha then return end
+  --region.__alpha = alpha
   region:SetAlpha(alpha)
+  --hooksecurefunc(region, "SetAlpha", ResetAlpha)
 end
 
 local function ApplyFont(fontString,font)
@@ -309,6 +318,12 @@ function rButtonTemplate:StyleAuraButton(button, cfg)
     local normalTexture = button:GetNormalTexture()
     SetupTexture(normalTexture,cfg.normalTexture,"SetNormalTexture",button)
   end
+
+  --no clue why but blizzard created count and duration on background layer, need to fix that
+  local overlay = CreateFrame("Frame",nil,button)
+  overlay:SetAllPoints()
+  if count then count:SetParent(overlay) end
+  if duration then duration:SetParent(overlay) end
 
   --count,duration,symbol
   SetupFontString(count,cfg.count)
