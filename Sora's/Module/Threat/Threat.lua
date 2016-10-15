@@ -2,7 +2,7 @@
 local S, C, L, DB = unpack(select(2, ...))
 
 -- Variables
-local maxRawPercent = 255
+local maxThreatValue = 255
 local bars, threats = nil, nil
 
 -- Begin
@@ -17,7 +17,7 @@ local function UpdateThreat(unit)
     
     local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation(unit, "target")
     
-    if not status or not rawPercent or rawPercent == 0 then
+    if not status or not threatValue or threatValue == 0 then
         return
     end
     
@@ -25,12 +25,12 @@ local function UpdateThreat(unit)
     threat.guid = guid
     threat.name = name
     threat.status = status
-    threat.isTanking = isTanking
-    threat.rawPercent = rawPercent
+    threat.threatValue = threatValue
     threat.classColor = RAID_CLASS_COLORS[class]
+    threat.isTanking = threat.isTanking or threat.status >= 2
     
-    if threat.isTanking or threat.status >= 2 then
-        maxRawPercent = threat.rawPercent
+    if threat.isTanking then
+        maxThreatValue = threat.threatValue
     end
     
     table.insert(threats, threat)
@@ -58,15 +58,20 @@ local function UpdateAllThreats()
     for i = 1, 5 do
         UpdateThreat("party" .. i, mobiUnit)
         UpdateThreat("party" .. i .. "pet", mobiUnit)
+        UpdateThreat("party" .. i .. "target", mobiUnit)
+    end
+    
+    for i = 1, 20 do
+        UpdateThreat("nameplate" .. i, mobiUnit)
     end
     
     for i = 1, 40 do
         UpdateThreat("raid" .. i, mobiUnit)
         UpdateThreat("raid" .. i .. "pet", mobiUnit)
+        UpdateThreat("raid" .. i .. "target", mobiUnit)
     end
     
     local tempThreats = {}
-    
     for k, v in pairs(threats) do
         tempThreats[v.guid] = v
     end
@@ -77,12 +82,12 @@ local function UpdateAllThreats()
     end
     
     table.sort(threats, function(l, r)
-        return l.isTanking or l.status >= 2 or l.rawPercent > r.rawPercent
+        return l.isTanking or l.threatValue > r.threatValue
     end)
 end
 
 local function UpdateAllThreatBars()
-    if #threats < 2 then
+    if #threats < 1 then
         for i = 1, 4 do
             bars[i]:Hide()
         end
@@ -94,11 +99,11 @@ local function UpdateAllThreatBars()
                 local bar, threat = bars[i], threats[i]
                 
                 bar:Show()
-                bar:SetValue(threat.rawPercent / maxRawPercent * 100)
+                bar:SetValue(threat.threatValue / maxThreatValue * 100)
                 bar:SetStatusBarColor(threat.classColor.r, threat.classColor.g, threat.classColor.b)
                 
                 bar.infoText:SetText(i .. " - " .. threat.name)
-                bar.valueText:SetText(("%2.f%%"):format(threat.rawPercent / 255 * 100))
+                bar.valueText:SetText(("%2.f%%"):format(threat.threatValue / maxThreatValue * 100))
             end
         end
     end
