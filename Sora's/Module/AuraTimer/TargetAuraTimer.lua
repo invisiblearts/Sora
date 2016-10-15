@@ -8,33 +8,32 @@ local spacing, iconSize, barWidth = nil, nil, nil
 
 -- Begin
 local function SetTargetAuraTimer(self, ...)
-    local auraTimers = CreateFrame("Frame", nil, self)
-    auraTimers:SetAllPoints()
+    local auras = CreateFrame("Frame", nil, self)
+    auras:SetAllPoints()
     
-    auraTimers.num = 8
-    auraTimers.size = iconSize
-    auraTimers.spacing = spacing
-    auraTimers["growth-y"] = "UP"
-    auraTimers["growth-x"] = "RIGHT"
-    auraTimers.disableCooldown = true
-    auraTimers.initialAnchor = "TOPLEFT"
+    auras.num = 8
+    auras.size = iconSize
+    auras.spacing = spacing
+    auras["growth-y"] = "UP"
+    auras["growth-x"] = "RIGHT"
+    auras.disableCooldown = true
+    auras.initialAnchor = "TOPLEFT"
     
-    auraTimers.PostUpdateIcon = function(self, unit, icon, index, offest, ...)
+    auras.PostUpdateIcon = function(self, unit, icon, index, offest, ...)
         icon.nameText:SetText(icon.name)
         icon.bar:SetMinMaxValues(0, icon.duration)
         
-        icon.timer = 0
         icon:SetScript("OnUpdate", function(self, elapsed, ...)
-            self.timer = self.expires - GetTime()
+            local expires = self.timeLeft - GetTime()
             
-            if self.timer >= 0 and self.timer < 60 then
-                self.bar:SetValue(self.timer)
-                self.timeText:SetText(string.format("%.1f", self.timer))
+            if expires > 0 and expires < 60 then
+                self.bar:SetValue(expires)
+                self.timeText:SetText(("%.1f"):format(expires))
             end
         end)
     end
     
-    auraTimers.PostCreateIcon = function(self, icon, ...)
+    auras.PostCreateIcon = function(self, icon, ...)
         if not icon.isProcessed then
             icon.icon:SetAllPoints()
             icon.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
@@ -66,20 +65,23 @@ local function SetTargetAuraTimer(self, ...)
         end
     end
     
-    auraTimers.CustomFilter = function(self, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
+    auras.CustomFilter = function(self, unit, icon, name, rank, _, count, _, duration, timeLeft, caster, _, _, spellID)
         local flag = false
         
         if duration > 0 and duration < 60 and caster == "player" and icon.isDebuff then
             flag = true
+            icon.name = name
+            icon.duration = duration
+            icon.timeLeft = timeLeft
         end
         
         return flag
     end
     
-    self.AuraTimers = auraTimers
+    self.Auras = auras
 end
 
-local function InitParent(self, ...)
+local function RegisterStyle(self, ...)
     local target = _G["oUF_Sora_Target"]
     local targetWitdh = target:GetWidth()
     
@@ -89,15 +91,14 @@ local function InitParent(self, ...)
     
     self:SetSize(iconSize, iconSize)
     self:SetPoint("BOTTOMLEFT", target, "TOPLEFT", 0, 12)
+    
+    SetTargetAuraTimer(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)
-    oUF:RegisterStyle("oUF_Sora_TargetAuraTimer", function(self, ...)
-        InitParent(self, ...)
-        SetTargetAuraTimer(self, ...)
-    end)
-    
+    oUF:RegisterStyle("oUF_Sora_TargetAuraTimer", RegisterStyle)
     oUF:SetActiveStyle("oUF_Sora_TargetAuraTimer")
+    
     oUF:Spawn("target", "oUF_Sora_TargetAuraTimer")
 end
 
