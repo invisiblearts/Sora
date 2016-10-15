@@ -87,7 +87,7 @@ local function UpdateAllThreats()
 end
 
 local function UpdateAllThreatBars()
-    if #threats < 1 then
+    if #threats < 2 then
         for i = 1, 4 do
             bars[i]:Hide()
         end
