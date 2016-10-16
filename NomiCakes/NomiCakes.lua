@@ -171,6 +171,7 @@ local function DecorateNomi()
 	for j = 1, #IngredientOrder do
 		local ingredientItemID = IngredientOrder[j]
 		local count = GetItemCount(ingredientItemID, true) or 0
+		local _, _, _, _, ingredientIcon = GetItemInfoInstant(ingredientItemID)
 		if count >= 5 then -- we have enough of an ingredient for nomi to display it
 			i = i + 1
 			local button = _G['GossipTitleButton' .. i]
@@ -234,12 +235,13 @@ local function DecorateNomi()
 					end
 					if unlearned ~= 0 then
 						if canLearn ~= 0 then
-							button:SetText(canLearn .. ' [' .. ingredientName .. ']')
+							button:SetFormattedText('|T%d:16|t %d [%s] x%d', ingredientIcon, canLearn, ingredientName, count)
 						else
-							button:SetText('|cff660000' .. canLearn .. ' [' .. ingredientName .. ']')
+							-- button:SetText('|cff660000' .. canLearn .. ' [' .. ingredientName .. ']')
+							button:SetFormattedText('|T%d:16|t |cff660000%d [%s] x%d|r', ingredientIcon, canLearn, ingredientName, count)
 						end
 					else
-						button:SetText("|cff660000No more [" .. ingredientName .. ']')
+						button:SetFormattedText('|cff660000No more |T%d:16|t [%s]', ingredientIcon, ingredientName)
 					end
 					GossipResize(button)
 				end
