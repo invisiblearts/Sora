@@ -174,8 +174,10 @@ local function DecorateNomi()
 		local _, _, _, _, ingredientIcon = GetItemInfoInstant(ingredientItemID)
 		if count >= 5 then -- we have enough of an ingredient for nomi to display it
 			i = i + 1
-			local button = _G['GossipTitleButton' .. i]
-			if button and button:IsShown() then
+			local buttonName = 'GossipTitleButton' .. i
+			local button = _G[buttonName]
+			local buttonIcon = _G[buttonName .. 'GossipIcon'] -- check that the icon is for a work order, otherwise we might overwrite a quest button or something
+			if button and button:IsShown() and buttonIcon and buttonIcon:GetTexture():lower() == 'interface\\gossipframe\\workordergossipicon' then
 				if not HookedButtons[button] then
 					button:HookScript('OnEnter', function(self)
 						if not IsNomi then return end
@@ -233,6 +235,7 @@ local function DecorateNomi()
 							end
 						end
 					end
+					--buttonIcon:SetTexture(ingredientIcon)
 					if unlearned ~= 0 then
 						if canLearn ~= 0 then
 							button:SetFormattedText('|T%d:16|t %d [%s] x%d', ingredientIcon, canLearn, ingredientName, count)
