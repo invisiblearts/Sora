@@ -25,7 +25,7 @@ local function UpdateThreat(unit)
     threat.guid = guid
     threat.name = name
     threat.status = status
-    threat.threatValue = threatValue or 0
+    threat.threatValue = threatValue
     threat.classColor = RAID_CLASS_COLORS[class]
     threat.isTanking = threat.isTanking or threat.status >= 2
     
@@ -84,16 +84,14 @@ local function UpdateAllThreats()
     table.sort(threats, function(l, r)
         local result = false
         
-        if l and not r then
+        if not l then
+            result = false
+        elseif not r then
             result = true
-        elseif not l and r then
-            result = false
-        elseif not l and not r then
-            result = false
         else
             result = l.isTanking or l.threatValue > r.threatValue
         end
-
+        
         return result
     end)
 end
