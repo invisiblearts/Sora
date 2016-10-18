@@ -41,8 +41,8 @@ local function HookDebuffButtonUpdateAnchors(buttonName, index, ...)
         
         if key == 1 then
             value:SetPoint("TOPRIGHT", DebuffAnchor, 0, 0)
-        elseif key % 12 == 1 then
-            value:SetPoint("TOP", auras[key - 12], "BOTTOM", 0, -C.Aura.Space)
+        elseif key % 8 == 1 then
+            value:SetPoint("TOP", auras[key - 8], "BOTTOM", 0, -C.Aura.Space)
         else
             value:SetPoint("RIGHT", auras[key - 1], "LEFT", -C.Aura.Space, 0)
         end
@@ -80,8 +80,8 @@ local function HookBuffFrameUpdateAllBuffAnchors(self, ...)
         
         if key == 1 then
             value:SetPoint("TOPRIGHT", BuffAnchor, 0, 0)
-        elseif key % 8 == 1 then
-            value:SetPoint("TOP", auras[key - 8], "BOTTOM", 0, -C.Aura.Space)
+        elseif key % 12 == 1 then
+            value:SetPoint("TOP", auras[key - 12], "BOTTOM", 0, -C.Aura.Space)
         else
             value:SetPoint("RIGHT", auras[key - 1], "LEFT", -C.Aura.Space, 0)
         end
