@@ -25,7 +25,7 @@ local function toggle(frame)
     end
 end
 
-local function SlashTestMode()
+local function SlashSoraTest()
     for k, v in pairs(frames) do
         local frame = _G[v]
         
@@ -37,9 +37,9 @@ end
 
 -- Begin
 local function OnPlayerLogin(self, event, ...)
-    SLASH_TESTMODE1 = "/testmode"
-    SLASH_TESTMODE2 = "/ts"
-    SlashCmdList.TESTMODE = SlashTestMode
+    SLASH_SORATEST1 = "/st"
+    SLASH_SORATEST2 = "/soratest"
+    SlashCmdList.SORATEST = SlashSoraTest
 end
 
 -- Event
@@ -47,7 +47,6 @@ local Event = CreateFrame("Frame", nil, UIParent)
 Event:RegisterEvent("PLAYER_LOGIN")
 Event:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_LOGIN" then
-        SlashTestMode()
         OnPlayerLogin(self, event, ...)
     end
 end)

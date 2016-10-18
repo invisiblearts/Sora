@@ -5,23 +5,23 @@ local S, C, L, DB = unpack(select(2, ...))
 
 -- Begin
 local function CreatePower(self, ...)
-	local power = CreateFrame("StatusBar", nil, self)
-	power:SetPoint("BOTTOM")
-	power:SetSize(self:GetWidth(), 2)
-	power:SetStatusBarTexture(DB.Statusbar)
-
+    local power = CreateFrame("StatusBar", nil, self)
+    power:SetPoint("BOTTOM")
+    power:SetSize(self:GetWidth(), 2)
+    power:SetStatusBarTexture(DB.Statusbar)
+    
     power.bg = power:CreateTexture(nil, "BACKGROUND")
     power.bg:SetAllPoints()
     power.bg:SetTexture(DB.Statusbar)
     power.bg:SetVertexColor(0.12, 0.12, 0.12)
     power.bg.multiplier = 0.12
-	
-	power.Smooth = true
-	power.colorPower = true
-	power.frequentUpdates = true
-	power.shadow = S.MakeShadow(power, 2)
-	
-	self.Power = power
+    
+    power.Smooth = true
+    power.colorPower = true
+    power.frequentUpdates = true
+    power.shadow = S.MakeShadow(power, 2)
+    
+    self.Power = power
 end
 
 local function CreateHealth(self, ...)
@@ -40,8 +40,6 @@ local function CreateHealth(self, ...)
     health.colorTapping = true
     health.colorDisconnected = true
     health.colorClass = true
-    health.colorClassNPC = true
-    health.colorClassPet = true
     health.colorReaction = true
     health.colorHealth = true
     health.frequentUpdates = true
@@ -54,7 +52,7 @@ local function CreateTag(self, ...)
     local NameTag = S.MakeText(self.Health, 10)
     NameTag:SetPoint("TOPLEFT", 1, -1)
     self:Tag(NameTag, "[Sora:Name]")
-
+    
     local HealthTag = S.MakeText(self.Health, 7)
     HealthTag:SetPoint("BOTTOMRIGHT", self.Health, 2, 1)
     self:Tag(HealthTag, "[Sora:PerHealth]")
@@ -78,12 +76,12 @@ local function RegisterStyle(self, ...)
     self:SetPoint("TOPLEFT", _G["oUF_Sora_Target"], "BOTTOMRIGHT", 4, -4)
     self:SetSize(C.UnitFrame.TargetTarget.Width, C.UnitFrame.TargetTarget.Height)
     
-	CreatePower(self, ...)
-	CreateHealth(self, ...)
+    CreatePower(self, ...)
+    CreateHealth(self, ...)
     
     CreateTag(self, ...)
     CreateRaidIcon(self, ...)
-
+    
     RegisterForEvent(self, ...)
 end
 

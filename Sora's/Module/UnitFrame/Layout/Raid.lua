@@ -592,8 +592,6 @@ local function CreateHealth(self, ...)
     health.colorTapping = true
     health.colorDisconnected = true
     health.colorClass = true
-    health.colorClassNPC = true
-    health.colorClassPet = true
     health.colorReaction = true
     health.colorHealth = true
     health.frequentUpdates = true
