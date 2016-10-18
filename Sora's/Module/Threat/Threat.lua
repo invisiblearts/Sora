@@ -25,7 +25,7 @@ local function UpdateThreat(unit)
     threat.guid = guid
     threat.name = name
     threat.status = status
-    threat.threatValue = threatValue
+    threat.threatValue = threatValue or 0
     threat.classColor = RAID_CLASS_COLORS[class]
     threat.isTanking = threat.isTanking or threat.status >= 2
     
@@ -108,7 +108,6 @@ local function UpdateAllThreatBars()
         end
     end
 end
-
 
 local function OnPlayerLogin(self, event, ...)
     bars = {}

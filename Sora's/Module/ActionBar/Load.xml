@@ -1,5 +1,7 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/">
 
+	<script file = "Config.lua" />
+
 	<script file = "Bar\BagBar.lua" />
 	<script file = "Bar\PetBar.lua" />
 	<script file = "Bar\MainBar.lua" />

@@ -49,7 +49,6 @@ end
 oUF.Tags.Events["Sora:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 
 oUF.Tags.Methods["Sora:Color"] = function(unit)
-    local name = UnitName(unit)
     local _, class = UnitClass(unit)
     local reaction = UnitReaction(unit, "player")
     
@@ -58,7 +57,7 @@ oUF.Tags.Methods["Sora:Color"] = function(unit)
     
     if UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit) then
         color.r, color.g, color.b = 0.63, 0.63, 0.63
-    elseif UnitIsPlayer(unit) then
+    elseif UnitIsPlayer(unit) and class then
         color.r, color.g, color.b = unpack(oUF.colors.class[class])
     elseif reaction then
         color.r, color.g, color.b = unpack(oUF.colors.reaction[reaction])

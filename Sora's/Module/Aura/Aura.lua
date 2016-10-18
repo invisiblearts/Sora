@@ -80,8 +80,8 @@ local function HookBuffFrameUpdateAllBuffAnchors(self, ...)
         
         if key == 1 then
             value:SetPoint("TOPRIGHT", BuffAnchor, 0, 0)
-        elseif key % 12 == 1 then
-            value:SetPoint("TOP", auras[key - 12], "BOTTOM", 0, -C.Aura.Space)
+        elseif key % 8 == 1 then
+            value:SetPoint("TOP", auras[key - 8], "BOTTOM", 0, -C.Aura.Space)
         else
             value:SetPoint("RIGHT", auras[key - 1], "LEFT", -C.Aura.Space, 0)
         end
@@ -93,7 +93,7 @@ local function OnPlayerLogin(self, event, ...)
     
     BuffAnchor = CreateFrame("Frame", nil, UIParent)
     BuffAnchor:SetPoint(unpack(C.Aura.Postion))
-    BuffAnchor:SetSize(C.Aura.Size * 8 + C.Aura.Size * 7, C.Aura.Size * 3 + C.Aura.Space * 2)
+    BuffAnchor:SetSize(C.Aura.Size * 12 + C.Aura.Size * 11, C.Aura.Size * 3 + C.Aura.Space * 2)
     
     DebuffAnchor = CreateFrame("Frame", nil, UIParent)
     DebuffAnchor:SetSize(C.Aura.Size * 8 + C.Aura.Size * 7, C.Aura.Size * 2 + C.Aura.Space)

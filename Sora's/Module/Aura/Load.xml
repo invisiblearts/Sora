@@ -1,5 +1,7 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/">
 
+	<script file = "Config.lua" />
+
 	<Script file="Aura.lua" />
 	<Script file="Style.lua" />
 
