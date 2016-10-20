@@ -53,7 +53,7 @@ local function SetChatFrame()
 		
 		-- 设置聊天框体标签
 		_G["ChatFrame"..i.."TabText"].SetTextColor = function() end
-		_G["ChatFrame"..i.."TabText"]:SetFont(STANDARD_TEXT_FONT, 10, "THINOUTLINE")
+		_G["ChatFrame"..i.."TabText"]:SetFont(STANDARD_TEXT_FONT, 12, "THINOUTLINE")
 		
 		-- 干掉频道标签材质
 		local Tab = _G["ChatFrame"..i.."Tab"]
