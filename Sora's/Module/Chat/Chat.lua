@@ -152,7 +152,7 @@ local function FormatChatMessage()
 				msg = string.gsub(msg, "本地防务", "防务")
 				msg = string.gsub(msg, "世界防务", "防务")
 				msg = string.gsub(msg, "寻求组队", "组队")
-				msg = string.gsub(msg, "大脚世界频道", "大脚")
+				msg = string.gsub(msg, "大脚世界频道", "世界")
 				msg = string.gsub(msg, "%[(%d%d):(%d%d):(%d%d)%]", "|HSoraCopy|h%[%1:%2%]|h")
 
 				return OrginalAddMessage(frame, msg, ...)
