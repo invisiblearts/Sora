@@ -29,7 +29,6 @@ local Requisites = { -- List of recipes you must (probably) already know in orde
 	-- While technically you need to know the previous rank of a spell to receive the next one,
 	-- we'll use the base rank as the requirement for all ranks because it's more intuitive
 	-- I only want to grey-out recipes that we can't learn because we don't know the base rank
-	-- I only want to grey-out recipes that we can't learn because we don't know the base rank
 	[201506] = {201501}, -- Azshari Salad: Suramar Surf and Turf
 	[201508] = {201503}, -- Seed-Battered Fish Plate: Kio-Scented Stormray
 	[201507] = {201502}, -- Nightborne Delicacy Platter: Barracuda Mrglgagh
@@ -385,4 +384,141 @@ SLASH_NOMICAKES1, SLASH_NOMICAKES2 = '/nomicakes', '/nomi'
 
 function SlashCmdList.NOMICAKES()
 	RequestCookingStuff(OutputRecipes)
+end
+
+--------------------------------------
+do -- Experimental work order stuff
+	local WorkOrderItemIDs = { -- cross-reference item IDs from work orders with the actual ingredient item ID
+		[133877] = 124117, -- Lean Shank
+		[133886] = 124121, -- Wildfowl Egg
+		[133915] = 124119, -- Big Gamy Ribs
+		[133914] = 124118, -- Fatty Bearsteak
+		[133916] = 124120, -- Leyblood
+		[133917] = 124107, -- Cursed Queenfish
+		[133918] = 124108, -- Mossgill Perch
+		[133919] = 124109, -- Highmountain Salmon
+		[133920] = 124110, -- Stormray
+		[133921] = 124111, -- Runescale Koi
+		[133922] = 124112, -- Black Barracuda
+		[133923] = 133680, -- Slabs of Bacon
+		[141700] = 133607, -- Silver Mackerel
+	}
+	
+	NomiCakesDatas = { WorkOrders = {} }
+	local WorkOrders = NomiCakesDatas.WorkOrders -- [i] = {itemID, placementTime, endTime}
+	local addonName = ...
+	local ShipmentOpenTime
+	local NumWorkOrdersOrdered, WorkOrderType = 0
+	local f = CreateFrame('frame')
+	f:SetScript('OnEvent', function(self, event, ...)
+		if event == 'SHIPMENT_CRAFTER_OPENED' then
+			if ... == 122 then -- we're talking to nomi
+				ShipmentOpenTime = time()
+				NumWorkOrdersOrdered = 0
+				self:RegisterEvent('SHIPMENT_UPDATE')
+				self:RegisterEvent('SHIPMENT_CRAFTER_CLOSED')
+				self:RegisterEvent('SHIPMENT_CRAFTER_INFO')
+			else -- these events shouldn't be registered, but make absolutely certain we don't respond to them when not talking to nomi
+				self:UnregisterEvent('SHIPMENT_UPDATE')
+				self:UnregisterEvent('SHIPMENT_CRAFTER_CLOSED')
+				self:UnregisterEvent('SHIPMENT_CRAFTER_INFO')
+			end
+		elseif event == 'SHIPMENT_CRAFTER_INFO' and ... then
+			-- shipment information should be available at this point, record it
+			self:UnregisterEvent('SHIPMENT_CRAFTER_INFO')
+			local success, pendingShipments, maxShipments, ownedShipments = ...
+			if maxShipments == 0 then -- nomi is bugged (no work order window), we can't fetch work order data
+				print('|cffffff66Nomi is bugged, try again!|r') -- outputting a message might confuse people, but I think it's better than nothing
+				C_Garrison.CloseTradeskillCrafter() -- end interaction so we don't have to walk away from him
+			else
+				local now = time()
+				wipe(WorkOrders)
+				for i = 1, C_Garrison.GetNumPendingShipments() do
+					-- "name" is not guaranteed to exist, if the item info hasn't been cached yet it will return nil, so don't bother recording it
+					-- we might need to manually cache the names for all of our items using GET_ITEM_INFO_UPDATE so we can add them to the tooltip later
+					local name, texture, _, itemID, _, startDelta, timeRemaining = C_Garrison.GetPendingShipmentInfo(i)
+					local orderPlaced = now - startDelta -- time the work order was placed, not when the work order will start
+					local endTime = now + timeRemaining
+					-- local startTime = endTime - 14400 -- start time is end time of previous recipe, or endTime - 14400, which makes recording it kind of pointless
+					WorkOrders[i] = {WorkOrderItemIDs[itemID], orderPlaced, endTime}
+				end
+			end
+		elseif event == 'SHIPMENT_UPDATE' then
+			if ... then -- this will fire for each separate shipment if you queue multiple work orders at once
+				local name, texture, quality, itemID, followerID, duration = C_Garrison.GetShipmentItemInfo()
+				-- if itemID and WorkOrderItemIDs[itemID] then -- todo: sanity check if all else fails, but I would prefer this error out if something isn't working as expected
+				local numWorkOrders = #WorkOrders
+				local orderPlaced = time()
+				local startTime = numWorkOrders > 0 and WorkOrders[numWorkOrders][3] or orderPlaced
+				local endTime = startTime + duration
+				WorkOrders[ #WorkOrders + 1 ] = {WorkOrderItemIDs[itemID], orderPlaced, endTime}
+				WorkOrderType = WorkOrderItemIDs[itemID]
+				NumWorkOrdersOrdered = NumWorkOrdersOrdered + 1
+				-- print(GetTime(), 'SHIPMENT_UPDATE', name, itemID, duration, 'started')
+			end
+		elseif event == 'SHIPMENT_CRAFTER_CLOSED' then -- if this event doesn't fire for some reason, we won't unregister events properly and will bug the next time the player talks to a work order npc
+			-- output what work orders were placed when the window is closed
+			self:UnregisterEvent('SHIPMENT_UPDATE')
+			self:UnregisterEvent('SHIPMENT_CRAFTER_CLOSED')
+			self:UnregisterEvent('SHIPMENT_CRAFTER_INFO') -- this shouldn't be necessary
+			if NumWorkOrdersOrdered > 0 then
+				local itemID = WorkOrderType
+				local name = LocalizedIngredientList[itemID] and LocalizedIngredientList[itemID][2] or '???'
+				local _, _, _, _, ingredientIcon = GetItemInfoInstant(itemID)
+				if ingredientIcon then
+					name = format('|T%d:16|t %s', ingredientIcon, name)
+				end
+				print(format('%d |4Work Order:Work Orders; placed for %s', NumWorkOrdersOrdered, name))
+			end
+		elseif event == 'ADDON_LOADED' and ... == addonName then
+			self:UnregisterEvent('ADDON_LOADED')
+			WorkOrders = NomiCakesDatas.WorkOrders
+			if NomiCakesDatas.Version ~= 2 then
+				NomiCakesDatas.Version = 2
+				wipe(NomiCakesDatas.WorkOrders)
+			end
+			self:RegisterEvent('SHIPMENT_CRAFTER_OPENED')
+		end
+	end)
+	f:RegisterEvent('ADDON_LOADED')
+	
+	local READY_FOR_PICKUP = GARRISON_LANDING_RETURN:gsub('%s*%%d%s*', '')
+	local IgnoreShow = false
+	GameTooltip:HookScript('OnHide', function() IgnoreShow = false end)
+	hooksecurefunc(GameTooltip, 'Show', function(self)
+		if IgnoreShow then return end
+		local owner = self:GetOwner()
+		if owner and owner.containerID == 122 and WorkOrders then -- probably should add a better check for the tooltip owner than this
+			local numWorkOrders = #WorkOrders
+			
+			local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, _, _, _, _, followerID = C_Garrison.GetLandingPageShipmentInfoByContainerID(122)
+			
+			if numWorkOrders > 0 then
+				--local endTime = WorkOrders[numWorkOrders][3]
+				--local timeLeft = endTime - time()
+				self:AddLine(' ')
+				--if timeLeft > 0 then
+					--self:AddLine(format(CAPACITANCE_ALL_COMPLETE, SecondsToTime(timeLeft)))
+				--end
+			end
+			
+			for i = 1, numWorkOrders do
+				local workOrder = WorkOrders[i]
+				local itemID, orderPlaced, endTime = workOrder[1], workOrder[2], workOrder[3]
+				local name = LocalizedIngredientList[itemID] and LocalizedIngredientList[itemID][1] or '???'
+				local _, _, _, _, ingredientIcon = GetItemInfoInstant(itemID)
+				if ingredientIcon then
+					name = format('|T%d:16|t %s', ingredientIcon, name)
+				end
+				local timeLeft = endTime - time()
+				if timeLeft > 0 then
+					self:AddDoubleLine(name, SecondsToTime(timeLeft), 1, 1, 0.4, 1, 1, 0.4)
+				elseif shipmentsReady > 0 then
+					self:AddDoubleLine(name, READY_FOR_PICKUP, 0.4, 1, 0.4, 0.4, 1, 0.4)
+				end
+			end
+			IgnoreShow = true
+			self:Show()
+		end
+	end)
 end
