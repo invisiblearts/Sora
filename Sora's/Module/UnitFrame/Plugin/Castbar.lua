@@ -16,7 +16,7 @@ local channelingTicks = {
 	[GetSpellInfo(740)] = 4, -- Tranquility
 	-- [GetSpellInfo(16914)] = 10, -- Hurricane
 	-- priest
-	[GetSpellInfo(15407)] = 3, -- mind flay
+	[GetSpellInfo(15407)] = 4, -- mind flay
 	[GetSpellInfo(48045)] = 5, -- mind sear
 	[GetSpellInfo(47540)] = 2, -- penance
 	-- mage
