@@ -24,7 +24,7 @@ C.PlayerAuraWhiteList = {
     178207, -- Drums of Fury
 
     -- Shadow Priests
-    228264, -- Voidform
+    194249, -- Voidform
     197937, -- Lingering Insanity
 
     -- Emerald Nightmare Trinkets
