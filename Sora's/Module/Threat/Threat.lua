@@ -84,12 +84,31 @@ local function UpdateAllThreats()
     table.sort(threats, function(l, r)
         local result = false
         
+        -- Attempt to fix nil error
+
         if not l then
             result = false
         elseif not r then
             result = true
         else
-            result = l.isTanking or l.threatValue > r.threatValue
+
+            local lit = l.isTanking
+            local ltv = l.threatValue
+            local rtv = r.threatValue
+
+            if lit == nil then
+                lit = false
+            end
+
+            if ltv == nil then
+                return lit
+            end
+
+            if rtv == nil then
+                return true
+            end
+
+            result = lit or ltv > rtv
         end
         
         return result
