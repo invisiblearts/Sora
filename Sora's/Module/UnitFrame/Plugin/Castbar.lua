@@ -9,26 +9,26 @@ S.Castbar = {}
 -- special thanks to Allez for coming up with this solution
 local channelingTicks = {
 	-- warlock
-	-- [GetSpellInfo(103103)] = 5, -- drain soul
 	[GetSpellInfo(689)] = 6, -- drain life
-	-- [GetSpellInfo(5740)] = 4, -- rain of fire
+	[GetSpellInfo(193440)] = 3, -- demonwrath
+	[GetSpellInfo(198590)] = 6, -- drain soul
 	-- druid
-	[GetSpellInfo(740)] = 5, -- Tranquility
-	-- [GetSpellInfo(16914)] = 10, -- Hurricane
+	[GetSpellInfo(740)] = 4, -- tranquility
 	-- priest
+	[GetSpellInfo(64843)] = 4, -- divine hymn
 	[GetSpellInfo(15407)] = 4, -- mind flay
-	[GetSpellInfo(48045)] = 6, -- mind sear
+	[GetSpellInfo(48045)] = 5, -- mind sear
 	[GetSpellInfo(47540)] = 2, -- penance
-	-- note: here a judgement should be made, as the tick might be changed by talents
-	[GetSpellInfo(64843)] = 5, -- divine hymn
+	[GetSpellInfo(205065)] = 4, -- void torrent
 	-- mage
 	[GetSpellInfo(5143)] = 5, -- arcane missiles
-	-- [GetSpellInfo(10)] = 5, -- blizzard
 	[GetSpellInfo(12051)] = 3, -- evocation
-	-- shaman
-	-- [GetSpellInfo(61882)] = 8, -- earthquake
-	--monk
-	-- [GetSpellInfo(115175)] = 9 -- soothing mists
+	[GetSpellInfo(205021)] = 10, -- ray of frost
+	-- monk
+	[GetSpellInfo(117952)] = 4, -- crackling jade lightning
+	[GetSpellInfo(191837)] = 3, -- essence font
+
+	-- above are copied from quartz3, legion.
 }
 
 local ticks = {}
