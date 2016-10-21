@@ -6,6 +6,17 @@ local S, C, L, DB = unpack(select(2, ...))
 -- Variables
 local spacing, iconSize, barWidth = nil, nil, nil
 
+-- Helper
+local function ElementInTable(ele, tbl)
+    for k,v in ipairs(tbl)
+    do
+          if v == ele then
+              return true;
+          end
+    end
+    return false;
+end
+
 -- Begin
 local function SetTargetAuraTimer(self, ...)
     local auras = CreateFrame("Frame", nil, self)
@@ -66,10 +77,10 @@ local function SetTargetAuraTimer(self, ...)
     end
     
     auras.CustomFilter = function(self, unit, icon, name, rank, _, count, _, duration, timeLeft, caster, _, _, spellID)
-        local flag = false
-        
-        if duration > 0 and duration < 60 and caster == "player" and icon.isDebuff then
-            flag = true
+        local flag = (duration > 0 and duration < 60 and caster == "player" and icon.isDebuff and not ElementInTable(spellID, C.TargetAuraBlackList))
+                     or ElementInTable(spellID, C.TargetAuraWhiteList)
+
+        if flag then
             icon.name = name
             icon.duration = duration
             icon.timeLeft = timeLeft

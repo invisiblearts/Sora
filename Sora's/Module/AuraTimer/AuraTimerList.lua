@@ -2,15 +2,10 @@
 local S, C, L, DB = unpack(select(2, ...))
 
 -- Variables Initialization
-local VariablesToEnsure = {C.PlayerAuraWhiteList,
-                           C.PlayerAuraBlackList,
-                           C.TargetAuraWhiteList,
-                           C.TargetAuraBlackList}
-
-for i = 1, #VariablesToEnsure
-do
-    VariablesToEnsure[i] = {}
-end
+C.PlayerAuraWhiteList = {}
+C.PlayerAuraBlackList = {}
+C.TargetAuraWhiteList = {}
+C.TargetAuraBlackList = {}
 
 -- List Definitions. Patches welcome.
 -- WhiteList will override BlackList if a spellID appears in both lists.
@@ -28,10 +23,23 @@ C.PlayerAuraWhiteList = {
     197937, -- Lingering Insanity
 
     -- Emerald Nightmare Trinkets
-    222046 -- Madding Whispers, buff gained from Wriggling Sinew    
+    222046 -- Madding Whispers, buff gained from Wriggling Sinew
+}
+
+C.PlayerAuraBlackList = {
+    -- Shadow Priests
+    15407, -- Mind Flay
 }
 
 C.TargetAuraBlackList = {
+    -- Shadow Priests
+    15407, -- Mind Flay
+    193473, -- Mind Flay by Call to the Void
+    205065, -- Void Torrent
+
+    -- Legion World Trinkets
+    224078, -- Devisaur Shock Leash
+    
     -- Emerald Nightmare Trinkets
-    221811 -- Swarming Plaguehive. This has no effect on strategy but occupies space.
+    221812, -- Swarming Plaguehive. This has no effect on strategy but occupies space.
 }
