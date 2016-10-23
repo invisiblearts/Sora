@@ -538,6 +538,136 @@ local raidDebuffFilters = {
         [88427] = 7, -- Electrocute
         [93294] = 8, -- Lightning Rod
         [93284] = 9, -- Squall Line
+        
+---------------------------
+-- LEG BrokenIsles BEGIN --
+---------------------------
+
+-- Calamir
+[218888] = 21, -- Impish Flames (non-dispellable)
+[217925] = 24, -- Icy Comet (non-dispellable) AoE Slow
+[217966] = 24, -- Howling Gale (non-dispellable)
+[218012] = 25, -- Arcanopulse (non-dispellable) DMG + Stun
+
+-- Drugon the Frostblood
+[219602] = 31, -- Snow Plow (non-dispellable) Fixate
+
+-- Flotsam
+[223373] = 41, -- Yaksam (non-dispellable) Cone AoE
+[223355] = 42, -- Oozing Bile (non-dispellable)
+
+-- Humongris
+[216430] = 50, -- Earthshake Stomp (non-dispellable) DMG + Stun
+[216467] = 51, -- Make the Snow (non-dispellable) AoE Frost DMG + Slow
+[216822] = 52, -- You Go Bang! (non-dispellable) Fire Bomb + DMG Increase Debuff
+
+-- Levantus
+[170196] = 61, -- Rending Whirl (non-dispellable) Rend
+[217362] = 63, -- Turbulent Vortex (dispellable)
+[217229] = 64, -- Rampaging Torrent (non-dispellable) DMG + DMG Increase Debuff Stacks
+
+-- Na'zak the Fiend
+[219349] = 71, -- Corroding Spray (non-dispellable) Cone AoE Stacks
+
+-- Nithogg
+[212867] = 81, -- Electrical Storm (non-dispellable) Ground AoE
+[212852] = 82, -- Storm Breath (non-dispellable) DMG + DMG Increase Debuff
+
+-- Shar'thos
+[215876] = 92, -- Burning Earth (non-dispellable) Ground AoE
+[216044] = 93, -- Cry of the Tormented (non-dispellable) AoE Fear
+
+-- The Soultakers
+[213665] = 101, -- Marauding Mists (non-dispellable) DMG + Disorient
+
+-------------------------
+-- LEG BrokenIsles END --
+-------------------------
+
+        --------------------------------
+        -- LEG EmeraldNightmare BEGIN --
+        --------------------------------
+
+        -- Nythendra
+        [204504] = 11, -- Infested
+        [203045] = 12, -- Infested Ground (standing in pool)
+        [203096] = 13, -- Rot (AoE people around you)
+        [204463] = 14, -- Volatile Rot (exploding tank)
+        [203646] = 15, -- Burst of Corruption
+        
+        -- Il'gynoth, Heart of Corruption
+        [212886] = 21, -- Nightmare Corruption (standing in pool)
+        [215845] = 22, -- Dispersed Spores (dot)
+        [210099] = 23, -- The Eye of Il'gynoth Nightmare Ichor (fixate)
+        [209469] = 24, -- Touch of Corruption (dot, stacks, magic)
+        [209471] = 25, -- Nightmare Explosion (dot, stacks)
+        [210984] = 26, -- Eye of Fate (tank debuff, stacks)
+        [208697] = 27, -- Mind Flay (dot)
+        [208929] = 28, -- Spew Corruption (dot, drops pools)
+        [215128] = 29, -- Cursed Blood (dot, weak bomb)
+        
+        -- Elerethe Renferal
+        [215307] = 31, -- Web of Pain (link)
+        [215460] = 32, -- Necrotic Venom (dot, drops pools)
+        [213124] = 33, -- Venomous Pool (standing in pool)
+        [210850] = 34, -- Twisting Shadows (dot)
+        [215582] = 35, -- Raking Talons (tank debuff, stacks)
+        [218519] = 36, -- Wind Burn (debuff, stacks)
+        [210228] = 37, -- Dripping Fangs (dot, stacks)
+        
+        -- Ursoc
+        [197943] = 41, -- Overwhelm (tank debuff, stacks)
+        [204859] = 42, -- Rend Flesh (dot)
+        [198006] = 43, -- Focused Gaze (fixate)
+        [198108] = 44, -- Momentum (debuff)
+        [197980] = 45, -- Nightmarish Cacophony (fear)
+        [205611] = 46, -- Miasma (standing in)
+        
+        -- Dragons of Nightmare
+        [203110] = 51, -- Slumbering Nightmare (stun)
+        [203102] = 52, -- Mark of Ysondre (dot, stacks)
+        [207681] = 53, -- Nightmare Bloom (standing in)
+        [204731] = 54, -- Wasting Dread (debuff)
+        [203770] = 55, -- Defiled Vines (root, magic)
+        [203125] = 56, -- Mark of Emeriss (dot, stacks)
+        [203787] = 57, -- Volatile Infection (AoE dot)
+        [203086] = 58, -- Mark of Lethon (dot, stacks)
+        [204044] = 59, -- Mark of Taerar (dot, stacks)
+        [203121] = 60, -- Shadow Burst (dot, stacks)
+        [205341] = 61, -- Seeping Fog (dot, sleep, magic)
+        [204078] = 61, -- Bellowing Roar (fear)
+        [214543] = 63, -- Collapsing Nightmare (debuff)
+        
+        -- Cenarius
+        [212681] = 71, -- Cleansed Ground (buff)
+        [210279] = 72, -- Creeping Nightmares (debuff, stacks)
+        [210315] = 73, -- Nightmare Brambles (dot, root, magic)
+        [213162] = 74, -- Nightmare Blast (tank debuff, stacks)
+        [226821] = 75, -- Desiccating Stomp (melee debuff, stacks)
+        [211507] = 76, -- Nightmare Javelin (dot, magic)
+        [211471] = 77, -- Scorned Touch (dot, spreads)
+        [216516] = 78, -- Ancient Dream (buff)
+        [211989] = 79, -- Unbound Touch (buff, spreads)
+        [211990] = 80, -- Unbound Essence (buff)
+        [214529] = 81, -- Spear of Nightmares (tank debuff, stacks)
+        
+        -- Xavius
+        [206005] = 91, -- Dream Simulacrum (buff)
+        [206109] = 92, -- Awakening to the Nightmare (buff)
+        [208431] = 93, -- Descent into Madness (buff)
+        [207409] = 94, -- Madness (mind control)
+        [206651] = 95, -- Darkening Soul (dot, magic)
+        [211802] = 96, -- Nightmare Blades (fixate)
+        [205771] = 97, -- Tormenting Fixation (fixate)
+        [209158] = 98, -- Blackening Soul (dot, magic)
+        [205612] = 99, -- Blackened? (debuff)
+        [205612] = 100, -- Bonds of Terror (link)
+        [205612] = 101, -- Tainted Discharge (standing in)
+        [205612] = 102, -- The Infinite Dark (standing in?)
+
+        ------------------------------
+        -- LEG EmeraldNightmare END --
+        ------------------------------
 }
 
 -- Begin
