@@ -493,6 +493,19 @@ do -- Experimental work order stuff
 			
 			local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, _, _, _, _, followerID = C_Garrison.GetLandingPageShipmentInfoByContainerID(122)
 			
+			-- to ignore completed work orders that we've already picked up,
+			-- iterate backwards over our work orders until we get to the first one that is completed,
+			-- subtract the number of "ready" shipments from our index, add 1, and start from that point
+			local startIndex = 1
+			for i = numWorkOrders, 1, -1 do
+				local endTime = WorkOrders[i][3]
+				local timeLeft = endTime - time()
+				if timeLeft <= 0 then -- shipment ready
+					startIndex = i - shipmentsReady + 1
+					break
+				end
+			end
+			
 			if numWorkOrders > 0 then
 				--local endTime = WorkOrders[numWorkOrders][3]
 				--local timeLeft = endTime - time()
@@ -502,7 +515,7 @@ do -- Experimental work order stuff
 				--end
 			end
 			
-			for i = 1, numWorkOrders do
+			for i = startIndex, numWorkOrders do
 				local workOrder = WorkOrders[i]
 				local itemID, orderPlaced, endTime = workOrder[1], workOrder[2], workOrder[3]
 				local name = LocalizedIngredientList[itemID] and LocalizedIngredientList[itemID][1] or '???'

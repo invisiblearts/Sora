@@ -60,18 +60,24 @@ local function HookBuffFrameUpdateAllBuffAnchors(self, ...)
         end
     end
     
+    for i = 1, #auras do
+        auras[i].timeLeft = auras[i].timeLeft or 31 * 24 * 60 * 60
+    end
+    
     table.sort(auras, function(l, r)
-        local flag = false
+        local result = false
         
-        if not l.timeLeft and r.timeLeft then
-            flag = true
-        elseif l.timeLeft and not r.timeLeft then
-            flag = false
-        elseif l.timeLeft and r.timeLeft then
-            flag = l.timeLeft > r.timeLeft
+        if l and not r then
+            result = true
+        elseif not l and r then
+            result = false
+        elseif not l and not r then
+            result = false
+        else
+            result = l.timeLeft > r.timeLeft
         end
         
-        return flag
+        return result
     end)
     
     for key, value in pairs(auras) do

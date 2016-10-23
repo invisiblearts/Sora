@@ -84,13 +84,20 @@ local function UpdateAllThreats()
     table.sort(threats, function(l, r)
         local result = false
         
+<<<<<<< HEAD
         -- Attempt to fix nil error
 
         if not l then
             result = false
         elseif not r then
+=======
+        if (l and not r) or (l.isTanking and not r.isTanking) then
+>>>>>>> upstream/master
             result = true
+        elseif (not l and r) or (not l and not r) or (not l.isTanking and r.isTanking) then
+            result = false
         else
+<<<<<<< HEAD
 
             local lit = l.isTanking
             local ltv = l.threatValue
@@ -109,6 +116,9 @@ local function UpdateAllThreats()
             end
 
             result = lit or ltv > rtv
+=======
+            result = l.threatValue > r.threatValue
+>>>>>>> upstream/master
         end
         
         return result
