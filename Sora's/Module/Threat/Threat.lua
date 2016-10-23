@@ -84,12 +84,12 @@ local function UpdateAllThreats()
     table.sort(threats, function(l, r)
         local result = false
         
-        if not l then
-            result = false
-        elseif not r then
+        if (l and not r) or (l.isTanking and not r.isTanking) then
             result = true
+        elseif (not l and r) or (not l and not r) or (not l.isTanking and r.isTanking) then
+            result = false
         else
-            result = l.isTanking or l.threatValue > r.threatValue
+            result = l.threatValue > r.threatValue
         end
         
         return result
