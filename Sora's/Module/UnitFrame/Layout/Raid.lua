@@ -172,8 +172,6 @@ local raidDebuffFilters = {
         [145071] = 5, --Touch of Y'Sharrj
         [148718] = 4, --Fire Pit
         
-        
-        
         --Jin'rokh the Breaker
         [138006] = 4, --Electrified Waters
         [137399] = 6, --Focused Lightning fixate
@@ -307,7 +305,6 @@ local raidDebuffFilters = {
         [138308] = 6, --Unstable Vita
         [138372] = 5, --Vita Sensitivity
         
-        
         --Protector Kaolan
         [117519] = 7, --Touch of Sha
         [111850] = 7, --Lightning Prison: Targeted
@@ -341,8 +338,6 @@ local raidDebuffFilters = {
         [129189] = 7, --Sha Globe
         [119086] = 7, --Penetrating Bolt
         [119775] = 7, --Reaching Attack
-        
-        
         
         --Imperial Vizier Zor'lok
         [123812] = 7, --Pheromones of Zeal
@@ -455,7 +450,6 @@ local raidDebuffFilters = {
         
         [88954] = 6, -- Consuming Darkness
         
-        
         --Magmaw
         [78941] = 6, -- Parasitic Infection
         [89773] = 7, -- Mangle
@@ -539,50 +533,50 @@ local raidDebuffFilters = {
         [93294] = 8, -- Lightning Rod
         [93284] = 9, -- Squall Line
         
----------------------------
--- LEG BrokenIsles BEGIN --
----------------------------
-
--- Calamir
-[218888] = 21, -- Impish Flames (non-dispellable)
-[217925] = 24, -- Icy Comet (non-dispellable) AoE Slow
-[217966] = 24, -- Howling Gale (non-dispellable)
-[218012] = 25, -- Arcanopulse (non-dispellable) DMG + Stun
-
--- Drugon the Frostblood
-[219602] = 31, -- Snow Plow (non-dispellable) Fixate
-
--- Flotsam
-[223373] = 41, -- Yaksam (non-dispellable) Cone AoE
-[223355] = 42, -- Oozing Bile (non-dispellable)
-
--- Humongris
-[216430] = 50, -- Earthshake Stomp (non-dispellable) DMG + Stun
-[216467] = 51, -- Make the Snow (non-dispellable) AoE Frost DMG + Slow
-[216822] = 52, -- You Go Bang! (non-dispellable) Fire Bomb + DMG Increase Debuff
-
--- Levantus
-[170196] = 61, -- Rending Whirl (non-dispellable) Rend
-[217362] = 63, -- Turbulent Vortex (dispellable)
-[217229] = 64, -- Rampaging Torrent (non-dispellable) DMG + DMG Increase Debuff Stacks
-
--- Na'zak the Fiend
-[219349] = 71, -- Corroding Spray (non-dispellable) Cone AoE Stacks
-
--- Nithogg
-[212867] = 81, -- Electrical Storm (non-dispellable) Ground AoE
-[212852] = 82, -- Storm Breath (non-dispellable) DMG + DMG Increase Debuff
-
--- Shar'thos
-[215876] = 92, -- Burning Earth (non-dispellable) Ground AoE
-[216044] = 93, -- Cry of the Tormented (non-dispellable) AoE Fear
-
--- The Soultakers
-[213665] = 101, -- Marauding Mists (non-dispellable) DMG + Disorient
-
--------------------------
--- LEG BrokenIsles END --
--------------------------
+        ---------------------------
+        -- LEG BrokenIsles BEGIN --
+        ---------------------------
+        
+        -- Calamir
+        [218888] = 21, -- Impish Flames (non-dispellable)
+        [217925] = 24, -- Icy Comet (non-dispellable) AoE Slow
+        [217966] = 24, -- Howling Gale (non-dispellable)
+        [218012] = 25, -- Arcanopulse (non-dispellable) DMG + Stun
+        
+        -- Drugon the Frostblood
+        [219602] = 31, -- Snow Plow (non-dispellable) Fixate
+        
+        -- Flotsam
+        [223373] = 41, -- Yaksam (non-dispellable) Cone AoE
+        [223355] = 42, -- Oozing Bile (non-dispellable)
+        
+        -- Humongris
+        [216430] = 50, -- Earthshake Stomp (non-dispellable) DMG + Stun
+        [216467] = 51, -- Make the Snow (non-dispellable) AoE Frost DMG + Slow
+        [216822] = 52, -- You Go Bang! (non-dispellable) Fire Bomb + DMG Increase Debuff
+        
+        -- Levantus
+        [170196] = 61, -- Rending Whirl (non-dispellable) Rend
+        [217362] = 63, -- Turbulent Vortex (dispellable)
+        [217229] = 64, -- Rampaging Torrent (non-dispellable) DMG + DMG Increase Debuff Stacks
+        
+        -- Na'zak the Fiend
+        [219349] = 71, -- Corroding Spray (non-dispellable) Cone AoE Stacks
+        
+        -- Nithogg
+        [212867] = 81, -- Electrical Storm (non-dispellable) Ground AoE
+        [212852] = 82, -- Storm Breath (non-dispellable) DMG + DMG Increase Debuff
+        
+        -- Shar'thos
+        [215876] = 92, -- Burning Earth (non-dispellable) Ground AoE
+        [216044] = 93, -- Cry of the Tormented (non-dispellable) AoE Fear
+        
+        -- The Soultakers
+        [213665] = 101, -- Marauding Mists (non-dispellable) DMG + Disorient
+        
+        -------------------------
+        -- LEG BrokenIsles END --
+        -------------------------
 
         --------------------------------
         -- LEG EmeraldNightmare BEGIN --
