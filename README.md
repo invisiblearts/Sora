@@ -9,6 +9,8 @@ Since Neavo, the original author of Sora's, is nearly AFK, this fork intends to 
 
 * Branch Dev: Dangerous area. Development here will finally be merged into Master. Full of untested messy codes. UNTESTED AND MESSY. UNTESTED AND MESSY. Important things should be said three times.
 
+* Branch Elvor: A heavily flavored variant, surpressing castbar, used for ElvorUI only.
+
 Please feel free to raise [issues](https://github.com/invisiblearts/Sora/issues). Pull requests also welcome.
 
 Note: Some of the plugins here are unlicensed and probably unauthorized. If you feel your rights are violated, please contact me. It is currently the common practice despite the fact that this is, strictly, inadequate.
