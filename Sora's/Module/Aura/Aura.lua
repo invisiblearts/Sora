@@ -61,35 +61,23 @@ local function HookBuffFrameUpdateAllBuffAnchors(self, ...)
     end
     
     for i = 1, #auras do
-        auras[i].timeLeft = auras[i].timeLeft or 31 * 24 * 60 * 60
+        auras[i].timeLeft = auras[i].timeLeft or 365 * 24 * 60 * 60
     end
     
     table.sort(auras, function(l, r)
-        local result = false
-        
-        if l and not r then
-            result = true
-        elseif not l and r then
-            result = false
-        elseif not l and not r then
-            result = false
-        else
-            result = l.timeLeft > r.timeLeft
-        end
-        
-        return result
+        return (l and not r) or (l and r and l.timeLeft > r.timeLeft)
     end)
-    
-    for key, value in pairs(auras) do
-        value:ClearAllPoints()
-        value:SetSize(C.Aura.Size, C.Aura.Size)
+
+    for k, v in pairs(auras) do
+        v:ClearAllPoints()
+        v:SetSize(C.Aura.Size, C.Aura.Size)
         
-        if key == 1 then
-            value:SetPoint("TOPRIGHT", BuffAnchor, 0, 0)
-        elseif key % 12 == 1 then
-            value:SetPoint("TOP", auras[key - 12], "BOTTOM", 0, -C.Aura.Space)
+        if k == 1 then
+            v:SetPoint("TOPRIGHT", BuffAnchor, 0, 0)
+        elseif k % 12 == 1 then
+            v:SetPoint("TOP", auras[k - 12], "BOTTOM", 0, -C.Aura.Space)
         else
-            value:SetPoint("RIGHT", auras[key - 1], "LEFT", -C.Aura.Space, 0)
+            v:SetPoint("RIGHT", auras[k - 1], "LEFT", -C.Aura.Space, 0)
         end
     end
 end

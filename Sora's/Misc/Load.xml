@@ -2,7 +2,6 @@
 
 	<Script file = "ZD.lua" />
 	<Script file = "CVar.lua" />
-	<Script file = "Hack.lua" />
 	<Script file = "Mail.lua" />
 	<Script file = "Align.lua" />
 	<Script file = "Focuser.lua" />
