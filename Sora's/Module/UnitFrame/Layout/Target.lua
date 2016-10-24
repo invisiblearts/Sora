@@ -119,6 +119,7 @@ local function CreateAura(self, ...)
 end
 
 local function CreateCastbar(self, ...)
+    --[[
     local Castbar = CreateFrame("StatusBar", nil, self)
     Castbar:SetStatusBarTexture(DB.Statusbar)
     Castbar:SetStatusBarColor(95 / 255, 182 / 255, 255 / 255)
@@ -171,6 +172,7 @@ local function CreateCastbar(self, ...)
     end
     
     self.Castbar = Castbar
+    ]]
 end
 
 local function CreatePortrait(self, ...)

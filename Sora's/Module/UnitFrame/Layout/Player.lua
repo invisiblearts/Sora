@@ -116,6 +116,7 @@ local function SetDebuff(self, ...)
 end
 
 local function SetCastbar(self, ...)
+    --[[
     local Castbar = CreateFrame("StatusBar", nil, self)
     Castbar:SetStatusBarTexture(DB.Statusbar)
     Castbar:SetStatusBarColor(95 / 255, 182 / 255, 255 / 255)
@@ -168,6 +169,7 @@ local function SetCastbar(self, ...)
     end
     
     self.Castbar = Castbar
+    ]]
 end
 
 local function SetPortrait(self, ...)
