@@ -35,16 +35,19 @@ local function HookDebuffButtonUpdateAnchors(buttonName, index, ...)
         end
     end
     
-    for key, value in pairs(auras) do
-        value:ClearAllPoints()
-        value:SetSize(C.Aura.Size, C.Aura.Size)
+    for k, v in pairs(auras) do
+        v.duration:Show()
+        v.duration:SetAlpha(1.00)
         
-        if key == 1 then
-            value:SetPoint("TOPRIGHT", DebuffAnchor, 0, 0)
-        elseif key % 8 == 1 then
-            value:SetPoint("TOP", auras[key - 8], "BOTTOM", 0, -C.Aura.Space)
+        v:ClearAllPoints()
+        v:SetSize(C.Aura.Size, C.Aura.Size)
+        
+        if k == 1 then
+            v:SetPoint("TOPRIGHT", DebuffAnchor, 0, 0)
+        elseif k % 8 == 1 then
+            v:SetPoint("TOP", auras[k - 8], "BOTTOM", 0, -C.Aura.Space)
         else
-            value:SetPoint("RIGHT", auras[key - 1], "LEFT", -C.Aura.Space, 0)
+            v:SetPoint("RIGHT", auras[k - 1], "LEFT", -C.Aura.Space, 0)
         end
     end
 end
@@ -61,14 +64,19 @@ local function HookBuffFrameUpdateAllBuffAnchors(self, ...)
     end
     
     for i = 1, #auras do
-        auras[i].timeLeft = auras[i].timeLeft or 365 * 24 * 60 * 60
+        if not auras[i].timeLeft then
+            auras[i].timeLeft = 365 * 24 * 60 * 60
+        end
     end
     
     table.sort(auras, function(l, r)
         return (l and not r) or (l and r and l.timeLeft > r.timeLeft)
     end)
-
+    
     for k, v in pairs(auras) do
+        v.duration:Show()
+        v.duration:SetAlpha(1.00)
+        
         v:ClearAllPoints()
         v:SetSize(C.Aura.Size, C.Aura.Size)
         
