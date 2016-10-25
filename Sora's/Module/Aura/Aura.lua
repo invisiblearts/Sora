@@ -47,7 +47,7 @@ local function HookDebuffButtonUpdateAnchors(buttonName, index, ...)
         elseif k % 8 == 1 then
             v:SetPoint("TOP", auras[k - 8], "BOTTOM", 0, -C.Aura.Space)
         else
-            v:SetPoint("RIGHT", auras[kkey - 1], "LEFT", -C.Aura.Space, 0)
+            v:SetPoint("RIGHT", auras[k - 1], "LEFT", -C.Aura.Space, 0)
         end
     end
 end
