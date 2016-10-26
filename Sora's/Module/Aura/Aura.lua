@@ -63,16 +63,6 @@ local function HookBuffFrameUpdateAllBuffAnchors(self, ...)
         end
     end
     
-    for i = 1, #auras do
-        if not auras[i].timeLeft then
-            auras[i].timeLeft = 365 * 24 * 60 * 60
-        end
-    end
-    
-    table.sort(auras, function(l, r)
-        return (l and not r) or (l and r and l.timeLeft > r.timeLeft)
-    end)
-    
     for k, v in pairs(auras) do
         v.duration:Show()
         v.duration:SetAlpha(1.00)
