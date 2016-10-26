@@ -1,0 +1,13 @@
+tag 1.7.3
+1baae3e4415f27f811489526ec954fb309d29cb3
+Hendrik Leppkes <h.leppkes@gmail.com>
+2016-10-26 09:53:14 +0200
+
+Tag as 1.7.3
+
+
+--------------------
+
+Hendrik Leppkes:
+	- Update TOC for 7.1
+	- Remove PlayerArrow hooks, broken with 7.1
