@@ -1,10 +1,10 @@
-## Interface: 70000
+## Interface: 70100
 ## Title: Angry World Quests
 ## Notes: Adds World Quests to the quest list
 ## Author: Ermad
 ## SavedVariables: AngryWorldQuests_Config
 ## SavedVariablesPerCharacter: AngryWorldQuests_CharacterConfig
-## X-Curse-Packaged-Version: v0.15.1
+## X-Curse-Packaged-Version: v0.15.2
 ## X-Curse-Project-Name: Angry World Quests
 ## X-Curse-Project-ID: angry-world-quests
 ## X-Curse-Repository-ID: wow/angry-world-quests/mainline
