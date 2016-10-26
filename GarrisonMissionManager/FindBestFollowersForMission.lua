@@ -13,6 +13,7 @@ local GARRISON_FOLLOWER_MAX_LEVEL = GARRISON_FOLLOWER_MAX_LEVEL
 local GARRISON_SHIP_OIL_CURRENCY = GARRISON_SHIP_OIL_CURRENCY
 local GarrisonMissionFrame = GarrisonMissionFrame
 local GetFramesRegisteredForEvent = GetFramesRegisteredForEvent
+local GetMissionCost = C_Garrison.GetMissionCost
 local GetNumFollowersOnMission = C_Garrison.GetNumFollowersOnMission
 local GetPartyMissionInfo = C_Garrison.GetPartyMissionInfo
 local LE_FOLLOWER_TYPE_GARRISON_6_0 = LE_FOLLOWER_TYPE_GARRISON_6_0
@@ -51,7 +52,19 @@ local min, max = {}, {}
 local best_modes = { "success" }
 local best_mode_unavailable = {}
 local preserve_mission_page_followers = {}
+
+local FindBestFollowersForMission_compare
+
 local function FindBestFollowersForMission(mission, followers, mode)
+   local compare_top_1
+   if FindBestFollowersForMission_compare then
+      FindBestFollowersForMission_compare(mission, followers, mode)
+      compare_top_1 = {}
+      for key, val in pairs(top[1]) do
+         compare_top_1[key] = val
+      end
+   end
+
    local followers_count = #followers
 
    local top_entries = mode == "mission_list" and 1 or 3
@@ -86,6 +99,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
          RemoveFollowerFromMission(mission_id, followers[idx].followerID)
       end
    end
+
+   local baseCost, cost = GetMissionCost(mission_id)
+   local increased_cost = cost > baseCost
 
    for idx = 1, slots do
       max[idx] = followers_count - slots + idx
@@ -172,7 +188,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
             if follower2.isTroop then
                follower2_is_troop = 1
                -- Only used to remove "duplicate" teams with different instance of same troop class
-               follower2_troop_spec = follower2.classSpec * (-follower2_busy)
+               follower2_troop_spec = follower2.classSpec * (follower2_busy == 1 and 1 or -1)
             end
          end
          -- Special handling to calculate precisely one team for 1 filled slot in 3 members missions.
@@ -197,7 +213,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                if follower3.isTroop then
                   follower3_is_troop = 1
                   -- Only used to remove "duplicate" teams with different instance of same troop class
-                  follower3_troop_spec = follower3.classSpec * (-follower3_busy)
+                  follower3_troop_spec = follower3.classSpec * (follower3_busy == 1 and 1 or -1)
                end
             end
 
@@ -254,6 +270,12 @@ local function FindBestFollowersForMission(mission, followers, mode)
                -- Calculate result
                local follower_level_total = follower1_level + follower2_level + follower3_level
                local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier, goldMultiplier = GetPartyMissionInfo(mission_id)
+               local cost = 0
+               if type70 then
+                  local baseCost
+                  baseCost, cost = GetMissionCost(mission_id)
+               end
+
                -- Uh, thanks 6.2, for lots of new calls and tables going directly to garbage right in the middle of most computational heavy loop.
                -- At least I can eliminate "type" after first check.
                -- TODO: remove old API support
@@ -314,13 +336,18 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         if not prev_top[1] then found = true break end
 
                         local prev_followers_troop = prev_top.followers_troop
-                        local prev_SuccessChance = prev_top.successChance
+                        local prev_successChance = prev_top.successChance
                         local prev_followers_maxed = prev_top.followers_maxed
 
-                        local c_material_yield = prev_top.material_yield
+                        if mode == 'unconditional_minimize_troops' then
+                           if prev_followers_troop < followers_troop then break end
+                           if prev_followers_troop > followers_troop then found = true break end
+                        end
+
+                        local prev_material_yield = prev_top.material_yield
                         if mode == 'material_yield' then
-                           if c_material_yield < material_yield then found = true break end
-                           if c_material_yield > material_yield then break end
+                           if prev_material_yield < material_yield then found = true break end
+                           if prev_material_yield > material_yield then break end
                         end
 
                         local c_gold_yield = prev_top.gold_yield
@@ -330,20 +357,20 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         end
 
                         if not type70 or overmax_reward then -- TODO: FollowerOptions
-                           if prev_SuccessChance < successChance then found = true break end
-                           if prev_SuccessChance > successChance then break end
+                           if prev_successChance < successChance then found = true break end
+                           if prev_successChance > successChance then break end
                         else
                            -- No point in going over 100%. Try to find team >= 100%, but with as little overkill as posible.
-                           local prev_SuccessChance_clamped
+                           local prev_successChance_clamped
                            local successChance_clamped
-                           local prev_SuccessChance_over
+                           local prev_successChance_over
                            local successChance_over
-                           if prev_SuccessChance > 100 then
-                              prev_SuccessChance_clamped = 100
-                              prev_SuccessChance_over = prev_SuccessChance - 100
+                           if prev_successChance > 100 then
+                              prev_successChance_clamped = 100
+                              prev_successChance_over = prev_successChance - 100
                            else
-                              prev_SuccessChance_clamped = prev_SuccessChance
-                              prev_SuccessChance_over = 0
+                              prev_successChance_clamped = prev_successChance
+                              prev_successChance_over = 0
                            end
                            if successChance > 100 then
                               successChance_clamped = 100
@@ -353,17 +380,17 @@ local function FindBestFollowersForMission(mission, followers, mode)
                               successChance_over = 0
                            end
 
-                           if prev_SuccessChance_clamped > successChance_clamped then break end
-                           if prev_SuccessChance_clamped < successChance_clamped then found = true break end
+                           if prev_successChance_clamped > successChance_clamped then break end
+                           if prev_successChance_clamped < successChance_clamped then found = true break end
 
-                           if prev_SuccessChance_over < successChance_over then break end
-                           if prev_SuccessChance_over > successChance_over then found = true break end
+                           if prev_successChance_over < successChance_over then break end
+                           if prev_successChance_over > successChance_over then found = true break end
                         end
 
                         if material_rewards then
-                           local cMaterialMultiplier = prev_top.materialMultiplier
-                           if cMaterialMultiplier < materialMultiplier then found = true break end
-                           if cMaterialMultiplier > materialMultiplier then break end
+                           local prev_materialMultiplier = prev_top.materialMultiplier
+                           if prev_materialMultiplier < materialMultiplier then found = true break end
+                           if prev_materialMultiplier > materialMultiplier then break end
                         end
 
                         if prev_followers_maxed > followers_maxed then found = true break end
@@ -380,14 +407,18 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         if cTotalTimeSeconds > totalTimeSeconds then found = true break end
                         if cTotalTimeSeconds < totalTimeSeconds then break end
 
+                        local prev_cost = prev_top.cost
+                        if prev_cost > cost then found = true break end
+                        if prev_cost < cost then break end
+
                         local c_follower_level_total = prev_top.follower_level_total
                         if c_follower_level_total > follower_level_total then found = true break end
                         if c_follower_level_total < follower_level_total then break end
 
                         -- Maximize material/gold yield in general mode when possible too
                         if material_rewards then
-                           if c_material_yield < material_yield then found = true break end
-                           if c_material_yield > material_yield then break end
+                           if prev_material_yield < material_yield then found = true break end
+                           if prev_material_yield > material_yield then break end
                         end
 
                         if gold_rewards then
@@ -406,9 +437,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
                         -- Minimize material/gold multiplier if possible if no corresponding reward is available.
                         if not material_rewards then
-                           local c_material_multiplier = prev_top.materialMultiplier
-                           if c_material_multiplier > materialMultiplier then found = true break end
-                           if c_material_multiplier < materialMultiplier then break end
+                           local prev_materialMultiplier = prev_top.materialMultiplier
+                           if prev_materialMultiplier > materialMultiplier then found = true break end
+                           if prev_materialMultiplier < materialMultiplier then break end
                         end
 
                         if not gold_rewards then
@@ -457,6 +488,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         new.follower_level_total = follower_level_total
                         new.mission_level = mission.level
                         new.followers_troop = followers_troop
+                        new.cost = cost
                         tinsert(top_list, idx, new)
                         top_list[5] = nil
                         break
@@ -493,6 +525,25 @@ local function FindBestFollowersForMission(mission, followers, mode)
             GarrisonMissionFrame:AssignFollowerToMission(MissionPageFollowers[party_idx], preserve_mission_page_followers[party_idx])
          end
       end
+   end
+
+   if compare_top_1 then
+      local diff
+      for key, val in pairs(top[1]) do
+         if compare_top_1[key] ~= val and key ~= "cost" then
+            print("compare diff", key,
+               type(compare_top_1[key]) == "table" and compare_top_1[key].name or compare_top_1[key],
+               type(val) == "table" and val.name or val
+            )
+            diff = true
+         end
+         compare_top_1[key] = nil
+      end
+      for key, val in pairs(compare_top_1) do
+         print("compare extra", key, val)
+         diff = true
+      end
+      if not diff then print("compare no diffs") end
    end
 
    for idx = 1, #event_handlers do RegisterEvent(event_handlers[idx], "GARRISON_FOLLOWER_LIST_UPDATE") end
