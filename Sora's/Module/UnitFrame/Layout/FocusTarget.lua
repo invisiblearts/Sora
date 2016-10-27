@@ -53,7 +53,7 @@ local function CreateTag(self, ...)
     nameTag:SetPoint("TOPLEFT", 1, -3)
     self:Tag(nameTag, "[Sora:Name]")
 
-    local healthTag = S.MakeText(self.Health, 8)
+    local healthTag = S.MakeText(self.Health, 10)
     healthTag:SetPoint("BOTTOMRIGHT", self.Health, 2, 1)
     self:Tag(healthTag, "[Sora:PerHealth]")
 end
