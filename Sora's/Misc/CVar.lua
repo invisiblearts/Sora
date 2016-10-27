@@ -11,6 +11,11 @@ local function OnPlayerLogin(self, event, ...)
     
     -- 还原经典战斗文字效果
     SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
+    
+    -- 自动适配分辨率
+    SetCVar("useUiScale", 0)
+    UIParent:SetScale(1.00)
+    UIParent:SetScale(UIParent:GetHeight() / 1440)
 end
 
 -- Event

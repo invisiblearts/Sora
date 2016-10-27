@@ -36,7 +36,7 @@ local function SetChatFrame()
         
         ChatFrame:SetSpacing(2)
         ChatFrame:SetFading(false)
-        ChatFrame:SetFont(STANDARD_TEXT_FONT, 11, "OUTLINE")
+        ChatFrame:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
         
         ChatFrame:SetMinResize(0, 0)
         ChatFrame:SetMaxResize(0, 0)
