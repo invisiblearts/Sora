@@ -4,8 +4,6 @@ local S, C, L, DB = unpack(select(2, ...))
 -- Variables Initialization
 C.PlayerAuraWhiteList = {}
 C.PlayerAuraBlackList = {}
-C.TargetAuraWhiteList = {}
-C.TargetAuraBlackList = {}
 
 -- List Definitions. Patches welcome.
 -- WhiteList will override BlackList if a spellID appears in both lists.
@@ -31,15 +29,3 @@ C.PlayerAuraBlackList = {
     15407, -- Mind Flay
 }
 
-C.TargetAuraBlackList = {
-    -- Shadow Priests
-    15407, -- Mind Flay
-    193473, -- Mind Flay by Call to the Void
-    205065, -- Void Torrent
-
-    -- Legion World Trinkets
-    224078, -- Devisaur Shock Leash
-    
-    -- Emerald Nightmare Trinkets
-    221812, -- Swarming Plaguehive. This has no effect on strategy but occupies space.
-}

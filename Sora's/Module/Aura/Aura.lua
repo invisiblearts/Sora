@@ -35,10 +35,7 @@ local function HookDebuffButtonUpdateAnchors(buttonName, index, ...)
         end
     end
     
-    for k, v in pairs(auras) do
-        v.duration:Show()
-        v.duration:SetAlpha(1.00)
-        
+    for k, v in pairs(auras) do        
         v:ClearAllPoints()
         v:SetSize(C.Aura.Size, C.Aura.Size)
         
@@ -63,20 +60,7 @@ local function HookBuffFrameUpdateAllBuffAnchors(self, ...)
         end
     end
     
-    for i = 1, #auras do
-        if not auras[i].timeLeft then
-            auras[i].timeLeft = 365 * 24 * 60 * 60
-        end
-    end
-    
-    table.sort(auras, function(l, r)
-        return (l and not r) or (l and r and l.timeLeft > r.timeLeft)
-    end)
-    
-    for k, v in pairs(auras) do
-        v.duration:Show()
-        v.duration:SetAlpha(1.00)
-        
+    for k, v in pairs(auras) do        
         v:ClearAllPoints()
         v:SetSize(C.Aura.Size, C.Aura.Size)
         
@@ -91,7 +75,7 @@ local function HookBuffFrameUpdateAllBuffAnchors(self, ...)
 end
 
 local function OnPlayerLogin(self, event, ...)
-    SetCVar("buffDurations", 1)
+    -- SetCVar("buffDurations", 1)
     
     BuffAnchor = CreateFrame("Frame", nil, UIParent)
     BuffAnchor:SetPoint(unpack(C.Aura.Postion))
@@ -101,7 +85,7 @@ local function OnPlayerLogin(self, event, ...)
     DebuffAnchor:SetSize(C.Aura.Size * 8 + C.Aura.Size * 7, C.Aura.Size * 2 + C.Aura.Space)
     DebuffAnchor:SetPoint("TOPRIGHT", BuffAnchor, "BOTTOMRIGHT", 0, -C.Aura.Space)
     
-    hooksecurefunc("AuraButton_OnUpdate", HookAuraButtonOnUpdate)
+    -- hooksecurefunc("AuraButton_OnUpdate", HookAuraButtonOnUpdate)
     hooksecurefunc("AuraButton_UpdateDuration", HookAuraButtonUpdateDuration)
     hooksecurefunc("DebuffButton_UpdateAnchors", HookDebuffButtonUpdateAnchors)
     hooksecurefunc("BuffFrame_UpdateAllBuffAnchors", HookBuffFrameUpdateAllBuffAnchors)

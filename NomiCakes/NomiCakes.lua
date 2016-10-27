@@ -1,7 +1,7 @@
 --[[
 	Operating under the following assumptions about how recipes are discovered:
 	1) You must know the base rank of a recipe to receive higher ranked versions of it
-	2) You must already know all recipes which are reagents for the recipe (unconfirmed)
+	2) You must already know all recipes which are reagents for the recipe (No longer true in 7.1)
 --]]
 
 local HookedButtons = {} -- [button] = true
@@ -29,6 +29,8 @@ local Requisites = { -- List of recipes you must (probably) already know in orde
 	-- While technically you need to know the previous rank of a spell to receive the next one,
 	-- we'll use the base rank as the requirement for all ranks because it's more intuitive
 	-- I only want to grey-out recipes that we can't learn because we don't know the base rank
+	--[[
+	-- 7.1 patch notes imply that recipes no longer require knowing other recipes to learn
 	[201506] = {201501}, -- Azshari Salad: Suramar Surf and Turf
 	[201508] = {201503}, -- Seed-Battered Fish Plate: Kio-Scented Stormray
 	[201507] = {201502}, -- Nightborne Delicacy Platter: Barracuda Mrglgagh
@@ -52,7 +54,7 @@ local Requisites = { -- List of recipes you must (probably) already know in orde
 	[201556] = {201507}, -- Nightborne Delicacy Platter
 	[201537] = {201508}, -- Seed-Battered Fish Plate
 	[201557] = {201508}, -- Seed-Battered Fish Plate
-	
+	--]]
 	[201531] = {201502}, -- Barracuda Mrglgagh
 	[201551] = {201502}, -- Barracuda Mrglgagh
 	[201533] = {201504}, -- Drogbar-Style Salmon
@@ -166,6 +168,25 @@ end
 local IsNomi = false -- Are we currently interacting with Nomi?
 local function DecorateNomi()
 	wipe(TooltipInfo)
+	
+	local WorkOrders = NomiCakesDatas and NomiCakesDatas.WorkOrders
+	local activeWorkOrders = {}
+	if WorkOrders then -- count number of pending work orders to display on their buttons
+		local now = time()
+		for i = 1, #WorkOrders do
+			local workOrder = WorkOrders[i]
+			local ingredientItemID = workOrder[1]
+			local endTime = workOrder[3]
+			if endTime > now then -- still active
+				if not activeWorkOrders[ingredientItemID] then
+					activeWorkOrders[ingredientItemID] = 1
+				else
+					activeWorkOrders[ingredientItemID] = activeWorkOrders[ingredientItemID] + 1
+				end
+			end
+		end
+	end
+	
 	local i = 0
 	for j = 1, #IngredientOrder do
 		local ingredientItemID = IngredientOrder[j]
@@ -235,15 +256,26 @@ local function DecorateNomi()
 						end
 					end
 					--buttonIcon:SetTexture(ingredientIcon)
+					local text
 					if unlearned ~= 0 then
 						if canLearn ~= 0 then
-							button:SetFormattedText('|T%d:16|t %d [%s] x%d', ingredientIcon, canLearn, ingredientName, count)
+							--button:SetFormattedText('|T%d:16|t %d [%s] x%d', ingredientIcon, canLearn, ingredientName, count)
+							text = format('|T%d:16|t %d [%s] x%d', ingredientIcon, canLearn, ingredientName, count)
 						else
 							-- button:SetText('|cff660000' .. canLearn .. ' [' .. ingredientName .. ']')
-							button:SetFormattedText('|T%d:16|t |cff660000%d [%s] x%d|r', ingredientIcon, canLearn, ingredientName, count)
+							--button:SetFormattedText('|T%d:16|t |cff660000%d [%s] x%d|r', ingredientIcon, canLearn, ingredientName, count)
+							text = format('|T%d:16|t |cff660000%d [%s] x%d|r', ingredientIcon, canLearn, ingredientName, count)
 						end
 					else
-						button:SetFormattedText('|cff660000No more |T%d:16|t [%s]', ingredientIcon, ingredientName)
+						--button:SetFormattedText('|cff660000No more |T%d:16|t [%s]', ingredientIcon, ingredientName)
+						text = format('|cff660000No more |T%d:16|t [%s]', ingredientIcon, ingredientName)
+					end
+					if text then
+						if activeWorkOrders[ingredientItemID] then
+							-- spell_holy_borrowedtime
+							text = text .. ' |Tinterface/icons/spell_holy_borrowedtime:16|t |cff660000' .. activeWorkOrders[ingredientItemID] .. '|r'
+						end
+						button:SetText(text)
 					end
 					GossipResize(button)
 				end
@@ -414,7 +446,7 @@ do -- Experimental work order stuff
 		if event == 'SHIPMENT_CRAFTER_OPENED' then
 			if ... == 122 then -- we're talking to nomi
 				ShipmentOpenTime = time()
-				NumWorkOrdersOrdered = 0
+				NumWorkOrdersOrdered, WorkOrderType = 0
 				self:RegisterEvent('SHIPMENT_UPDATE')
 				self:RegisterEvent('SHIPMENT_CRAFTER_CLOSED')
 				self:RegisterEvent('SHIPMENT_CRAFTER_INFO')
@@ -458,10 +490,12 @@ do -- Experimental work order stuff
 			end
 		elseif event == 'SHIPMENT_CRAFTER_CLOSED' then -- if this event doesn't fire for some reason, we won't unregister events properly and will bug the next time the player talks to a work order npc
 			-- output what work orders were placed when the window is closed
+			
+			-- todo: figure out how this could possibly print twice, since the event is being unregistered
 			self:UnregisterEvent('SHIPMENT_UPDATE')
 			self:UnregisterEvent('SHIPMENT_CRAFTER_CLOSED')
 			self:UnregisterEvent('SHIPMENT_CRAFTER_INFO') -- this shouldn't be necessary
-			if NumWorkOrdersOrdered > 0 then
+			if WorkOrderType and NumWorkOrdersOrdered > 0 then
 				local itemID = WorkOrderType
 				local name = LocalizedIngredientList[itemID] and LocalizedIngredientList[itemID][2] or '???'
 				local _, _, _, _, ingredientIcon = GetItemInfoInstant(itemID)
