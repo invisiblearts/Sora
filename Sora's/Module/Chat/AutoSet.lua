@@ -7,7 +7,7 @@ local function OnPlayerLogin(self, event, unit, ...)
 	FCF_SetChatWindowFontSize(self, ChatFrame1, 11) 
 
 	ChatFrame1:ClearAllPoints()
-	ChatFrame1:SetSize(450, 150)
+	ChatFrame1:SetSize(450, 155)
 	ChatFrame1:SetUserPlaced(true)
 	ChatFrame1:SetPoint("BOTTOMLEFT", 28, 28)
 
