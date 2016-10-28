@@ -71,8 +71,8 @@ local function SetTargetAuraTimer(self, ...)
     auras.CustomFilter = function(self, unit, icon, name, rank, _, count, _, duration, timeLeft, caster, _, _, spellID)
         local flag = false
         
-        if (caster == "player" and icon.isDebuff and duration > 0 and duration < 60
-           and not blackList[spellID]) or (whiteList[spellID] and caster == "player") then
+        if caster == "player" and ((icon.isDebuff and duration > 0 and duration < 60
+           and not blackList[spellID]) or whiteList[spellID]) then
             flag = true
             icon.name = name
             icon.duration = duration
