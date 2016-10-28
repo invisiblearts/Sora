@@ -1,6 +1,6 @@
 ﻿-- Engines
 local S, C, L, DB = unpack(select(2, ...))
-local Aurora = select(1, unpack(Aurora or FreeUI))
+-- local Aurora = select(1, unpack(Aurora or FreeUI))
 
 -- Begin
 function S.Dump(target)
@@ -81,7 +81,7 @@ function S.Dump(target)
 end
 
 function S.MakeText(parent, size)
-    local Text = parent:CreateFontString(nil, "OVERLAY")
+    local Text = parent:CreateFontString(nil, "ARTWORK")
     Text:SetFont(STANDARD_TEXT_FONT, size, "OUTLINE")
     
     return Text

@@ -23,16 +23,6 @@ local blackList = {
     [221812] = true, -- Swarming Plaguehive. This has no effect on strategy but occupies space.    
 }
 
--- Helper
-local function ElementInTable(ele, tbl)
-    for k,v in ipairs(tbl)
-    do
-          if v == ele then
-              return true;
-          end
-    end
-    return false;
-end
 
 -- Begin
 local function SetTargetAuraTimer(self, ...)
@@ -97,7 +87,7 @@ local function SetTargetAuraTimer(self, ...)
         local flag = false
         
         if (caster == "player" and icon.isDebuff and duration > 0 and duration < 60
-           and not blackList[spellID]) or whiteList[spellID] then
+           and not blackList[spellID]) or (whiteList[spellID] and caster == "player") then
             flag = true
             icon.name = name
             icon.duration = duration

@@ -171,7 +171,7 @@ end
 
 local Cache = {}
 local function getPlayer(unit)
-	local guid = UnitGUID(unit)
+	local guid = unit and UnitGUID(unit)
 	if (not Cache[guid]) then
 		local class, _, race, _, _, name, realm = GetPlayerInfoByGUID(guid)
 		if (not name) then return end

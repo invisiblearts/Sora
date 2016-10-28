@@ -49,13 +49,13 @@ local function CreateHealth(self, ...)
 end
 
 local function CreateTag(self, ...)
-    local NameTag = S.MakeText(self.Health, 10)
-    NameTag:SetPoint("TOPLEFT", 1, -1)
-    self:Tag(NameTag, "[Sora:Name]")
-    
-    local HealthTag = S.MakeText(self.Health, 7)
-    HealthTag:SetPoint("BOTTOMRIGHT", self.Health, 2, 1)
-    self:Tag(HealthTag, "[Sora:PerHealth]")
+    local nameTag = S.MakeText(self.Health, 10)
+    nameTag:SetPoint("TOPLEFT", 1, -3)
+    self:Tag(nameTag, "[Sora:Name]")
+
+    local healthTag = S.MakeText(self.Health, 10)
+    healthTag:SetPoint("BOTTOMRIGHT", self.Health, 2, 1)
+    self:Tag(healthTag, "[Sora:PerHealth]")
 end
 
 local function CreateRaidIcon(self, ...)
