@@ -45,7 +45,7 @@ local function SetExperienceBar(self, ...)
     experience.rested:SetStatusBarTexture(DB.Statusbar)
     experience.shadow = S.MakeShadow(experience, 2)
     
-    experience.text = S.MakeText(experience, 10)
+    experience.text = S.MakeText(experience, 12)
     experience.text:SetText("N/A")
     experience.text:SetPoint("CENTER", 0, 5)
     self:Tag(experience.text, "[perxp]%")
@@ -58,15 +58,15 @@ local function SetExperienceBar(self, ...)
     experience:SetScript("OnLeave", OnLeave)
     experience:SetScript("OnEnter", OnExperienceBarEnter)
     
-    experience.onEnterInfoLine = S.MakeText(experience, 10)
+    experience.onEnterInfoLine = S.MakeText(experience, 12)
     experience.onEnterInfoLine:ClearAllPoints()
     self:Tag(experience.onEnterInfoLine, "[class] - Lv.[level]")
     
-    experience.onEnterValueLine = S.MakeText(experience, 10)
+    experience.onEnterValueLine = S.MakeText(experience, 12)
     experience.onEnterValueLine:ClearAllPoints()
     self:Tag(experience.onEnterValueLine, "[curxp]/[maxxp] - [perxp]%")
     
-    experience.onEnterRestedLine = S.MakeText(experience, 10)
+    experience.onEnterRestedLine = S.MakeText(experience, 12)
     experience.onEnterRestedLine:ClearAllPoints()
     self:Tag(experience.onEnterRestedLine, "[currested] - [perrested]%")
     
@@ -83,7 +83,7 @@ local function SetReputationBar(self, ...)
     reputation.colorStanding = true
     reputation.shadow = S.MakeShadow(reputation, 2)
     
-    reputation.text = S.MakeText(reputation, 10)
+    reputation.text = S.MakeText(reputation, 12)
     reputation.text:SetText("N/A")
     reputation.text:SetPoint("CENTER", 0, 5)
     self:Tag(reputation.text, "[perrep]%")
@@ -96,11 +96,11 @@ local function SetReputationBar(self, ...)
     reputation:SetScript("OnLeave", OnLeave)
     reputation:SetScript("OnEnter", OnReputationBarEnter)
     
-    reputation.onEnterInfoLine = S.MakeText(reputation, 10)
+    reputation.onEnterInfoLine = S.MakeText(reputation, 12)
     reputation.onEnterInfoLine:ClearAllPoints()
     self:Tag(reputation.onEnterInfoLine, "[reputation] - [standing]")
     
-    reputation.onEnterValueLine = S.MakeText(reputation, 10)
+    reputation.onEnterValueLine = S.MakeText(reputation, 12)
     reputation.onEnterValueLine:ClearAllPoints()
     self:Tag(reputation.onEnterValueLine, "[currep]/[maxrep] - [perrep]%")
     

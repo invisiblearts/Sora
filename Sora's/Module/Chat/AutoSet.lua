@@ -11,7 +11,7 @@ local function OnPlayerLogin(self, event, unit, ...)
 	ChatFrame1:SetUserPlaced(true)
 	ChatFrame1:SetPoint("BOTTOMLEFT", 28, 28)
 
-	for i = 1, 10 do
+	for i = 1, NUM_CHAT_WINDOWS do
 		FCF_SetWindowAlpha(_G["ChatFrame"..i], 0)
 	end
 
