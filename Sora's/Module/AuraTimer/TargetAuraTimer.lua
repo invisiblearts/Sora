@@ -5,23 +5,8 @@ local S, C, L, DB = unpack(select(2, ...))
 
 -- Variables
 local spacing, iconSize, barWidth = nil, nil, nil
-local whiteList = {
-    [164812] = true, -- 月火术
-    [164815] = true, -- 阳炎术
-}
-
-local blackList = {
-    -- Shadow Priests
-    [15407] = true, -- Mind Flay
-    [193473] = true, -- Mind Flay by Call to the Void
-    [205065] = true, -- Void Torrent
-
-    -- Legion World Trinkets
-    [224078] = true, -- Devisaur Shock Leash
-    
-    -- Emerald Nightmare Trinkets
-    [221812] = true, -- Swarming Plaguehive. This has no effect on strategy but occupies space.    
-}
+local whiteList = C.TargetAuraWhiteList
+local blackList = C.TargetAuraBlackList
 
 
 -- Begin

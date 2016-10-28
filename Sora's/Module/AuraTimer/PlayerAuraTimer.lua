@@ -5,17 +5,8 @@ local S, C, L, DB = unpack(select(2, ...))
 
 -- Variables
 local spacing, iconSize = nil, nil
-
--- Helper
-local function ElementInTable(ele, tbl)
-    for k,v in ipairs(tbl)
-    do
-          if v == ele then
-              return true;
-          end
-    end
-    return false;
-end
+local whiteList = C.PlayerAuraWhiteList
+local blackList = C.PlayerAuraBlackList
 
 -- Begin
 local function SetPlayerAuraTimer(self, ...)
@@ -44,8 +35,8 @@ local function SetPlayerAuraTimer(self, ...)
     
     auras.CustomFilter = function(self, unit, icon, name, rank, _, count, _, duration, timeLeft, caster, _, _, spellID)
         local flag = (duration > 0 and duration < 60 and caster == "player" and not icon.isDebuff
-                     and not ElementInTable(spellID, C.PlayerAuraBlackList))
-                     or ElementInTable(spellID, C.PlayerAuraWhiteList)
+                     and not blackList[spellID])
+                     or whiteList[spellID]
         -- Sorry for its messiness. Why lua is so shitty?
 
         if flag then
