@@ -11,9 +11,6 @@ local function OnPlayerLogin(self, event, ...)
     
     -- 还原经典战斗文字效果
     SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
-    
-    -- 还原经典切换目标（Tab）范围
-    SetCVar("TargetPriorityAllowAnyOnScreen", 0)
 end
 
 -- Event
