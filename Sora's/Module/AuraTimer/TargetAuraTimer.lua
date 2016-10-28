@@ -5,6 +5,23 @@ local S, C, L, DB = unpack(select(2, ...))
 
 -- Variables
 local spacing, iconSize, barWidth = nil, nil, nil
+local whiteList = {
+    [164812] = true, -- 月火术
+    [164815] = true, -- 阳炎术
+}
+
+local blackList = {
+    -- Shadow Priests
+    [15407] = true, -- Mind Flay
+    [193473] = true, -- Mind Flay by Call to the Void
+    [205065] = true, -- Void Torrent
+
+    -- Legion World Trinkets
+    [224078] = true, -- Devisaur Shock Leash
+    
+    -- Emerald Nightmare Trinkets
+    [221812] = true, -- Swarming Plaguehive. This has no effect on strategy but occupies space.    
+}
 
 -- Helper
 local function ElementInTable(ele, tbl)
@@ -77,10 +94,11 @@ local function SetTargetAuraTimer(self, ...)
     end
     
     auras.CustomFilter = function(self, unit, icon, name, rank, _, count, _, duration, timeLeft, caster, _, _, spellID)
-        local flag = (duration > 0 and duration < 60 and caster == "player" and icon.isDebuff and not ElementInTable(spellID, C.TargetAuraBlackList))
-                     or ElementInTable(spellID, C.TargetAuraWhiteList)
-
-        if flag then
+        local flag = false
+        
+        if (caster == "player" and icon.isDebuff and duration > 0 and duration < 60
+           and not blackList[spellID]) or whiteList[spellID] then
+            flag = true
             icon.name = name
             icon.duration = duration
             icon.timeLeft = timeLeft

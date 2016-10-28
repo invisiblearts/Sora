@@ -82,7 +82,7 @@ end
 
 function S.MakeText(parent, size)
     local Text = parent:CreateFontString(nil, "OVERLAY")
-    Text:SetFont(STANDARD_TEXT_FONT, size, "THINOUTLINE")
+    Text:SetFont(STANDARD_TEXT_FONT, size, "OUTLINE")
     
     return Text
 end
