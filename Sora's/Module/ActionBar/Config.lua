@@ -7,6 +7,6 @@ if not C.ActionBar then
 end
 
 C.ActionBar = {}
-C.ActionBar.Size = 42
+C.ActionBar.Size = 48
 C.ActionBar.Space = 8
 C.ActionBar.MainBarPostion = {"BOTTOM", UIParent, 0, 8}

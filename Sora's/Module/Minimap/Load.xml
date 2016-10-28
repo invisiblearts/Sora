@@ -4,5 +4,6 @@
 	<Script file = "Minimap.lua" />
 	<Script file = "MinimapERBar.lua" />
 	<Script file = "MinimapPanel.lua" />
+	<Script file = "MinimapButton.lua" />
 
 </Ui>

@@ -193,7 +193,7 @@ local function RegisterStyle(self, ...)
     if i == 1 then
         self:SetPoint("LEFT", anchor, "LEFT", 0, 0)
     else
-        self:SetPoint("LEFT", _G["oUF_Sora_Boss" .. (i - 1)], "RIGHT", 16, 0)
+        self:SetPoint("LEFT", _G["oUF_Sora_Boss" .. (i - 1)], "RIGHT", 32, 0)
     end
     
     CreatePower(self, ...)
@@ -211,7 +211,7 @@ end
 local function OnPlayerLogin(self, event, ...)
     anchor = CreateFrame("Frame", nil, UIParent)
     anchor:SetPoint(unpack(C.UnitFrame.Boss.Postion))
-    anchor:SetSize(C.UnitFrame.Boss.Width * 5 + 16 * 4, C.UnitFrame.Boss.Height)
+    anchor:SetSize(C.UnitFrame.Boss.Width * 5 + 32 * 4, C.UnitFrame.Boss.Height)
     
     oUF:RegisterStyle("oUF_Sora_Boss", RegisterStyle)
     oUF:SetActiveStyle("oUF_Sora_Boss")

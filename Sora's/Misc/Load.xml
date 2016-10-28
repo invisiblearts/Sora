@@ -10,6 +10,5 @@
 	<Script file = "AutoRepair.lua" />
 	<Script file = "UIParentFade.lua" />
 	<Script file = "ClearFont_zhCN.lua" />
-	<Script file = "ClearFont_zhTW.lua" />
 
 </Ui>
