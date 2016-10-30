@@ -4,10 +4,10 @@ local S, C, L, DB = unpack(select(2, ...))
 -- Begin
 local function OnPlayerLogin(self, event, unit, ...)
 	FCF_SetLocked(ChatFrame1, nil)
-	FCF_SetChatWindowFontSize(self, ChatFrame1, 12) 
+	FCF_SetChatWindowFontSize(self, ChatFrame1, 11) 
 
 	ChatFrame1:ClearAllPoints()
-	ChatFrame1:SetSize(572, 152)
+	ChatFrame1:SetSize(450, 132)
 	ChatFrame1:SetUserPlaced(true)
 	ChatFrame1:SetPoint("BOTTOMLEFT", 28, 28)
 

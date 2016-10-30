@@ -55,7 +55,7 @@ local function SetPingPanel()
     bar:SetSize((C.MiniMap.Width - 4 * 2) / 3, C.MiniMap.BarHeight)
     bar:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", 0, -C.MiniMap.BarHeight - 8)
     
-    bar.text = S.MakeText(bar, 12)
+    bar.text = S.MakeText(bar, 10)
     bar.text:SetText("0ms")
     bar.text:SetPoint("CENTER", 0, 5)
     
@@ -175,7 +175,7 @@ local function SetAddOnPanel()
     bar:SetSize((C.MiniMap.Width - 4 * 2) / 3, C.MiniMap.BarHeight)
     bar:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 0, -C.MiniMap.BarHeight - 8)
     
-    bar.text = S.MakeText(bar, 12)
+    bar.text = S.MakeText(bar, 10)
     bar.text:SetText("N/A")
     bar.text:SetPoint("CENTER", 0, 5)
     
@@ -220,7 +220,7 @@ local function SetClockPanel()
     clock:SetPoint("TOP", Minimap, "BOTTOM", 0, -8)
     clock:SetSize((C.MiniMap.Width - 4 * 2) / 3, C.MiniMap.BarHeight * 2)
     
-    clock.text = S.MakeText(clock, 18)
+    clock.text = S.MakeText(clock, 14)
     clock.text:SetAllPoints()
     
     clock.timer = 0
@@ -272,7 +272,7 @@ local function SetGoldPanel()
     bar:SetSize((C.MiniMap.Width - 4) / 2, C.MiniMap.BarHeight)
     bar:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", 0, -C.MiniMap.BarHeight * 3 - 8 * 2)
     
-    bar.text = S.MakeText(bar, 12)
+    bar.text = S.MakeText(bar, 10)
     bar.text:SetText("N/A")
     bar.text:SetPoint("CENTER", 0, 5)
     
@@ -360,7 +360,7 @@ local function SetDurabilityPanel()
     bar:SetSize((C.MiniMap.Width - 4) / 2, C.MiniMap.BarHeight)
     bar:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 0, -C.MiniMap.BarHeight * 3 - 8 * 2)
     
-    bar.text = S.MakeText(bar, 12)
+    bar.text = S.MakeText(bar, 10)
     bar.text:SetText("N/A")
     bar.text:SetPoint("CENTER", 0, 5)
     

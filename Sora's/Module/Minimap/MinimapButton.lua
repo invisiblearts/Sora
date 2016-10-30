@@ -25,9 +25,7 @@ local function ProcessButtons()
         anchor:SetPoint("TOPLEFT", Minimap, "TOPRIGHT", 0, 0)
         anchor:SetSize(buttons[1]:GetWidth(), Minimap:GetHeight())
         
-        for k, v in ipairs(buttons) do
-            v:SetScale(1.25)
-            
+        for k, v in ipairs(buttons) do            
             if k == 1 then
                 v:SetPoint("TOP", anchor, "TOP", 0, 6)
             else

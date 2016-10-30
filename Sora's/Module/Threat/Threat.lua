@@ -124,7 +124,7 @@ local function OnPlayerLogin(self, event, ...)
     
     for i = 1, 4 do
         local bar = CreateFrame("StatusBar", nil, UIParent)
-        bar:SetSize(256, 12)
+        bar:SetSize(220, 12)
         bar:SetMinMaxValues(0, 130)
         bar:SetStatusBarTexture(DB.Statusbar)
         
@@ -141,7 +141,7 @@ local function OnPlayerLogin(self, event, ...)
         bar.valueText:SetPoint("RIGHT", bar, "RIGHT", -4, 0)
         
         if i == 1 then
-            bar:SetPoint("TOP", UIParent, "CENTER", -384, -190)
+            bar:SetPoint("TOP", UIParent, "CENTER", -384, -200)
         else
             bar:SetPoint("TOP", bars[i - 1], "BOTTOM", 0, -4)
         end

@@ -62,21 +62,21 @@ local function SetActionButtonStyle()
     }
     
     actionButtonStyle.name = {
-        font = {STANDARD_TEXT_FONT, 12, "OUTLINE"},
+        font = {STANDARD_TEXT_FONT, 10, "OUTLINE"},
         points = {
             {"BOTTOM", 0, 1}
         }
     }
     
     actionButtonStyle.count = {
-        font = {STANDARD_TEXT_FONT, 14, "OUTLINE"},
+        font = {STANDARD_TEXT_FONT, 12, "OUTLINE"},
         points = {
             {"BOTTOMRIGHT", 1, 1}
         }
     }
     
     actionButtonStyle.hotkey = {
-        font = {STANDARD_TEXT_FONT, 14, "OUTLINE"},
+        font = {STANDARD_TEXT_FONT, 12, "OUTLINE"},
         points = {
             {"TOPRIGHT", 1, -1}
         }
@@ -129,14 +129,14 @@ local function SetExtraActionButtonStyle()
     }
     
     extraActionButtonStyle.count = {
-        font = {STANDARD_TEXT_FONT, 14, "OUTLINE"},
+        font = {STANDARD_TEXT_FONT, 12, "OUTLINE"},
         points = {
             {"BOTTOMRIGHT", 0, 2}
         }
     }
     
     extraActionButtonStyle.hotkey = {
-        font = {STANDARD_TEXT_FONT, 14, "OUTLINE"},
+        font = {STANDARD_TEXT_FONT, 12, "OUTLINE"},
         points = {
             {"TOPRIGHT", 1, -1}
         }

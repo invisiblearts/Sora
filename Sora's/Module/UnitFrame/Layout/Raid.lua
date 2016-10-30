@@ -396,14 +396,14 @@ local function CreateHealth(self, ...)
 end
 
 local function CreateTag(self, ...)
-    local nameTag = S.MakeText(self.Health, 12)
+    local nameTag = S.MakeText(self.Health, 10)
     nameTag:SetPoint("CENTER", 0, 0)
     
     self.NameTag = nameTag
     self:Tag(self.NameTag, "[Sora:Color][Sora:Name]|r")
     
-    local statusTag = S.MakeText(self.Health, 8)
-    statusTag:SetPoint("CENTER", 0, -12)
+    local statusTag = S.MakeText(self.Health, 7)
+    statusTag:SetPoint("CENTER", 0, -10)
     
     self.StatusTag = statusTag
     self:Tag(self.StatusTag, "[Sora:Color][Sora:Status]|r")

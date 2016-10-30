@@ -24,7 +24,7 @@ local defaults = {
 	fontSize = 18,
 
 	--the minimum scale we want to show cooldown counts at, anything below this will be hidden
-	minScale = 0.6,
+	minScale = 0.4,
 
 	--the minimum number of seconds a cooldown's duration must be to display text
 	minDuration = 3,
