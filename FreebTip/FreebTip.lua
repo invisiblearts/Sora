@@ -54,7 +54,7 @@ local cfg = {
 	factionIconSize = 60,				--阵营图标大小，不建议更改。
 	bgcolor = {r = 0, g = 0, b = 0},	--Tooltip默认背景颜色，不建议更改。
 	bdrcolor = {r = 0, g = 0, b = 0},	--Tooltip默认边框颜色，不建议更改。
-	sbHeight = 2,						--Tooltip血量/能量条高度，不建议更改。
+	sbHeight = 2,						--Tooltip血量/能量条高度(粗细)，不建议更改。
 	backdrop = {
 		bgFile = "Interface\\AddOns\\FreebTip\\media\\blank",
 		edgeFile = "Interface\\AddOns\\FreebTip\\media\\blank",
@@ -74,7 +74,10 @@ local nilColor = {r = 1, g = 1, b = 1}
 local tappedColor = {r = .6, g = .6, b = .6}
 local deadColor = {r = .6, g = .6, b = .6}
 
-local PowerColor = _G["PowerBarColor"]
+local PowerColor = {}
+for power, color in next, PowerBarColor do
+	PowerColor[power] = color
+end
 PowerColor["MANA"] = {r = .31, g = .45, b = .63}
 PowerColor["RAGE"] = {r = .69, g = .31, b = .31}
 
@@ -163,7 +166,7 @@ local function getUnit(self)
 	local _, unit = self and self:GetUnit()
 	if (not unit) then
 		local mFocus = GetMouseFocus()
-		unit = mFocus and (mFocus.unit or mFocus:GetAttribute("unit")) or "mouseover"
+		unit = mFocus and (mFocus.unit or (mFocus.GetAttribute and mFocus:GetAttribute("unit"))) or "mouseover"
 	end
 
 	return unit
@@ -171,7 +174,7 @@ end
 
 local Cache = {}
 local function getPlayer(unit)
-	local guid = unit and UnitGUID(unit)
+	local guid = UnitGUID(unit)
 	if (not Cache[guid]) then
 		local class, _, race, _, _, name, realm = GetPlayerInfoByGUID(guid)
 		if (not name) then return end
@@ -773,12 +776,22 @@ local function extrastyle(frame)
 	style(ftipBD)
 end
 
-local function framehook(frame)
+local function framehook(frame, mode)
+	if (not frame) then return end
 	frame:HookScript("OnShow", function(self)
 		if (cfg.combathideALL ~= 0 and InCombatLockdown()) then
 			return self:Hide()
 		end
-		style(self)
+		if (not mode) then
+			style(self)
+		elseif (not self.ftipStyle) then
+			if (mode == 1) then
+				style(self)
+			elseif (mode == 2) then
+				extrastyle(self)
+			end
+			self.ftipStyle = true
+		end
 	end)
 end
 
@@ -831,7 +844,7 @@ frameload:SetScript("OnEvent", function(self, event, addon)
 		for i, tip in ipairs(tooltips) do
 			local frame = _G[tip]
 			if (frame) then
-				style(frame)
+				framehook(frame, 1)
 			end
 		end
 
@@ -859,34 +872,34 @@ frameload:SetScript("OnEvent", function(self, event, addon)
 		for i, tip in ipairs(tooltips) do
 			local frame = _G[tip]
 			if (frame) then
-				extrastyle(frame)
+				framehook(frame, 2)
 			end
 		end
 
 		local frame = _G["WorldMapTooltip"]
 		if (frame) then
-			style(frame.BackdropFrame)
+			framehook(frame.BackdropFrame, 1)
 		end
 
 		local frame = _G["QuestScrollFrame"]
 		if (frame) then
-			style(frame.StoryTooltip)
+			framehook(frame.StoryTooltip, 1)
 		end
 
 		local frame = _G["GarrisonBuildingFrame"]
 		if (frame) then
-			extrastyle(frame.BuildingLevelTooltip)
+			framehook(frame.BuildingLevelTooltip, 2)
 		end
 
 		local frame = _G["IMECandidatesFrame"]
 		if (frame) then
-			extrastyle(frame)
+			framehook(frame, 2)
 			frame.selection:SetVertexColor(unitColor("player"))
 		end
 	elseif (addon == "Blizzard_PVPUI") then
 		local frame = _G["PVPRewardTooltip"]
 		if (frame) then
-			style(frame)
+			framehook(frame, 1)
 		end
 	elseif (addon == "Blizzard_Collections") then
 		local tooltips = {
@@ -896,7 +909,7 @@ frameload:SetScript("OnEvent", function(self, event, addon)
 		for i, tip in ipairs(tooltips) do
 			local frame = _G[tip]
 			if (frame) then
-				extrastyle(frame)
+				framehook(frame, 2)
 			end
 		end
 	end

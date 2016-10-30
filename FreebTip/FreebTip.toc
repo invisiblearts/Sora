@@ -1,12 +1,13 @@
-## Interface: 70000
+## Interface: 70100
 ## Title: FreebTip
 ## Notes: FreebTip自用修改版，修复新版本装等提示不准确的问题。
-## Version: 70000.24
+## Version: 70100.01
 ## Author: Freebaser / Edit by aliluya555
 
 Libs\LibItemLevel.lua
 FreebTip.lua
 IDCard.lua
 IDTip.lua
+hover.lua
 ilvlspec.lua
 multiItem.lua
