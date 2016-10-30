@@ -13,10 +13,15 @@ local function OnPlayerLogin(self, event, ...)
                 local nameplate = _G["NamePlate" .. i .. "UnitFrame"]
                 
                 if nameplate then
-                    local font, size, outline = nameplate.name:GetFont()
+                    local _, _, nameOutline = nameplate.name:GetFont()
+                    local _, _, castBatOutline = nameplate.castBar.Text:GetFont()
                     
-                    if outline ~= "OUTLINE" then
-                        nameplate.name:SetFont(font, size, "OUTLINE")
+                    if nameOutline ~= "OUTLINE" then
+                        nameplate.name:SetFont(STANDARD_TEXT_FONT, 8, "OUTLINE")
+                    end
+
+                    if castBatOutline ~= "OUTLINE" then
+                        nameplate.castBar.Text:SetFont(STANDARD_TEXT_FONT, 7, "OUTLINE")
                     end
                 end
             end
