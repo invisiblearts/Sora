@@ -59,3 +59,17 @@ end
 
 -- 设置动作条驱动状态
 RegisterStateDriver(Parent, "visibility", "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists] hide; show")
+
+hooksecurefunc("MultiActionBar_UpdateGridVisibility", function(self, event, ...)
+    if InCombatLockdown() then
+        print("Grid toggle for actionbar1 is not possible in combat.")
+        return
+    else
+        for i = 1, NUM_ACTIONBAR_BUTTONS do
+            local button = _G["ActionButton" .. i]
+            button:SetAttribute("showgrid", 1)
+
+            ActionButton_ShowGrid(button)
+        end
+    end
+end)
