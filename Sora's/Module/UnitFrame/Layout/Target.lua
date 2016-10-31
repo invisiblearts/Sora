@@ -68,17 +68,17 @@ local function CreateHealth(self, ...)
 end
 
 local function CreateTag(self, ...)
-    NameTag = S.MakeText(self.Health, 12)
+    NameTag = S.MakeText(self.Health, 10)
     NameTag:SetAlpha(0.00)
     NameTag:SetPoint("LEFT", 4, 0)
     self:Tag(NameTag, "[Sora:Level][Sora:Rare][Sora:Color][Sora:Name]|r")
     
-    HPTag = S.MakeText(self.Health, 12)
+    HPTag = S.MakeText(self.Health, 10)
     HPTag:SetAlpha(0.00)
     HPTag:SetPoint("RIGHT", -4, 0)
     self:Tag(HPTag, "[Sora:Color][Sora:Health]|r | [Sora:Color][Sora:PerHealth]|r")
     
-    PPTag = S.MakeText(self.Power, 9)
+    PPTag = S.MakeText(self.Power, 8)
     PPTag:SetAlpha(0.00)
     PPTag:SetPoint("RIGHT", -4, 0)
     self:Tag(PPTag, "[Sora:Power] | [Sora:PerPower]")
@@ -103,15 +103,17 @@ local function CreateAura(self, ...)
     auras.disableCooldown = false
     auras.initialAnchor = "TOPLEFT"
     
-    auras.PostCreateIcon = function(self, button)
-        if not button.shadow then
-            button.shadow = S.MakeShadow(button, 2)
+    auras.PostCreateIcon = function(self, icon, ...)
+        if not icon._isProcessed then
+            icon.shadow = S.MakeShadow(icon, 2)
             
-            button.icon:SetAllPoints()
-            button.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+            icon.icon:SetAllPoints()
+            icon.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
             
-            button.count = S.MakeText(button, 10)
-            button.count:SetPoint("BOTTOMRIGHT", 3, 0)
+            icon.count = S.MakeText(icon, 10)
+            icon.count:SetPoint("BOTTOMRIGHT", 3, 0)
+            
+            icon._isProcessed = true
         end
     end
     

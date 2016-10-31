@@ -19,15 +19,15 @@ local function SetOption()
     BNToastFrame:SetClampRectInsets(-15, 15, 15, -15)
     
     CHAT_FONT_HEIGHTS = {10, 11, 12, 13, 14, 15, 16, 17, 18}
-    
-    -- ChatTypeInfo["SAY"].sticky = 1 -- 说
-    -- ChatTypeInfo["PARTY"].sticky = 1 -- 小队
-    -- ChatTypeInfo["GUILD"].sticky = 1 -- 公会
-    -- ChatTypeInfo["WHISPER"].sticky = 0 -- 密语
-    -- ChatTypeInfo["BN_WHISPER"].sticky = 0 -- 实名密语
-    -- ChatTypeInfo["RAID"].sticky = 1 -- 团队
-    -- ChatTypeInfo["OFFICER"].sticky = 1 -- 官员
-    -- ChatTypeInfo["CHANNEL"].sticky = 0 -- 频道
+
+-- ChatTypeInfo["SAY"].sticky = 1 -- 说
+-- ChatTypeInfo["PARTY"].sticky = 1 -- 小队
+-- ChatTypeInfo["GUILD"].sticky = 1 -- 公会
+-- ChatTypeInfo["WHISPER"].sticky = 0 -- 密语
+-- ChatTypeInfo["BN_WHISPER"].sticky = 0 -- 实名密语
+-- ChatTypeInfo["RAID"].sticky = 1 -- 团队
+-- ChatTypeInfo["OFFICER"].sticky = 1 -- 官员
+-- ChatTypeInfo["CHANNEL"].sticky = 0 -- 频道
 end
 
 local function SetChatFrame()
@@ -36,12 +36,11 @@ local function SetChatFrame()
         
         ChatFrame:SetSpacing(2)
         ChatFrame:SetFading(false)
-        ChatFrame:SetFont(STANDARD_TEXT_FONT, 16, "OUTLINE")
-        
         ChatFrame:SetMinResize(0, 0)
         ChatFrame:SetMaxResize(0, 0)
         ChatFrame:SetClampedToScreen(false)
         ChatFrame:SetClampRectInsets(0, 0, 0, 0)
+        ChatFrame:SetFont(STANDARD_TEXT_FONT, 16, "OUTLINE")
         
         if i ~= 2 then
             local OrginalAddMessage = ChatFrame.AddMessage
@@ -71,9 +70,9 @@ local function SetChatFrame()
         kill(_G["ChatFrame" .. i .. "TabHighlightLeft"])
         kill(_G["ChatFrame" .. i .. "TabHighlightRight"])
         kill(_G["ChatFrame" .. i .. "TabHighlightMiddle"])
-
+        
         _G["ChatFrame" .. i .. "TabText"].SetTextColor = function() end
-        _G["ChatFrame" .. i .. "TabText"]:SetFont(STANDARD_TEXT_FONT, 11, "OUTLINE")
+        _G["ChatFrame" .. i .. "TabText"]:SetFont(STANDARD_TEXT_FONT, 10, "OUTLINE")
         
         local EditBox = _G["ChatFrame" .. i .. "EditBox"]
         EditBox:ClearAllPoints()
@@ -82,6 +81,9 @@ local function SetChatFrame()
         EditBox:SetFont(STANDARD_TEXT_FONT, 11, "OUTLINE")
         EditBox:SetPoint("TOPLEFT", ChatFrame, "BOTTOMLEFT", -8, -6)
         EditBox:SetPoint("BOTTOMRIGHT", ChatFrame, "BOTTOMRIGHT", 8, -22)
+        
+        local EditBoxHeader = _G["ChatFrame" .. i .. "EditBoxHeader"]
+        EditBoxHeader:SetFont(STANDARD_TEXT_FONT, 11, "OUTLINE")
         
         kill(_G["ChatFrame" .. i .. "EditBoxMid"])
         kill(_G["ChatFrame" .. i .. "EditBoxLeft"])

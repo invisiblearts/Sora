@@ -7,5 +7,6 @@
 	<include file = "ActionBar\Load.xml" />
 	<include file = "UnitFrame\Load.xml" />
 	<include file = "AuraTimer\Load.xml" />
+	<include file = "NamePlate\Load.xml" />
 
 </Ui>

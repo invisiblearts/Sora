@@ -55,10 +55,10 @@ local function SetTargetAuraTimer(self, ...)
             icon.bar.bg:SetAllPoints()
             icon.bar.bg:SetVertexColor(0.12, 0.12, 0.12)
             
-            icon.timeText = S.MakeText(icon.bar, 12)
+            icon.timeText = S.MakeText(icon.bar, 10)
             icon.timeText:SetPoint("RIGHT", 0, 6)
             
-            icon.nameText = S.MakeText(icon.bar, 12)
+            icon.nameText = S.MakeText(icon.bar, 10)
             icon.nameText:SetPoint("CENTER", -10, 6)
             
             icon.shadow = S.MakeShadow(icon, 2)

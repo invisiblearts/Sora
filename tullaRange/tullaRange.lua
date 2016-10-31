@@ -52,8 +52,8 @@ local function copyDefaults(tbl, defaults)
 end
 
 
---[[ 
-	The main thing 
+--[[
+	The main thing
 --]]
 
 function Addon:Load()
@@ -107,8 +107,8 @@ function Addon:Load()
 end
 
 
---[[ 
-	Frame Events 
+--[[
+	Frame Events
 --]]
 
 function Addon:OnEvent(event, ...)
@@ -129,8 +129,8 @@ function Addon:PLAYER_LOGOUT()
 end
 
 
---[[ 
-	Button Hooking 
+--[[
+	Button Hooking
 --]]
 
 do
@@ -162,18 +162,18 @@ do
 end
 
 
---[[ 
-	Actions 
+--[[
+	Actions
 --]]
 
 function Addon:RequestUpdate()
-	if next(self.buttonsToUpdate) then 
-		self.updater:Show() 
-	end	
+	if next(self.buttonsToUpdate) then
+		self.updater:Show()
+	end
 end
 
 function Addon:UpdateButtons(elapsed)
-	if next(self.buttonsToUpdate) then 
+	if next(self.buttonsToUpdate) then
 		for button in pairs(self.buttonsToUpdate) do
 			self:UpdateButton(button, elapsed)
 		end
@@ -263,8 +263,8 @@ function Addon:SetButtonColor(button, colorIndex)
 end
 
 
---[[ 
-	Configuration 
+--[[
+	Configuration
 --]]
 
 function Addon:SetupDatabase()

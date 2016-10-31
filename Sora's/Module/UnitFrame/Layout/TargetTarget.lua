@@ -49,12 +49,12 @@ local function CreateHealth(self, ...)
 end
 
 local function CreateTag(self, ...)
-    local nameTag = S.MakeText(self.Health, 10)
-    nameTag:SetPoint("TOPLEFT", 1, -3)
+    local nameTag = S.MakeText(self.Health, 9)
+    nameTag:SetPoint("TOPLEFT", 1, -2)
     self:Tag(nameTag, "[Sora:Name]")
 
-    local healthTag = S.MakeText(self.Health, 10)
-    healthTag:SetPoint("BOTTOMRIGHT", self.Health, 2, 1)
+    local healthTag = S.MakeText(self.Health, 9)
+    healthTag:SetPoint("BOTTOMRIGHT", self.Health, 1, 1)
     self:Tag(healthTag, "[Sora:PerHealth]")
 end
 

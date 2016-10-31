@@ -8,7 +8,7 @@
 	<Script file = "AutoSell.lua" />
 	<Script file = "DragEmAll.lua" />
 	<Script file = "AutoRepair.lua" />
+	<Script file = "FontOutline.lua" />
 	<Script file = "UIParentFade.lua" />
-	<Script file = "ClearFont_zhCN.lua" />
 
 </Ui>

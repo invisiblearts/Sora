@@ -7,6 +7,6 @@ if not C.Aura then
 end
 
 C.Aura = {}
-C.Aura.Size = 48
+C.Aura.Size = 36
 C.Aura.Space = 8
 C.Aura.Postion = {"TOPRIGHT", UIParent, -C.Aura.Space, -C.Aura.Space}
