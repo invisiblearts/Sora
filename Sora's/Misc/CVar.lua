@@ -12,8 +12,10 @@ local function OnPlayerLogin(self, event, ...)
     -- 还原经典战斗文字效果
     SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
     
-    -- 还原经典切换目标（Tab）范围
-    SetCVar("TargetPriorityAllowAnyOnScreen", 0)
+    -- 以1920宽度为基准，自动适配分辨率，可通过调整scale的值微调整体比例
+    local scale = 1.00
+    local value = UIParent:GetScale() / (1920 / UIParent:GetWidth())
+    UIParent:SetScale(scale * value)
 end
 
 -- Event

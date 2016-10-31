@@ -84,12 +84,12 @@ local function UpdateAllThreats()
     table.sort(threats, function(l, r)
         local result = false
         
-        if not l then
-            result = false
-        elseif not r then
+        if (l and not r) or (l.isTanking and not r.isTanking) then
             result = true
+        elseif (not l and r) or (not l and not r) or (not l.isTanking and r.isTanking) then
+            result = false
         else
-            result = l.isTanking or l.threatValue > r.threatValue
+            result = l.threatValue > r.threatValue
         end
         
         return result
@@ -124,7 +124,7 @@ local function OnPlayerLogin(self, event, ...)
     
     for i = 1, 4 do
         local bar = CreateFrame("StatusBar", nil, UIParent)
-        bar:SetSize(256, 12)
+        bar:SetSize(220, 12)
         bar:SetMinMaxValues(0, 130)
         bar:SetStatusBarTexture(DB.Statusbar)
         
@@ -141,7 +141,7 @@ local function OnPlayerLogin(self, event, ...)
         bar.valueText:SetPoint("RIGHT", bar, "RIGHT", -4, 0)
         
         if i == 1 then
-            bar:SetPoint("TOP", UIParent, "CENTER", -384, -190)
+            bar:SetPoint("TOP", UIParent, "CENTER", -384, -200)
         else
             bar:SetPoint("TOP", bars[i - 1], "BOTTOM", 0, -4)
         end

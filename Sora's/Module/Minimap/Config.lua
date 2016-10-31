@@ -7,7 +7,7 @@ if not C.UnitFrame then
 end
 
 C.MiniMap = {}
-C.MiniMap.Width = 148
-C.MiniMap.Height = 148
+C.MiniMap.Width = 150
+C.MiniMap.Height = 150
 C.MiniMap.BarHeight = 6
 C.MiniMap.Postion = {"TOPLEFT", UIParent, 8, -8}

@@ -35,16 +35,16 @@ local function HookDebuffButtonUpdateAnchors(buttonName, index, ...)
         end
     end
     
-    for key, value in pairs(auras) do
-        value:ClearAllPoints()
-        value:SetSize(C.Aura.Size, C.Aura.Size)
+    for k, v in pairs(auras) do        
+        v:ClearAllPoints()
+        v:SetSize(C.Aura.Size, C.Aura.Size)
         
-        if key == 1 then
-            value:SetPoint("TOPRIGHT", DebuffAnchor, 0, 0)
-        elseif key % 8 == 1 then
-            value:SetPoint("TOP", auras[key - 8], "BOTTOM", 0, -C.Aura.Space)
+        if k == 1 then
+            v:SetPoint("TOPRIGHT", DebuffAnchor, 0, 0)
+        elseif k % 8 == 1 then
+            v:SetPoint("TOP", auras[k - 8], "BOTTOM", 0, -C.Aura.Space)
         else
-            value:SetPoint("RIGHT", auras[key - 1], "LEFT", -C.Aura.Space, 0)
+            v:SetPoint("RIGHT", auras[k - 1], "LEFT", -C.Aura.Space, 0)
         end
     end
 end
@@ -60,36 +60,22 @@ local function HookBuffFrameUpdateAllBuffAnchors(self, ...)
         end
     end
     
-    table.sort(auras, function(l, r)
-        local flag = false
+    for k, v in pairs(auras) do        
+        v:ClearAllPoints()
+        v:SetSize(C.Aura.Size, C.Aura.Size)
         
-        if not l.timeLeft and r.timeLeft then
-            flag = true
-        elseif l.timeLeft and not r.timeLeft then
-            flag = false
-        elseif l.timeLeft and r.timeLeft then
-            flag = l.timeLeft > r.timeLeft
-        end
-        
-        return flag
-    end)
-    
-    for key, value in pairs(auras) do
-        value:ClearAllPoints()
-        value:SetSize(C.Aura.Size, C.Aura.Size)
-        
-        if key == 1 then
-            value:SetPoint("TOPRIGHT", BuffAnchor, 0, 0)
-        elseif key % 12 == 1 then
-            value:SetPoint("TOP", auras[key - 12], "BOTTOM", 0, -C.Aura.Space)
+        if k == 1 then
+            v:SetPoint("TOPRIGHT", BuffAnchor, 0, 0)
+        elseif k % 12 == 1 then
+            v:SetPoint("TOP", auras[k - 12], "BOTTOM", 0, -C.Aura.Space)
         else
-            value:SetPoint("RIGHT", auras[key - 1], "LEFT", -C.Aura.Space, 0)
+            v:SetPoint("RIGHT", auras[k - 1], "LEFT", -C.Aura.Space, 0)
         end
     end
 end
 
 local function OnPlayerLogin(self, event, ...)
-    SetCVar("buffDurations", 1)
+    -- SetCVar("buffDurations", 1)
     
     BuffAnchor = CreateFrame("Frame", nil, UIParent)
     BuffAnchor:SetPoint(unpack(C.Aura.Postion))
@@ -99,7 +85,7 @@ local function OnPlayerLogin(self, event, ...)
     DebuffAnchor:SetSize(C.Aura.Size * 8 + C.Aura.Size * 7, C.Aura.Size * 2 + C.Aura.Space)
     DebuffAnchor:SetPoint("TOPRIGHT", BuffAnchor, "BOTTOMRIGHT", 0, -C.Aura.Space)
     
-    hooksecurefunc("AuraButton_OnUpdate", HookAuraButtonOnUpdate)
+    -- hooksecurefunc("AuraButton_OnUpdate", HookAuraButtonOnUpdate)
     hooksecurefunc("AuraButton_UpdateDuration", HookAuraButtonUpdateDuration)
     hooksecurefunc("DebuffButton_UpdateAnchors", HookDebuffButtonUpdateAnchors)
     hooksecurefunc("BuffFrame_UpdateAllBuffAnchors", HookBuffFrameUpdateAllBuffAnchors)

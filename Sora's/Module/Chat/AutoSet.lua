@@ -7,11 +7,11 @@ local function OnPlayerLogin(self, event, unit, ...)
 	FCF_SetChatWindowFontSize(self, ChatFrame1, 11) 
 
 	ChatFrame1:ClearAllPoints()
-	ChatFrame1:SetSize(450, 150)
+	ChatFrame1:SetSize(450, 132)
 	ChatFrame1:SetUserPlaced(true)
 	ChatFrame1:SetPoint("BOTTOMLEFT", 28, 28)
 
-	for i = 1, 10 do
+	for i = 1, NUM_CHAT_WINDOWS do
 		FCF_SetWindowAlpha(_G["ChatFrame"..i], 0)
 	end
 

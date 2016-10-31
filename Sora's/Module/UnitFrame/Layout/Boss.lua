@@ -51,15 +51,15 @@ local function CreateHealth(self, ...)
 end
 
 local function CreateTag(self, ...)
-    local NameTag = S.MakeText(self.Health, 12)
+    local NameTag = S.MakeText(self.Health, 10)
     NameTag:SetPoint("LEFT", 4, 0)
     self:Tag(NameTag, "[Sora:Level][Sora:Rare][Sora:Color][Sora:Name]|r")
     
-    local HPTag = S.MakeText(self.Health, 12)
+    local HPTag = S.MakeText(self.Health, 10)
     HPTag:SetPoint("RIGHT", -4, 0)
     self:Tag(HPTag, "[Sora:Color][Sora:Health]|r | [Sora:Color][Sora:PerHealth]|r")
     
-    local PPTag = S.MakeText(self.Power, 9)
+    local PPTag = S.MakeText(self.Power, 8)
     PPTag:SetPoint("RIGHT", -4, 0)
     self:Tag(PPTag, "[Sora:Power] | [Sora:PerPower]")
 end
@@ -193,7 +193,7 @@ local function RegisterStyle(self, ...)
     if i == 1 then
         self:SetPoint("LEFT", anchor, "LEFT", 0, 0)
     else
-        self:SetPoint("LEFT", _G["oUF_Sora_Boss" .. (i - 1)], "RIGHT", 16, 0)
+        self:SetPoint("LEFT", _G["oUF_Sora_Boss" .. (i - 1)], "RIGHT", 32, 0)
     end
     
     CreatePower(self, ...)
@@ -211,7 +211,7 @@ end
 local function OnPlayerLogin(self, event, ...)
     anchor = CreateFrame("Frame", nil, UIParent)
     anchor:SetPoint(unpack(C.UnitFrame.Boss.Postion))
-    anchor:SetSize(C.UnitFrame.Boss.Width * 5 + 16 * 4, C.UnitFrame.Boss.Height)
+    anchor:SetSize(C.UnitFrame.Boss.Width * 5 + 32 * 4, C.UnitFrame.Boss.Height)
     
     oUF:RegisterStyle("oUF_Sora_Boss", RegisterStyle)
     oUF:SetActiveStyle("oUF_Sora_Boss")

@@ -3,9 +3,6 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 local S, C, L, DB = unpack(select(2, ...))
 
--- Variables
-local width, height = 48, 6
-
 -- Begin
 local function OnLeave(self, event, ...)
     GameTooltip:Hide()

@@ -1,20 +1,20 @@
 --[[
--- ¶ÔÓÒ¼ü²Ëµ¥À´Ëµ, ¼Ì³ĞUIDropDownTemplateÒâÒå²»´ó, Ö»ÊÇ×÷ÎªÒ»¸öÈİÆ÷ÔÚÓÃ, ButtonºÍText¶¼²»»áÏÔÊ¾³öÀ´
+-- å¯¹å³é”®èœå•æ¥è¯´, ç»§æ‰¿UIDropDownTemplateæ„ä¹‰ä¸å¤§, åªæ˜¯ä½œä¸ºä¸€ä¸ªå®¹å™¨åœ¨ç”¨, Buttonå’ŒTextéƒ½ä¸ä¼šæ˜¾ç¤ºå‡ºæ¥
 --]]
 
 --[[
-	text,                                              --°´Å¥Ãû³Æ
-	textHeight,                                        --°´Å¥×ÖÌå´óĞ¡
-	icon,                                              --°´Å¥Í¼Æ¬Â·¾¶
-	tCoordLeft, tCoordRight, tCoordTop, tCoordBottom,  --°´Å¥Í¼Æ¬µÄÏà¶Ô²¿·Ö
-	textR, textG, textB,                               --°´Å¥ÎÄ×Öî†É«
-	tooltipText,                                       --ÌáÊ¾ĞÅÏ¢
-	show,                                              --ÅĞ¶ÏÊÇ·ñÏÔÊ¾¸Ã°´Å¥µÄº¯Êı
-	func,                                              --µã»÷°´Å¥Ëù½øĞĞµÄ²Ù×÷
-	notClickable,                                      --²»¿Éµã»÷(»ÒÉ«°´Å¥)
-	justifyH,                                          --ÎÄ×Ö¶ÔÆä·½Ê½, LEFT»òCENTER
-	isSecure,                                          --ÊÇ·ñÊÇ°²È«°´Å¥
-	attributes,                                        --°²È«°´Å¥µÄÊôĞÔ, ¸ñÊ½Îª"ÊôĞÔ1:Öµ1; ÊôĞÔ2:Öµ2"
+	text,                                              --æŒ‰é’®åç§°
+	textHeight,                                        --æŒ‰é’®å­—ä½“å¤§å°
+	icon,                                              --æŒ‰é’®å›¾ç‰‡è·¯å¾„
+	tCoordLeft, tCoordRight, tCoordTop, tCoordBottom,  --æŒ‰é’®å›¾ç‰‡çš„ç›¸å¯¹éƒ¨åˆ†
+	textR, textG, textB,                               --æŒ‰é’®æ–‡å­—é¡”è‰²
+	tooltipText,                                       --æç¤ºä¿¡æ¯
+	show,                                              --åˆ¤æ–­æ˜¯å¦æ˜¾ç¤ºè¯¥æŒ‰é’®çš„å‡½æ•°
+	func,                                              --ç‚¹å‡»æŒ‰é’®æ‰€è¿›è¡Œçš„æ“ä½œ
+	notClickable,                                      --ä¸å¯ç‚¹å‡»(ç°è‰²æŒ‰é’®)
+	justifyH,                                          --æ–‡å­—å¯¹å…¶æ–¹å¼, LEFTæˆ–CENTER
+	isSecure,                                          --æ˜¯å¦æ˜¯å®‰å…¨æŒ‰é’®
+	attributes,                                        --å®‰å…¨æŒ‰é’®çš„å±æ€§, æ ¼å¼ä¸º"å±æ€§1:å€¼1; å±æ€§2:å€¼2"
 ]]
 
 --{ "WHISPER", "INVITE", "TARGET", "IGNORE", "REPORT_SPAM", "GUILD_PROMOTE", "GUILD_LEAVE", "CANCEL" };
@@ -308,27 +308,27 @@ FriendsMenuXP_Buttons["TRADE"] = {
     func = function (name) InitiateTrade("target"); end,
 }
 
---ÖÇÁ¦
+--æ™ºåŠ›
 FriendsMenuXP_Buttons["SPELL_MAGE_INTELLECT"] = {
     spellId = 1459,
 };
 
---Ä§·¨Äı¾Û
+--é­”æ³•å‡èš
 FriendsMenuXP_Buttons["SPELL_MAGE_FOCUS_MAGIC"] = {
     spellId = 54646,
 };
 
---ÄÍÁ¦
+--è€åŠ›
 FriendsMenuXP_Buttons["SPELL_PRIEST_FORTITUDE"] = {
     spellId = 21562,
 };
 
---·À»¤°µÓ°
+--é˜²æŠ¤æš—å½±
 FriendsMenuXP_Buttons["SPELL_PRIEST_SHADOW"] = {
     spellId = 27683,
 };
 
---×¦×Ó
+--çˆªå­
 FriendsMenuXP_Buttons["SPELL_DRUID_MILD"] = {
     spellId =  1126,
 };
@@ -373,10 +373,15 @@ FriendsMenuXP_Buttons["ARMORY"] = {
         local armory = host.."wow/character/"..urlencode(r).."/"..urlencode(n).."/advanced"
         local armoryNoDecode = host.."wow/character/"..r.."/"..n.."/advanced"
 
-        local editBox = ChatEdit_ChooseBoxForSend();
-        ChatEdit_ActivateChat(editBox);
-        editBox:SetText(armory);
-        editBox:HighlightText();
+        if ThreeDimensionsCode_Send and Cmd3DCode_CheckoutClientAndPrompt and not IsControlKeyDown() and Cmd3DCode_CheckoutClientAndPrompt("æ²¡æœ‰æ£€æµ‹åˆ°æœ‰çˆ±å®¢æˆ·ç«¯ï¼Œæ— æ³•å¯åŠ¨æœ‰çˆ±å†…ç½®æµè§ˆå™¨ï¼Œè¯·æ‰‹å·¥å¤åˆ¶ç½‘å€") then
+            U1Message(format("å·²åœ¨å†…ç½®æµè§ˆå™¨ä¸­æ‰“å¼€è‹±é›„æ¦œï¼Œä¸‹æ¬¡æŒ‰ä½CTRLå¯ä»¥è·å–é“¾æ¥ã€‚"))
+            ThreeDimensionsCode_Send("innerbrowser",armoryNoDecode)
+        else
+            local editBox = ChatEdit_ChooseBoxForSend();
+            ChatEdit_ActivateChat(editBox);
+            editBox:SetText(armory);
+            editBox:HighlightText();
+        end
     end,
 }
 

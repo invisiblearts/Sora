@@ -44,7 +44,7 @@ local function SetAuraButtonStyle()
     }
     
     auraButton.duration = {
-        font = {DB.AuraFont, 14, "THINOUTLINE"},
+        font = {DB.AuraFont, 12, "THINOUTLINE"},
         points = {
             {"BOTTOM", 2, -10},
         }

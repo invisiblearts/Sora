@@ -4,7 +4,7 @@ local oUF = ns.oUF or oUF
 local S, C, L, DB = unpack(select(2, ...))
 
 -- Variables
-local height = 6
+
 
 -- Begin
 local function OnLeave(self, ...)
@@ -271,7 +271,7 @@ local function SetGoldPanel()
     bar:SetStatusBarColor(0.00, 0.40, 1.00)
     bar:SetSize((C.MiniMap.Width - 4) / 2, C.MiniMap.BarHeight)
     bar:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", 0, -C.MiniMap.BarHeight * 3 - 8 * 2)
-
+    
     bar.text = S.MakeText(bar, 10)
     bar.text:SetText("N/A")
     bar.text:SetPoint("CENTER", 0, 5)
@@ -335,7 +335,7 @@ local function OnDurabilityPanelUpdate(self, elapsed, ...)
             end
         end
         
-        local value = currDurability / maxDurability * 100
+        local value = maxDurability > 0 and currDurability / maxDurability * 100 or 100
         
         if value < 10 then
             self:SetStatusBarColor(1.00, 0.00, 0.00)
@@ -344,7 +344,7 @@ local function OnDurabilityPanelUpdate(self, elapsed, ...)
         else
             self:SetStatusBarColor(0.00, 0.40, 1.00)
         end
-        
+                
         self:SetValue(value)
         self.text:SetText(string.format("%d%%", value))
         

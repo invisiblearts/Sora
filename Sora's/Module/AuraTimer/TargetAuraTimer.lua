@@ -5,6 +5,10 @@ local S, C, L, DB = unpack(select(2, ...))
 
 -- Variables
 local spacing, iconSize, barWidth = nil, nil, nil
+local whiteList = {
+    [164812] = true, -- 月火术
+    [164815] = true, -- 阳炎术
+}
 
 -- Begin
 local function SetTargetAuraTimer(self, ...)
@@ -52,10 +56,10 @@ local function SetTargetAuraTimer(self, ...)
             icon.bar.bg:SetAllPoints()
             icon.bar.bg:SetVertexColor(0.12, 0.12, 0.12)
             
-            icon.timeText = S.MakeText(icon.bar, 12)
+            icon.timeText = S.MakeText(icon.bar, 10)
             icon.timeText:SetPoint("RIGHT", 0, 6)
             
-            icon.nameText = S.MakeText(icon.bar, 12)
+            icon.nameText = S.MakeText(icon.bar, 10)
             icon.nameText:SetPoint("CENTER", -10, 6)
             
             icon.shadow = S.MakeShadow(icon, 2)
@@ -68,7 +72,7 @@ local function SetTargetAuraTimer(self, ...)
     auras.CustomFilter = function(self, unit, icon, name, rank, _, count, _, duration, timeLeft, caster, _, _, spellID)
         local flag = false
         
-        if duration > 0 and duration < 60 and caster == "player" and icon.isDebuff then
+        if caster == "player" and icon.isDebuff and duration > 0 and (duration < 60 or whiteList[spellID]) then
             flag = true
             icon.name = name
             icon.duration = duration
